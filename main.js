@@ -14,6 +14,7 @@ const authModal = document.getElementById('auth-modal');
 const closeButton = authModal.querySelector('.close-button');
 const authEmail = document.getElementById('auth-email');
 const authPassword = document.getElementById('auth-password');
+const privacyAgreeCheckbox = document.getElementById('privacy-agree');
 const modalLoginBtn = document.getElementById('modal-login-btn');
 const modalRegisterBtn = document.getElementById('modal-register-btn');
 
@@ -31,6 +32,13 @@ closeButton.addEventListener('click', () => {
 modalRegisterBtn.addEventListener('click', async () => {
     const email = authEmail.value;
     const password = authPassword.value;
+    const privacyAgreed = privacyAgreeCheckbox.checked;
+
+    if (!privacyAgreed) {
+        alert('개인정보 수집 및 이용에 동의해야 회원가입을 할 수 있습니다.');
+        return;
+    }
+
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         // Optionally, save user info to Firestore, e.g., role
