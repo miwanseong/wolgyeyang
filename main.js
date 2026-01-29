@@ -11,6 +11,94 @@ const db = getFirestore(app);
 // Export auth and db for use in other modules
 export { auth, db };
 
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
+import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
+import { firebaseConfig } from './firebase-config.js';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Export auth and db for use in other modules
+export { auth, db };
+
+// --- Authentication UI and Logic ---
+const userDisplay = document.getElementById('user-display');
+const loginBtn = document.getElementById('login-btn');
+const logoutBtn = document.getElementById('logout-btn');
+
+const authModal = document.getElementById('auth-modal');
+const closeButton = authModal.querySelector('.close-button');
+const authEmail = document.getElementById('auth-email');
+const authPassword = document.getElementById('auth-password');
+const modalLoginBtn = document.getElementById('modal-login-btn');
+const modalRegisterBtn = document.getElementById('modal-register-btn');
+
+// Show auth modal
+loginBtn.addEventListener('click', () => {
+    authModal.style.display = 'flex'; // Use flex to center the modal content
+});
+
+// Hide auth modal
+closeButton.addEventListener('click', () => {
+    authModal.style.display = 'none';
+});
+
+// Register new user
+modalRegisterBtn.addEventListener('click', async () => {
+    const email = authEmail.value;
+    const password = authPassword.value;
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert('회원가입 성공! 로그인되었습니다.');
+        authModal.style.display = 'none';
+    } catch (error) {
+        alert(`회원가입 실패: ${error.message}`);
+    }
+});
+
+// Login user
+modalLoginBtn.addEventListener('click', async () => {
+    const email = authEmail.value;
+    const password = authPassword.value;
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert('로그인 성공!');
+        authModal.style.display = 'none';
+    } catch (error) {
+        alert(`로그인 실패: ${error.message}`);
+    }
+});
+
+// Logout user
+logoutBtn.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
+        alert('로그아웃되었습니다.');
+    } catch (error) {
+        alert(`로그아웃 실패: ${error.message}`);
+    }
+});
+
+// Listen for auth state changes
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in
+        userDisplay.textContent = `환영합니다, ${user.email}`;
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = 'inline-block';
+    } else {
+        // User is signed out
+        userDisplay.textContent = '';
+        loginBtn.style.display = 'inline-block';
+        logoutBtn.style.display = 'none';
+        authModal.style.display = 'none'; // Hide modal if user logs out
+    }
+});
+
+
 class VtuberCard extends HTMLElement {
     constructor() {
         super();
