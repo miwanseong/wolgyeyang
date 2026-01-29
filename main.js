@@ -1,5 +1,5 @@
 import { auth, db } from './firebase-modules.js';
-import { onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
+import { onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
 import { collection, addDoc, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
 
 
@@ -41,13 +41,14 @@ modalRegisterBtn.addEventListener('click', async () => {
 
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        // Optionally, save user info to Firestore, e.g., role
+        await sendEmailVerification(userCredential.user); // Send verification email
+
         await addDoc(collection(db, 'users'), {
             uid: userCredential.user.uid,
             email: userCredential.user.email,
-            isAdmin: false // Default to not admin
+            isAdmin: false
         });
-        alert('회원가입 성공! 로그인되었습니다.');
+        alert('회원가입 성공! 이메일 인증 링크를 보냈으니 확인해주세요.');
         authModal.style.display = 'none';
     } catch (error) {
         alert(`회원가입 실패: ${error.message}`);
@@ -59,7 +60,12 @@ modalLoginBtn.addEventListener('click', async () => {
     const email = authEmail.value;
     const password = authPassword.value;
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        if (!userCredential.user.emailVerified) {
+            await signOut(auth);
+            alert('이메일 인증이 필요합니다. 받은 편지함을 확인해주세요.');
+            return;
+        }
         alert('로그인 성공!');
         authModal.style.display = 'none';
     } catch (error) {
