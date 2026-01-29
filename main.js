@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
-import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js'; // Added firestore imports
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js'; // Added firestore imports
 import { firebaseConfig } from './firebase-config.js';
 
 // Initialize Firebase
@@ -10,6 +10,8 @@ const db = getFirestore(app);
 
 // Export auth and db for use in other modules
 export { auth, db };
+
+let isAdmin = false; // Global flag for admin status
 
 // --- Authentication UI and Logic ---
 const userDisplay = document.getElementById('user-display');
@@ -38,7 +40,13 @@ modalRegisterBtn.addEventListener('click', async () => {
     const email = authEmail.value;
     const password = authPassword.value;
     try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        // Optionally, save user info to Firestore, e.g., role
+        await addDoc(collection(db, 'users'), {
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            isAdmin: false // Default to not admin
+        });
         alert('회원가입 성공! 로그인되었습니다.');
         authModal.style.display = 'none';
     } catch (error) {
@@ -70,7 +78,7 @@ logoutBtn.addEventListener('click', async () => {
 });
 
 // Listen for auth state changes
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         // User is signed in
         userDisplay.textContent = `환영합니다, ${user.email}`;
@@ -78,6 +86,23 @@ onAuthStateChanged(auth, (user) => {
         logoutBtn.style.display = 'inline-block';
         postFormContainer.style.display = 'block'; // Show post form for logged-in users
         newPostBtn.style.display = 'none'; // Hide "새 글 작성" button if form is already shown
+
+        // Fetch user's admin status from Firestore
+        const userDocRef = doc(db, 'users', user.uid); // Assuming user document ID is their UID
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+            isAdmin = userDocSnap.data().isAdmin || false;
+            console.log("User admin status:", isAdmin);
+        } else {
+            // If user document doesn't exist, create it (e.g., if they registered before this feature)
+            await addDoc(collection(db, 'users'), {
+                uid: user.uid,
+                email: user.email,
+                isAdmin: false // Default to not admin
+            });
+            isAdmin = false;
+        }
+
     } else {
         // User is signed out
         userDisplay.textContent = '';
@@ -86,8 +111,21 @@ onAuthStateChanged(auth, (user) => {
         authModal.style.display = 'none'; // Hide modal if user logs out
         postFormContainer.style.display = 'none'; // Hide post form for logged-out users
         newPostBtn.style.display = 'inline-block'; // Show "새 글 작성" button
+        // Reset admin status on logout
     }
 });
+
+// Function to delete a post
+async function deletePost(postId) {
+    if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+        try {
+            await deleteDoc(doc(db, 'posts', postId));
+            alert('게시글이 삭제되었습니다.');
+        } catch (error) {
+            alert(`게시글 삭제 실패: ${error.message}`);
+        }
+    }
+}
 
 // --- Bulletin Board UI and Logic ---
 const postFormContainer = document.querySelector('.post-form-container');
@@ -153,13 +191,31 @@ onSnapshot(q, (snapshot) => {
             border-radius: 10px;
             box-shadow: 0 5px 10px rgba(0,0,0,0.2);
             color: var(--text-color);
+            position: relative; /* For delete button positioning */
         `;
         postElement.innerHTML = `
             <h3 style="color: var(--accent-color); margin-bottom: 0.5rem;">${post.title}</h3>
             <p style="margin-bottom: 1rem;">${post.content}</p>
             <small style="color: #bbb;">작성자: ${post.author} / ${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : '날짜 없음'}</small>
-            <!-- Delete button for later implementation -->
         `;
+
+        if (isAdmin) { // Only show delete button if user is admin
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = '삭제';
+            deleteButton.style.cssText = `
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 5px 10px;
+                cursor: pointer;
+            `;
+            deleteButton.addEventListener('click', () => deletePost(postId));
+            postElement.appendChild(deleteButton);
+        }
         postsContainer.appendChild(postElement);
     });
 });
