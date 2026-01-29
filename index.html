@@ -61,6 +61,20 @@
                 <!-- 캐릭터 카드는 main.js에서 동적으로 생성됩니다. -->
             </div>
         </section>
+
+        <section class="board" id="board">
+            <h2>커뮤니티 게시판</h2>
+            <div class="post-form-container" style="margin-bottom: 2rem; display: none;">
+                <input type="text" id="post-title" placeholder="제목" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: var(--card-bg-color); color: var(--text-color);">
+                <textarea id="post-content" placeholder="내용" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: var(--card-bg-color); color: var(--text-color); min-height: 100px;"></textarea>
+                <button id="submit-post-btn" style="padding: 10px 20px; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;">게시글 작성</button>
+            </div>
+            <button id="new-post-btn" style="padding: 10px 20px; background-color: var(--primary-color); color: white; border: 1px solid var(--accent-color); border-radius: 5px; cursor: pointer; margin-bottom: 2rem;">새 글 작성</button>
+
+            <div class="posts-container" style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Posts will be loaded here dynamically -->
+            </div>
+        </section>
     </main>
 
     <footer>

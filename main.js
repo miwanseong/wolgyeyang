@@ -1,19 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
-import { firebaseConfig } from './firebase-config.js';
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// Export auth and db for use in other modules
-export { auth, db };
-
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
+import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js'; // Added firestore imports
 import { firebaseConfig } from './firebase-config.js';
 
 // Initialize Firebase
@@ -89,13 +76,92 @@ onAuthStateChanged(auth, (user) => {
         userDisplay.textContent = `환영합니다, ${user.email}`;
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
+        postFormContainer.style.display = 'block'; // Show post form for logged-in users
+        newPostBtn.style.display = 'none'; // Hide "새 글 작성" button if form is already shown
     } else {
         // User is signed out
         userDisplay.textContent = '';
         loginBtn.style.display = 'inline-block';
         logoutBtn.style.display = 'none';
         authModal.style.display = 'none'; // Hide modal if user logs out
+        postFormContainer.style.display = 'none'; // Hide post form for logged-out users
+        newPostBtn.style.display = 'inline-block'; // Show "새 글 작성" button
     }
+});
+
+// --- Bulletin Board UI and Logic ---
+const postFormContainer = document.querySelector('.post-form-container');
+const postTitleInput = document.getElementById('post-title');
+const postContentInput = document.getElementById('post-content');
+const submitPostBtn = document.getElementById('submit-post-btn');
+const newPostBtn = document.getElementById('new-post-btn');
+const postsContainer = document.querySelector('.posts-container');
+
+// Toggle post form visibility
+newPostBtn.addEventListener('click', () => {
+    if (auth.currentUser) {
+        postFormContainer.style.display = postFormContainer.style.display === 'none' ? 'block' : 'none';
+        newPostBtn.textContent = postFormContainer.style.display === 'none' ? '새 글 작성' : '폼 닫기';
+    } else {
+        alert('로그인 후 글을 작성할 수 있습니다.');
+        authModal.style.display = 'flex';
+    }
+});
+
+// Submit new post
+submitPostBtn.addEventListener('click', async () => {
+    const title = postTitleInput.value;
+    const content = postContentInput.value;
+    const authorEmail = auth.currentUser ? auth.currentUser.email : 'Anonymous';
+
+    if (title.trim() === '' || content.trim() === '') {
+        alert('제목과 내용을 입력해주세요.');
+        return;
+    }
+
+    try {
+        await addDoc(collection(db, 'posts'), {
+            title,
+            content,
+            author: authorEmail,
+            timestamp: serverTimestamp()
+        });
+        postTitleInput.value = '';
+        postContentInput.value = '';
+        postFormContainer.style.display = 'none';
+        newPostBtn.textContent = '새 글 작성';
+        alert('게시글이 성공적으로 작성되었습니다.');
+    } catch (error) {
+        alert(`게시글 작성 실패: ${error.message}`);
+    }
+});
+
+// Listen for posts in real-time
+const postsCol = collection(db, 'posts');
+const q = query(postsCol, orderBy('timestamp', 'desc'));
+
+onSnapshot(q, (snapshot) => {
+    postsContainer.innerHTML = ''; // Clear existing posts
+    snapshot.forEach(doc => {
+        const post = doc.data();
+        const postId = doc.id;
+        const postElement = document.createElement('div');
+        postElement.classList.add('post-card');
+        postElement.style.cssText = `
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            color: var(--text-color);
+        `;
+        postElement.innerHTML = `
+            <h3 style="color: var(--accent-color); margin-bottom: 0.5rem;">${post.title}</h3>
+            <p style="margin-bottom: 1rem;">${post.content}</p>
+            <small style="color: #bbb;">작성자: ${post.author} / ${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : '날짜 없음'}</small>
+            <!-- Delete button for later implementation -->
+        `;
+        postsContainer.appendChild(postElement);
+    });
 });
 
 
