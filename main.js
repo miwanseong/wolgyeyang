@@ -1,4 +1,4 @@
-class CharacterCard extends HTMLElement {
+class VtuberCard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
@@ -11,7 +11,7 @@ class CharacterCard extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>
-                .character-card {
+                .vtuber-card {
                     background-color: var(--card-bg-color, #0f3460);
                     border-radius: 15px;
                     padding: 1.5rem;
@@ -22,29 +22,29 @@ class CharacterCard extends HTMLElement {
                     opacity: 0;
                     transform: translateY(20px);
                 }
-                .character-card.show {
+                .vtuber-card.show {
                     opacity: 1;
                     transform: translateY(0);
                 }
-                .character-card:hover {
+                .vtuber-card:hover {
                     transform: translateY(-10px);
                 }
-                .character-card img {
+                .vtuber-card img {
                     width: 100%;
                     border-radius: 10px;
                     margin-bottom: 1rem;
                 }
-                .character-card h3 {
+                .vtuber-card h3 {
                     font-size: 1.5rem;
                     color: var(--accent-color, #e94560);
                     margin-bottom: 0.5rem;
                 }
-                .character-card p {
+                .vtuber-card p {
                     font-size: 1rem;
                     color: var(--text-color, #f0f0f0);
                 }
             </style>
-            <div class="character-card">
+            <div class="vtuber-card">
                 <img src="${imageUrl}" alt="${name}">
                 <h3>${name}</h3>
                 <p>${description}</p>
@@ -53,34 +53,34 @@ class CharacterCard extends HTMLElement {
     }
 }
 
-customElements.define('character-card', CharacterCard);
+customElements.define('vtuber-card', VtuberCard);
 
-const characters = [
+const vtubers = [
     {
-        name: '아리엘',
-        description: '숲의 수호자, 자연의 힘을 다룹니다.',
-        imageUrl: 'https://source.unsplash.com/random/300x400/?elf,fantasy'
+        name: '루나',
+        description: '노래를 사랑하는 달의 아이돌',
+        imageUrl: 'https://source.unsplash.com/random/300x400/?anime,girl,moon'
     },
     {
-        name: '카이저',
-        description: '강력한 검술을 사용하는 제국의 기사단장.',
-        imageUrl: 'https://source.unsplash.com/random/300x400/?knight,armor'
+        name: '렉스',
+        description: '게임을 좋아하는 활기찬 공룡',
+        imageUrl: 'https://source.unsplash.com/random/300x400/?anime,boy,dinosaur'
     },
     {
-        name: '리리스',
-        description: '어둠의 마법사, 금지된 힘을 탐구합니다.',
-        imageUrl: 'https://source.unsplash.com/random/300x400/?sorceress,dark'
+        name: '세라피나',
+        description: '신비로운 마법을 사용하는 책의 요정',
+        imageUrl: 'https://source.unsplash.com/random/300x400/?anime,girl,magic'
     }
 ];
 
-const characterContainer = document.querySelector('.character-cards');
+const vtuberContainer = document.querySelector('.vtuber-cards');
 
-characters.forEach(char => {
-    const card = document.createElement('character-card');
-    card.setAttribute('name', char.name);
-    card.setAttribute('description', char.description);
-    card.setAttribute('image-url', char.imageUrl);
-    characterContainer.appendChild(card);
+vtubers.forEach(vtuber => {
+    const card = document.createElement('vtuber-card');
+    card.setAttribute('name', vtuber.name);
+    card.setAttribute('description', vtuber.description);
+    card.setAttribute('image-url', vtuber.imageUrl);
+    vtuberContainer.appendChild(card);
 });
 
 // Hamburger menu toggle
@@ -97,11 +97,11 @@ const observer = new IntersectionObserver((entries) => {
         if (entry.isIntersecting) {
             entry.target.classList.add('show');
             if(entry.target.shadowRoot){
-                entry.target.shadowRoot.querySelector('.character-card').classList.add('show');
+                entry.target.shadowRoot.querySelector('.vtuber-card').classList.add('show');
             }
         }
     });
 });
 
-const hiddenElements = document.querySelectorAll('.card, .hero-content, character-card');
+const hiddenElements = document.querySelectorAll('.card, .hero-content, vtuber-card');
 hiddenElements.forEach((el) => observer.observe(el));
