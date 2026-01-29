@@ -17,6 +17,7 @@ let isAdmin = false; // Global flag for admin status
 const userDisplay = document.getElementById('user-display');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const mobileAuthContainer = document.querySelector('.mobile-auth-controls');
 
 const authModal = document.getElementById('auth-modal');
 const closeButton = authModal.querySelector('.close-button');
@@ -79,6 +80,8 @@ logoutBtn.addEventListener('click', async () => {
 
 // Listen for auth state changes
 onAuthStateChanged(auth, async (user) => {
+    mobileAuthContainer.innerHTML = ''; // Clear mobile auth controls
+
     if (user) {
         // User is signed in
         userDisplay.textContent = `환영합니다, ${user.email}`;
@@ -86,6 +89,17 @@ onAuthStateChanged(auth, async (user) => {
         logoutBtn.style.display = 'inline-block';
         postFormContainer.style.display = 'block'; // Show post form for logged-in users
         newPostBtn.style.display = 'none'; // Hide "새 글 작성" button if form is already shown
+
+        // Mobile auth
+        const mobileLogoutBtn = document.createElement('button');
+        mobileLogoutBtn.textContent = '로그아웃';
+        mobileLogoutBtn.style.cssText = 'padding: 10px 20px; width: 100%; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;';
+        mobileLogoutBtn.addEventListener('click', async () => {
+            await signOut(auth);
+            alert('로그아웃되었습니다.');
+            mobileNav.style.right = '-100%'; // Close mobile nav
+        });
+        mobileAuthContainer.appendChild(mobileLogoutBtn);
 
         // Fetch user's admin status from Firestore
         const userDocRef = doc(db, 'users', user.uid); // Assuming user document ID is their UID
@@ -111,7 +125,17 @@ onAuthStateChanged(auth, async (user) => {
         authModal.style.display = 'none'; // Hide modal if user logs out
         postFormContainer.style.display = 'none'; // Hide post form for logged-out users
         newPostBtn.style.display = 'inline-block'; // Show "새 글 작성" button
-        // Reset admin status on logout
+        isAdmin = false; // Reset admin status on logout
+
+        // Mobile auth
+        const mobileLoginBtn = document.createElement('button');
+        mobileLoginBtn.textContent = '로그인 / 회원가입';
+        mobileLoginBtn.style.cssText = 'padding: 10px 20px; width: 100%; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;';
+        mobileLoginBtn.addEventListener('click', () => {
+            authModal.style.display = 'flex';
+            mobileNav.style.right = '-100%'; // Close mobile nav
+        });
+        mobileAuthContainer.appendChild(mobileLoginBtn);
     }
 });
 
