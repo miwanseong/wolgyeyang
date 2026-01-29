@@ -3,10 +3,10 @@
 :root {
     --primary-color: #1a1a2e;
     --secondary-color: #16213e;
-    --accent-color: #e94560;
+    --accent-color: #FF8C00;
     --text-color: #f0f0f0;
     --card-bg-color: #0f3460;
-    --glow-color: rgba(233, 69, 96, 0.4);
+    --glow-color: rgba(255, 140, 0, 0.4);
 }
 
 * {
