@@ -139,10 +139,22 @@ nav {
     box-shadow: 0 6px 20px var(--glow-color);
 }
 
-.features, .vtubers, .board { /* Added .board */
+.features, .vtubers, .board, .board-page-container { /* Added .board-page-container */
     padding: 4rem 2rem;
     text-align: center;
 }
+
+.board-page-container {
+    max-width: 900px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: var(--card-bg-color);
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    color: var(--text-color);
+    text-align: left; /* Align text left within the container */
+}
+
 
 h2 {
     font-size: 2.8rem;
