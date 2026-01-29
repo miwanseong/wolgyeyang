@@ -1,14 +1,67 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>썹덕 - 수집형 RPG</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+    <header>
+        <nav>
+            <a href="index.html" class="logo" style="text-decoration: none;">썹덕</a>
+            <ul class="nav-links">
+                <li><a href="world.html">세계관</a></li>
+                <li><a href="#characters">캐릭터</a></li>
+                <li><a href="#">뉴스</a></li>
+                <li><a href="#">커뮤니티</a></li>
+            </ul>
+            <div class="burger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mobile-nav">
+        <ul>
+            <li><a href="world.html">세계관</a></li>
+            <li><a href="#characters">캐릭터</a></li>
+            <li><a href="#">뉴스</a></li>
+            <li><a href="#">커뮤니티</a></li>
+        </ul>
+    </div>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>새로운 세계가 당신을 기다립니다</h1>
+                <p>전략적인 전투와 끝없는 수집의 재미를 경험하세요.</p>
+                <button>게임 시작하기</button>
+            </div>
+        </section>
+
+        <section class="features">
+            <h2>게임 특징</h2>
+            <div class="feature-cards">
+                <div class="card">전략적인 턴제 전투</div>
+                <div class="card">다양한 캐릭터 수집</div>
+                <div class="card">강력한 길드 시스템</div>
+            </div>
+        </section>
+
+        <section class="characters" id="characters">
+            <h2>대표 캐릭터</h2>
+            <div class="character-cards">
+                <!-- 캐릭터 카드는 main.js에서 동적으로 생성됩니다. -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 썹덕. All Rights Reserved.</p>
+    </footer>
+
+    <script src="main.js"></script>
 </body>
 </html>
