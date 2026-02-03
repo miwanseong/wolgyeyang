@@ -18,16 +18,17 @@
             margin: 0;
         }
         .auth-container {
-            background-color: var(--secondary-color);
+            background-color: var(--text-color); /* Dark background */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             width: 90%;
             max-width: 400px;
             text-align: center;
+            color: white; /* Light text for the container */
         }
         .auth-container h2 {
-            color: var(--text-color);
+            color: white; /* Make heading white */
             margin-bottom: 30px;
         }
         .auth-container input {
@@ -36,8 +37,8 @@
             margin-bottom: 15px;
             border: 1px solid var(--accent-color);
             border-radius: 5px;
-            background-color: var(--card-bg-color);
-            color: var(--text-color);
+            background-color: var(--card-bg-color); /* Light background for inputs */
+            color: var(--text-color); /* Dark text for inputs */
         }
         .auth-container button {
             width: 100%;
@@ -76,10 +77,10 @@
     </style>
 </head>
 <body>
-    <div style="text-align: center; margin-top: 20px;">
-        <a href="index.html" style="text-decoration: none; color: var(--text-color); font-size: 1.8em; font-weight: bold;">태엽몽환경</a>
+    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+        <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-size: 1.8em; font-weight: bold;">태엽몽환경</a>
     </div>
-    <div class="auth-container" style="margin-top: 20px;">
+    <div class="auth-container" style="margin-top: 20px; background-color: var(--text-color); color: white;">
         <h2>로그인</h2>
         <input type="email" id="login-email" placeholder="이메일">
         <input type="password" id="login-password" placeholder="비밀번호">

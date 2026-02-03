@@ -18,16 +18,18 @@
             margin: 0;
         }
         .auth-container {
-            background-color: var(--secondary-color);
+            background-color: var(--text-color); /* Dark background */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             width: 90%;
             max-width: 400px;
             text-align: center;
+            color: white; /* Light text for the container */
+            margin-top: 20px; /* To prevent overlap with absolute positioned header */
         }
         .auth-container h2 {
-            color: var(--text-color);
+            color: white; /* Make heading white */
             margin-bottom: 30px;
         }
         .auth-container input[type="email"],
@@ -38,8 +40,8 @@
             margin-bottom: 15px;
             border: 1px solid var(--accent-color);
             border-radius: 5px;
-            background-color: var(--card-bg-color);
-            color: var(--text-color);
+            background-color: var(--card-bg-color); /* Light background for inputs */
+            color: var(--text-color); /* Dark text for inputs */
         }
         .auth-container .privacy-checkbox-group {
             display: flex;
@@ -87,7 +89,7 @@
         .auth-container .login-link {
             display: block;
             margin-top: 20px;
-            color: var(--accent-color);
+            color: white; /* Make link white on dark background */
             text-decoration: none;
             font-size: 0.95em;
         }
@@ -97,6 +99,9 @@
     </style>
 </head>
 <body>
+    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
+        <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-size: 1.8em; font-weight: bold;">태엽몽환경</a>
+    </div>
     <div class="auth-container">
         <h2>회원가입</h2>
         <input type="email" id="register-email" placeholder="이메일">
