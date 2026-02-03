@@ -60,12 +60,18 @@
         .auth-container .register-link {
             display: block;
             margin-top: 20px;
-            color: var(--primary-color);
+            padding: 10px;
+            background-color: var(--primary-color); /* Use primary color for contrast */
+            color: white;
             text-decoration: none;
             font-size: 0.95em;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
         }
         .auth-container .register-link:hover {
-            text-decoration: underline;
+            background-color: var(--primary-color-hover);
+            text-decoration: none;
         }
     </style>
 </head>
