@@ -18,18 +18,18 @@
             margin: 0;
         }
         .auth-container {
-            background-color: var(--text-color); /* Dark background */
+            background-color: var(--secondary-color); /* Reverted to original off-white */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             width: 90%;
             max-width: 400px;
             text-align: center;
-            color: white; /* Light text for the container */
-            margin-top: 20px; /* To prevent overlap with absolute positioned header */
+            color: var(--text-color); /* Reverted to dark text */
+            margin-top: 20px; /* To allow space for the absolute positioned header link */
         }
         .auth-container h2 {
-            color: white; /* Make heading white */
+            color: var(--text-color); /* Make heading dark */
             margin-bottom: 30px;
         }
         .auth-container input[type="email"],
@@ -55,6 +55,7 @@
         }
         .auth-container .privacy-checkbox-group label {
             font-size: 0.95em;
+            color: var(--text-color); /* Ensure label is dark */
         }
         .auth-container button {
             width: 100%;
@@ -89,7 +90,7 @@
         .auth-container .login-link {
             display: block;
             margin-top: 20px;
-            color: white; /* Make link white on dark background */
+            color: var(--accent-color); /* Reverted to orange link */
             text-decoration: none;
             font-size: 0.95em;
         }

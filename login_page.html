@@ -18,17 +18,18 @@
             margin: 0;
         }
         .auth-container {
-            background-color: var(--text-color); /* Dark background */
+            background-color: var(--secondary-color); /* Reverted to original off-white */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             width: 90%;
             max-width: 400px;
             text-align: center;
-            color: white; /* Light text for the container */
+            color: var(--text-color); /* Reverted to dark text */
+            margin-top: 20px; /* To allow space for the absolute positioned header link */
         }
         .auth-container h2 {
-            color: white; /* Make heading white */
+            color: var(--text-color); /* Make heading dark */
             margin-bottom: 30px;
         }
         .auth-container input {
@@ -62,8 +63,8 @@
             display: block;
             margin-top: 20px;
             padding: 10px;
-            background-color: var(--primary-color); /* Use primary color for contrast */
-            color: white;
+            background-color: var(--accent-color); /* Make it an orange button */
+            color: white; /* White text on orange button */
             text-decoration: none;
             font-size: 0.95em;
             border-radius: 5px;
@@ -71,7 +72,7 @@
             transition: background-color 0.3s ease;
         }
         .auth-container .register-link:hover {
-            background-color: var(--primary-color-hover);
+            background-color: var(--accent-color-hover);
             text-decoration: none;
         }
     </style>
@@ -80,7 +81,7 @@
     <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); text-align: center;">
         <a href="index.html" style="text-decoration: none; color: var(--accent-color); font-size: 1.8em; font-weight: bold;">태엽몽환경</a>
     </div>
-    <div class="auth-container" style="margin-top: 20px; background-color: var(--text-color); color: white;">
+    <div class="auth-container" style="margin-top: 20px;">
         <h2>로그인</h2>
         <input type="email" id="login-email" placeholder="이메일">
         <input type="password" id="login-password" placeholder="비밀번호">
