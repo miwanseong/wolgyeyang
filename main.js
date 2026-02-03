@@ -93,8 +93,6 @@ onAuthStateChanged(auth, async (user) => {
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline-block';
 
-
-
         // Mobile auth
         const mobileLogoutBtn = document.createElement('button');
         mobileLogoutBtn.textContent = '로그아웃';
@@ -102,11 +100,10 @@ onAuthStateChanged(auth, async (user) => {
         mobileLogoutBtn.addEventListener('click', async () => {
             await signOut(auth);
             alert('로그아웃되었습니다.');
-            mobileNav.style.right = '-100%'; // Close mobile nav
+            const mobileNav = document.querySelector('.mobile-nav');
+            if (mobileNav) mobileNav.style.right = '-100%'; // Close mobile nav
         });
         mobileAuthContainer.appendChild(mobileLogoutBtn);
-
-
 
     } else {
         // User is signed out
@@ -114,9 +111,6 @@ onAuthStateChanged(auth, async (user) => {
         loginBtn.style.display = 'inline-block';
         logoutBtn.style.display = 'none';
         authModal.style.display = 'none'; // Hide modal if user logs out
-        // postFormContainer.style.display = 'none'; // Removed, now in board.js
-        // newPostBtn.style.display = 'inline-block'; // Removed, now in board.js
-
 
         // Mobile auth
         const mobileLoginBtn = document.createElement('button');
@@ -124,7 +118,8 @@ onAuthStateChanged(auth, async (user) => {
         mobileLoginBtn.style.cssText = 'padding: 10px 20px; width: 100%; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;';
         mobileLoginBtn.addEventListener('click', () => {
             authModal.style.display = 'flex';
-            mobileNav.style.right = '-100%'; // Close mobile nav
+            const mobileNav = document.querySelector('.mobile-nav');
+            if (mobileNav) mobileNav.style.right = '-100%'; // Close mobile nav
         });
         mobileAuthContainer.appendChild(mobileLoginBtn);
     }
