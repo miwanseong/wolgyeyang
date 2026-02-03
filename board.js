@@ -106,8 +106,8 @@ onAuthStateChanged(auth, async (user) => {
         if (userDisplay) userDisplay.textContent = `환영합니다, ${user.email}`;
         if (loginBtn) loginBtn.style.display = 'none';
         if (logoutBtn) logoutBtn.style.display = 'inline-block';
-        if (postFormContainer) postFormContainer.style.display = 'block';
-        if (newPostBtn) newPostBtn.style.display = 'none';
+        if (postFormContainer) postFormContainer.style.display = 'none'; // Initially hide the form
+        if (newPostBtn) newPostBtn.style.display = 'inline-block'; // Show the 'New Post' button
 
         // Mobile auth
         if (mobileAuthContainer) {
@@ -202,7 +202,12 @@ if (submitPostBtn) {
     submitPostBtn.addEventListener('click', async () => {
         const title = postTitleInput.value;
         const content = postContentInput.value;
-        const authorEmail = auth.currentUser ? auth.currentUser.email : 'Anonymous';
+        const user = auth.currentUser;
+
+        if (!user) {
+            alert('로그인 후 게시글을 작성할 수 있습니다.');
+            return;
+        }
 
         if (title.trim() === '' || content.trim() === '') {
             alert('제목과 내용을 입력해주세요.');
@@ -213,7 +218,8 @@ if (submitPostBtn) {
             await addDoc(collection(db, 'posts'), {
                 title,
                 content,
-                author: authorEmail,
+                author: user.email,
+                authorId: user.uid, // Add author's UID
                 timestamp: serverTimestamp()
             });
             postTitleInput.value = '';
@@ -234,6 +240,7 @@ const q = query(postsCol, orderBy('timestamp', 'desc'));
 
 onSnapshot(q, (snapshot) => {
     if (postsContainer) postsContainer.innerHTML = ''; // Clear existing posts
+    const currentUser = auth.currentUser;
     snapshot.forEach(doc => {
         const post = doc.data();
         const postId = doc.id;
@@ -253,7 +260,8 @@ onSnapshot(q, (snapshot) => {
             <small style="color: #bbb;">작성자: ${post.author} / ${post.timestamp ? new Date(post.timestamp.toDate()).toLocaleString() : '날짜 없음'}</small>
         `;
 
-        if (isAdmin) { // Only show delete button if user is admin
+        // Show delete button if user is admin or the author of the post
+        if (isAdmin || (currentUser && currentUser.uid === post.authorId)) {
             const deleteButton = document.createElement('button');
             deleteButton.textContent = '삭제';
             deleteButton.style.cssText = `
