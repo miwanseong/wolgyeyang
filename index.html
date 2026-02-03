@@ -12,9 +12,9 @@
         <nav>
             <a href="index.html" class="logo" style="text-decoration: none;">태엽몽환경</a>
             <ul class="nav-links">
-                    <li><a href="about.html">회사소개</a></li>
-                <li><a href="#vtubers">소속 버튜버</a></li>
-                <li><a href="#">뉴스</a></li>
+                <li><a href="about.html">회사 소개</a></li>
+                <li><a href="#vtubers">소속 아티스트</a></li>
+                <li><a href="#">공지사항</a></li>
                 <li><a href="board.html">커뮤니티</a></li>
             </ul>
             <div class="auth-controls">
@@ -30,8 +30,9 @@
 
     <div class="mobile-nav">
         <ul>
-                <li><a href="about.html">회사소개</a></li>
-            <li><a href="#vtubers">소속 버튜버</a></li>
+            <li><a href="about.html">회사 소개</a></li>
+            <li><a href="#vtubers">소속 아티스트</a></li>
+            <li><a href="#">공지사항</a></li>
             <li><a href="board.html">커뮤니티</a></li>
             <li class="mobile-auth-controls" style="margin-top: 2rem;">
                 <!-- This will be controlled by JS -->
@@ -44,12 +45,12 @@
             <div class="hero-content">
                 <h1>당신이 사랑할 새로운 버추얼 스타</h1>
                 <p>개성 넘치는 버튜버들과 함께하는 즐거운 시간을 만들어가세요.</p>
-                <button>소속 버튜버 보기</button>
+                <button onclick="document.getElementById('vtubers').scrollIntoView();">소속 아티스트 보기</button>
             </div>
         </section>
 
         <section class="features">
-            <h2>회사 소개</h2>
+            <h2>태엽몽환경은?</h2>
             <div class="feature-cards">
                 <div class="card">다양한 라이브 방송</div>
                 <div class="card">팬들과의 소통</div>
@@ -58,7 +59,7 @@
         </section>
 
         <section class="vtubers" id="vtubers">
-            <h2>소속 버튜버</h2>
+            <h2>소속 아티스트</h2>
             <div class="vtuber-cards">
                 <!-- 캐릭터 카드는 main.js에서 동적으로 생성됩니다. -->
             </div>
@@ -69,10 +70,7 @@
         <p>&copy; 2024 태엽몽환경. All Rights Reserved.</p>
     </footer>
 
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js"></script>
-    <script type="module" src="./firebase-config.js"></script>
+    <script type="module" src="./firebase-modules.js"></script>
     <script src="main.js"></script>
     
     <!-- Authentication Modal -->

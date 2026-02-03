@@ -57,13 +57,6 @@ nav {
     transition: color 0.3s ease;
 }
 
-.nav-links a {
-    color: var(--text-color);
-    text-decoration: none;
-    font-size: 1.1rem;
-    transition: color 0.3s ease;
-}
-
 .nav-links a:hover {
     color: var(--accent-color);
 }
@@ -71,7 +64,7 @@ nav {
 .burger {
     display: none;
     cursor: pointer;
-    color: var(--text-color); /* Added color */
+    color: var(--text-color);
 }
 
 .mobile-nav {
@@ -119,7 +112,7 @@ nav {
 .hero-content p {
     font-size: 1.4rem;
     margin-bottom: 2rem;
-    color: #6C757D; /* Softer text color */
+    color: #6C757D;
 }
 
 .hero-content button {
@@ -139,7 +132,7 @@ nav {
     box-shadow: 0 6px 20px var(--glow-color);
 }
 
-.features, .vtubers, .board, .board-page-container { /* Added .board-page-container */
+.features, .vtubers, .board, .board-page-container {
     padding: 4rem 2rem;
     text-align: center;
 }
@@ -152,16 +145,15 @@ nav {
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     color: var(--text-color);
-    text-align: left; /* Align text left within the container */
+    text-align: left;
 }
-
 
 h2 {
     font-size: 2.8rem;
-    margin-bottom: 3rem; /* Increased margin */
+    margin-bottom: 3rem;
 }
 
-.feature-cards, .vtuber-cards { /* Renamed .character-cards */
+.feature-cards, .vtuber-cards {
     display: flex;
     justify-content: center;
     gap: 2rem;
@@ -187,14 +179,88 @@ footer {
     background-color: var(--secondary-color);
     color: #6C757D;
     text-align: center;
-    padding: 2rem; /* Increased padding */
-    margin-top: 4rem; /* Increased margin */
+    padding: 2rem;
+    margin-top: 4rem;
     border-top: 1px solid #E9ECEF;
 }
 
+/* New styles for about.html */
+.company-intro-container-new {
+    max-width: 1200px;
+    margin: 4rem auto;
+    padding: 2rem;
+}
+
+.intro-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.intro-header h1 {
+    font-size: 3.5rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.intro-header p {
+    font-size: 1.5rem;
+    color: #6C757D;
+}
+
+.intro-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.intro-cards .card {
+    background-color: var(--card-bg-color);
+    border-radius: 15px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #E9ECEF;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.intro-cards .card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.card-icon {
+    font-size: 3rem;
+    color: var(--accent-color);
+    margin-bottom: 1.5rem;
+}
+
+.card-content h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.card-content p, .card-content ul {
+    color: #6C757D;
+    line-height: 1.6;
+}
+
+.card-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.card-content ul li {
+    margin-bottom: 0.5rem;
+}
+
+
 /* 반응형 디자인 */
 @media (max-width: 768px) {
-    .nav-links, .auth-controls { /* Hide auth controls on mobile */
+    .nav-links, .auth-controls {
         display: none; 
     }
 
