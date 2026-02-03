@@ -107,7 +107,7 @@ if (newPostBtn) {
             newPostBtn.textContent = postFormContainer.style.display === 'none' ? '새 글 작성' : '폼 닫기';
         } else {
             alert('로그인 후 글을 작성할 수 있습니다.');
-            if (authModal) authModal.style.display = 'flex';
+            window.location.href = 'login_page.html'; // Redirect to login page
         }
     });
 }
