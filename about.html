@@ -13,10 +13,15 @@
             <a href="index.html" class="logo" style="text-decoration: none;">태엽몽환경</a>
             <ul class="nav-links">
                 <li><a href="about.html">회사 소개</a></li>
-                <li><a href="index.html#characters">소속 아티스트</a></li>
+                <li><a href="index.html#vtubers">소속 아티스트</a></li>
                 <li><a href="#">공지사항</a></li>
                 <li><a href="board.html">커뮤니티</a></li>
             </ul>
+            <div class="auth-controls">
+                <span id="user-display" style="color: white; margin-right: 10px;"></span>
+                <button id="login-btn" style="padding: 8px 15px; border-radius: 5px; border: none; background-color: var(--accent-color); color: white; cursor: pointer;">로그인</button>
+                <button id="logout-btn" style="padding: 8px 15px; border-radius: 5px; border: none; background-color: gray; color: white; cursor: pointer; display: none;">로그아웃</button>
+            </div>
             <div class="burger">
                 <i class="fas fa-bars"></i>
             </div>
@@ -26,9 +31,12 @@
     <div class="mobile-nav">
         <ul>
             <li><a href="about.html">회사 소개</a></li>
-            <li><a href="index.html#characters">소속 아티스트</a></li>
+            <li><a href="index.html#vtubers">소속 아티스트</a></li>
             <li><a href="#">공지사항</a></li>
             <li><a href="board.html">커뮤니티</a></li>
+            <li class="mobile-auth-controls" style="margin-top: 2rem;">
+                <!-- This will be controlled by JS -->
+            </li>
         </ul>
     </div>
 
@@ -94,5 +102,21 @@
     </footer>
 
     <script src="main.js"></script>
+    
+    <!-- Authentication Modal -->
+    <div id="auth-modal" style="display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); justify-content: center; align-items: center;">
+        <div style="background-color: var(--secondary-color); margin: auto; padding: 30px; border: 1px solid var(--accent-color); width: 80%; max-width: 400px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+            <span class="close-button" style="color: var(--text-color); float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2 style="color: var(--text-color); text-align: center; margin-bottom: 20px;">로그인 / 회원가입</h2>
+            <input type="email" id="auth-email" placeholder="이메일" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: var(--card-bg-color); color: var(--text-color);">
+            <input type="password" id="auth-password" placeholder="비밀번호" style="width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: var(--card-bg-color); color: var(--text-color);">
+            <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                <input type="checkbox" id="privacy-agree" style="margin-right: 10px; transform: scale(1.2);">
+                <label for="privacy-agree" style="color: var(--text-color); font-size: 0.9em;">개인정보 수집 및 이용에 동의합니다.</label>
+            </div>
+            <button id="modal-login-btn" style="width: 100%; padding: 10px; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 10px;">로그인</button>
+            <button id="modal-register-btn" style="width: 100%; padding: 10px; background-color: var(--primary-color); color: white; border: 1px solid var(--accent-color); border-radius: 5px; cursor: pointer;">회원가입</button>
+        </div>
+    </div>
 </body>
 </html>
