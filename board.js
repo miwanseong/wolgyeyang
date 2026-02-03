@@ -1,103 +1,18 @@
 import { auth, db } from './firebase-modules.js';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js';
-import { onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from 'https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js';
+import { onAuthStateChanged, signOut } from './auth.js'; // Import only necessary auth functions for header display
 
 let isAdmin = false; // Global flag for admin status
 
 // --- Authentication UI and Logic for Board Page ---
+// These UI elements are now handled by auth.js for their display logic
+// This file will only trigger auth state changes from the header if needed, but not define the core logic
 const userDisplay = document.getElementById('user-display');
 const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
 const mobileAuthContainer = document.querySelector('.mobile-auth-controls');
 
-const authModal = document.getElementById('auth-modal');
-const closeButton = authModal.querySelector('.close-button');
-const authEmail = document.getElementById('auth-email');
-const authPassword = document.getElementById('auth-password');
-const privacyAgreeCheckbox = document.getElementById('privacy-agree');
-const modalLoginBtn = document.getElementById('modal-login-btn');
-const modalRegisterBtn = document.getElementById('modal-register-btn');
-
-// Show auth modal
-if (loginBtn) { // Check if element exists (only on board.html if separate)
-    loginBtn.addEventListener('click', () => {
-        authModal.style.display = 'flex';
-    });
-}
-
-
-// Hide auth modal
-if (closeButton) {
-    closeButton.addEventListener('click', () => {
-        authModal.style.display = 'none';
-    });
-}
-
-
-// Register new user
-if (modalRegisterBtn) {
-    modalRegisterBtn.addEventListener('click', async () => {
-        const email = authEmail.value;
-        const password = authPassword.value;
-        const privacyAgreed = privacyAgreeCheckbox.checked;
-
-        if (!privacyAgreed) {
-            alert('개인정보 수집 및 이용에 동의해야 회원가입을 할 수 있습니다.');
-            return;
-        }
-
-        try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            await sendEmailVerification(userCredential.user); // Send verification email
-            
-            await addDoc(collection(db, 'users'), {
-                uid: userCredential.user.uid,
-                email: userCredential.user.email,
-                isAdmin: false // Default to not admin
-            });
-            alert('회원가입 성공! 이메일 인증 링크를 보냈으니 확인해주세요.');
-            authModal.style.display = 'none';
-        } catch (error) {
-            alert(`회원가입 실패: ${error.message}`);
-        }
-    });
-}
-
-
-// Login user
-if (modalLoginBtn) {
-    modalLoginBtn.addEventListener('click', async () => {
-        const email = authEmail.value;
-        const password = authPassword.value;
-        try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            if (!userCredential.user.emailVerified) {
-                await signOut(auth);
-                alert('이메일 인증이 필요합니다. 받은 편지함을 확인해주세요.');
-                return;
-            }
-            alert('로그인 성공!');
-            authModal.style.display = 'none';
-        } catch (error) {
-            alert(`로그인 실패: ${error.message}`);
-        }
-    });
-}
-
-
-// Logout user
-if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-        try {
-            await signOut(auth);
-            alert('로그아웃되었습니다.');
-        } catch (error) {
-            alert(`로그아웃 실패: ${error.message}`);
-        }
-    });
-}
-
-// Listen for auth state changes
+// Listen for auth state changes globally
 onAuthStateChanged(auth, async (user) => {
     if (mobileAuthContainer) mobileAuthContainer.innerHTML = ''; // Clear mobile auth controls
 
@@ -109,6 +24,7 @@ onAuthStateChanged(auth, async (user) => {
         if (postFormContainer) postFormContainer.style.display = 'none'; // Initially hide the form
         if (newPostBtn) newPostBtn.style.display = 'inline-block'; // Show the 'New Post' button
 
+
         // Mobile auth
         if (mobileAuthContainer) {
             const mobileLogoutBtn = document.createElement('button');
@@ -119,6 +35,7 @@ onAuthStateChanged(auth, async (user) => {
                 alert('로그아웃되었습니다.');
                 const mobileNav = document.querySelector('.mobile-nav');
                 if (mobileNav) mobileNav.style.right = '-100%'; // Close mobile nav
+                window.location.href = 'index.html';
             });
             mobileAuthContainer.appendChild(mobileLogoutBtn);
         }
@@ -143,7 +60,6 @@ onAuthStateChanged(auth, async (user) => {
         if (userDisplay) userDisplay.textContent = '';
         if (loginBtn) loginBtn.style.display = 'inline-block';
         if (logoutBtn) logoutBtn.style.display = 'none';
-        if (authModal) authModal.style.display = 'none';
         if (postFormContainer) postFormContainer.style.display = 'none';
         if (newPostBtn) newPostBtn.style.display = 'inline-block';
         isAdmin = false;
@@ -154,7 +70,7 @@ onAuthStateChanged(auth, async (user) => {
             mobileLoginBtn.textContent = '로그인 / 회원가입';
             mobileLoginBtn.style.cssText = 'padding: 10px 20px; width: 100%; background-color: var(--accent-color); color: white; border: none; border-radius: 5px; cursor: pointer;';
             mobileLoginBtn.addEventListener('click', () => {
-                if (authModal) authModal.style.display = 'flex';
+                window.location.href = 'login_page.html'; // Redirect to login page
                 const mobileNav = document.querySelector('.mobile-nav');
                 if (mobileNav) mobileNav.style.right = '-100%';
             });

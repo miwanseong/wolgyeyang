@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 태엽몽환경</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+        }
+        .auth-container {
+            background-color: var(--secondary-color);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        .auth-container h2 {
+            color: var(--text-color);
+            margin-bottom: 30px;
+        }
+        .auth-container input {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-color);
+            border-radius: 5px;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+        }
+        .auth-container button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .auth-container #login-submit-btn {
+            background-color: var(--accent-color);
+            color: white;
+            margin-bottom: 15px;
+        }
+        .auth-container #login-submit-btn:hover {
+            background-color: var(--accent-color-hover);
+        }
+        .auth-container .register-link {
+            display: block;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: 0.95em;
+        }
+        .auth-container .register-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <h2>로그인</h2>
+        <input type="email" id="login-email" placeholder="이메일">
+        <input type="password" id="login-password" placeholder="비밀번호">
+        <button id="login-submit-btn">로그인</button>
+        <a href="register_page.html" class="register-link">아직 계정이 없으신가요? 회원가입</a>
+    </div>
+
+    <script type="module" src="./firebase-modules.js"></script>
+    <script type="module" src="./auth.js"></script>
+</body>
+</html>
