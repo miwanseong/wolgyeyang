@@ -31,7 +31,8 @@
             margin-bottom: 30px;
         }
         .auth-container input[type="email"],
-        .auth-container input[type="password"] {
+        .auth-container input[type="password"],
+        .auth-container input[type="text"] { /* Added input[type="text"] for OTP */
             width: calc(100% - 20px);
             padding: 12px 10px;
             margin-bottom: 15px;
@@ -63,13 +64,25 @@
             font-weight: bold;
             transition: background-color 0.3s ease;
         }
+        .auth-container button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .auth-container #request-otp-btn {
+            background-color: var(--primary-color);
+            color: white;
+            margin-bottom: 15px;
+        }
+        .auth-container #request-otp-btn:hover {
+            background-color: var(--primary-color-hover);
+        }
         .auth-container #register-submit-btn {
             background-color: var(--accent-color);
             color: white;
             margin-bottom: 15px;
         }
         .auth-container #register-submit-btn:hover {
-            background-color: var(--primary-color-hover);
+            background-color: var(--accent-color-hover);
         }
         .auth-container .login-link {
             display: block;
@@ -88,11 +101,17 @@
         <h2>회원가입</h2>
         <input type="email" id="register-email" placeholder="이메일">
         <input type="password" id="register-password" placeholder="비밀번호">
+        <button id="request-otp-btn">OTP 요청</button>
+
+        <div id="otp-input-section" style="display: none;">
+            <input type="text" id="otp-code" placeholder="인증번호">
+        </div>
+
         <div class="privacy-checkbox-group">
             <input type="checkbox" id="privacy-agree">
             <label for="privacy-agree">개인정보 수집 및 이용에 동의합니다.</label>
         </div>
-        <button id="register-submit-btn">회원가입</button>
+        <button id="register-submit-btn" disabled>회원가입</button>
         <a href="login_page.html" class="login-link">이미 계정이 있으신가요? 로그인</a>
     </div>
 
