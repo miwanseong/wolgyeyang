@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소속 아티스트 - 태엽몽환경</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .artists-page-container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .artists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .artist-card {
+            background-color: var(--card-bg-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            color: var(--text-color);
+            text-align: left;
+            position: relative;
+        }
+        .artist-card img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        .artist-card h3 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+        .artist-card p {
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        .admin-controls {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+        .admin-controls button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .admin-controls button.delete {
+            background-color: #dc3545;
+        }
+        .admin-controls button:hover {
+            opacity: 0.8;
+        }
+        .add-artist-form-container {
+            background-color: var(--secondary-color);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+            margin-top: 2rem;
+            text-align: left;
+            display: none; /* Hidden by default */
+        }
+        .add-artist-form-container h3 {
+            color: var(--accent-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .add-artist-form-container input,
+        .add-artist-form-container textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: var(--card-bg-color);
+            color: var(--text-color);
+        }
+        .add-artist-form-container button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+        .add-artist-form-container button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo" style="text-decoration: none;">태엽몽환경</a>
+            <ul class="nav-links">
+                <li><a href="about.html">회사 소개</a></li>
+                <li><a href="artists.html">소속 아티스트</a></li> <!-- Link to this page -->
+                <li><a href="#">공지사항</a></li>
+                <li><a href="board.html">커뮤니티</a></li>
+            </ul>
+            <div class="auth-controls">
+                <span id="user-display" style="color: white; margin-right: 10px;"></span>
+                <button id="login-btn" onclick="window.location.href='login_page.html'" style="padding: 8px 15px; border-radius: 5px; border: none; background-color: var(--accent-color); color: white; cursor: pointer;">로그인</button>
+                <button id="logout-btn" style="padding: 8px 15px; border-radius: 5px; border: none; background-color: gray; color: white; cursor: pointer; display: none;">로그아웃</button>
+            </div>
+            <div class="burger">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <div class="mobile-nav">
+        <ul>
+            <li><a href="about.html">회사 소개</a></li>
+            <li><a href="artists.html">소속 아티스트</a></li> <!-- Link to this page -->
+            <li><a href="#">공지사항</a></li>
+            <li><a href="board.html">커뮤니티</a></li>
+            <li class="mobile-auth-controls" style="margin-top: 2rem;">
+                <!-- This will be controlled by JS -->
+            </li>
+        </ul>
+    </div>
+
+    <main>
+        <section class="artists-page-container">
+            <h2>소속 아티스트</h2>
+            
+            <button id="add-artist-btn" style="background-color: var(--accent-color); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-bottom: 1.5rem; display: none;">아티스트 추가</button>
+
+            <div class="add-artist-form-container">
+                <h3>새 아티스트 추가</h3>
+                <input type="text" id="artist-name" placeholder="아티스트 이름">
+                <input type="text" id="artist-image" placeholder="이미지 URL">
+                <textarea id="artist-description" placeholder="설명"></textarea>
+                <button id="submit-artist-btn">아티스트 저장</button>
+            </div>
+
+            <div class="artists-grid">
+                <!-- Artists will be loaded here dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 태엽몽환경. All Rights Reserved.</p>
+    </footer>
+
+    <script type="module" src="./firebase-modules.js"></script>
+    <script type="module" src="./auth.js"></script>
+    <script type="module" src="./artists.js"></script>
+</body>
+</html>
