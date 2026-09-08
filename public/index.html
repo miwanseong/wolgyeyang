@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI VTuber Control</title>
+  <style>
+    body{font-family:system-ui,sans-serif;background:#101018;color:#eee;margin:0;padding:24px}main{max-width:900px;margin:auto}.grid{display:grid;grid-template-columns:280px 1fr;gap:16px}.card{background:#191923;border:1px solid #30303d;border-radius:16px;padding:18px}.face{height:220px;border-radius:12px;display:grid;place-items:center;font-size:80px;background:linear-gradient(145deg,#27273a,#151520)}.emotion{font-size:28px;margin-top:12px}.bar{height:8px;background:#30303d;border-radius:8px;overflow:hidden}.fill{height:100%;width:50%;background:#9b7cff}.messages{height:390px;overflow:auto}.msg{padding:8px 0;border-bottom:1px solid #2b2b36}.ai{color:#bdaeff}input,button{box-sizing:border-box;border-radius:10px;border:1px solid #3a3a48;padding:11px;background:#111119;color:#fff}input{width:75%}button{width:23%;cursor:pointer}small{color:#888}
+  </style>
+</head>
+<body>
+<main>
+  <h1>AI VTuber MVP</h1>
+  <div class="grid">
+    <section class="card">
+      <div id="face" class="face">😐</div>
+      <div id="emotion" class="emotion">neutral</div>
+      <div class="bar"><div id="fill" class="fill"></div></div>
+      <p id="connection">CHZZK: 확인 중...</p>
+      <small>현재는 3D 모델 없이 감정 상태와 TTS부터 테스트합니다.</small>
+    </section>
+    <section class="card">
+      <div id="messages" class="messages"></div>
+      <div style="margin-top:12px">
+        <input id="input" placeholder="테스트 채팅 입력..." />
+        <button id="send">보내기</button>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+const faces={neutral:'😐',happy:'😊',angry:'😠',sad:'😢',surprised:'😲',shy:'😳'};
+const $=id=>document.getElementById(id);
+function render(s){
+  $('face').textContent=faces[s.emotion]||'😐';
+  $('emotion').textContent=`${s.emotion} (${Math.round(s.emotionScore*100)}%)`;
+  $('fill').style.width=`${Math.round(s.emotionScore*100)}%`;
+  $('connection').textContent=`CHZZK: ${s.connected?'연결됨':'연결 안 됨'}`;
+  $('messages').innerHTML=s.messages.map(m=>m.type==='chat'
+    ? `<div class="msg"><b>${escapeHtml(m.nickname)}</b>: ${escapeHtml(m.message)}</div>`
+    : `<div class="msg ai"><b>AI</b>: ${escapeHtml(m.message)} <small>[${m.emotion}]</small></div>`).join('');
+  $('messages').scrollTop=$('messages').scrollHeight;
+}
+function escapeHtml(x){return String(x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+async function refresh(){const r=await fetch('/api/state');render(await r.json());}
+async function send(){const input=$('input');const message=input.value.trim();if(!message)return;input.value='';const r=await fetch('/api/test',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message})});const d=await r.json();if(d.audioUrl)new Audio(d.audioUrl).play().catch(()=>{});await refresh();}
+$('send').onclick=send;$('input').onkeydown=e=>{if(e.key==='Enter')send()};setInterval(refresh,1000);refresh();
+</script>
+</body>
+</html>
