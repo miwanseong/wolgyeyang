@@ -1,123 +1,115 @@
 import 'dotenv/config';
 import express from 'express';
+import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import OpenAI from 'openai';
-import { ChzzkClient } from 'chzzk';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const app = express();
-const port = Number(process.env.PORT || 3000);
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
-const state = { emotion: 'neutral', emotionScore: 0.5, lastUser: '', lastMessage: '', lastReply: '', connected: false, messages: [] };
-let processing = false;
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('/api/state', (_req, res) => res.json(state));
-
-app.post('/api/test', async (req, res) => {
-  const message = String(req.body?.message || '').trim();
-  const nickname = String(req.body?.nickname || '테스트 시청자').trim();
-  if (!message) return res.status(400).json({ error: 'message is required' });
-  res.json(await handleChat({ nickname, message, source: 'test' }));
-});
-
-function pushMessage(item) {
-  state.messages.push(item);
-  if (state.messages.length > 50) state.messages.shift();
-}
-
-async function handleChat({ nickname, message, source = 'chzzk' }) {
-  if (processing) return { ok: false, skipped: true, reason: 'AI is processing another message' };
-  processing = true;
-  state.lastUser = nickname;
-  state.lastMessage = message;
-  pushMessage({ type: 'chat', nickname, message, source, at: Date.now() });
-
-  try {
-    const response = await openai.responses.create({
-      model: process.env.OPENAI_MODEL || 'gpt-5.6-luna',
-      instructions: `당신은 치지직에서 방송하는 AI 버튜버다.
-시청자에게 실제 방송에서 말할 법한 자연스럽고 짧은 한국어로 대답한다.
-불필요하게 설명하거나 길게 말하지 않는다.
-캐릭터의 감정도 판단한다.
-반드시 JSON 하나만 출력한다. 마크다운 코드블록을 사용하지 않는다.
-{"reply":"방송에서 말할 문장","emotion":"neutral|happy|angry|sad|surprised|shy","emotion_score":0.0}
-감정 점수는 0.0~1.0이다.`,
-      input: `${nickname}: ${message}`
+import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { WebSocketServer, WebSocket } from 'ws';
+import { configFromEnv } from './src/config.js';
+import { Budget } from './src/store.js';
+import { createProviders } from './src/providers.js';
+import { Engine } from './src/engine.js';
+import { Chzzk } from './src/chzzk.js';
+import { VTS } from './src/vts.js';
+import { persona } from './src/persona.js';
+const root = path.dirname(fileURLToPath(import.meta.url));
+export function createApp(config = configFromEnv(), overrides = {}) {
+  const app = express(); const server = http.createServer(app);
+  const controlToken = randomBytes(32).toString('hex');
+  const engine = new Engine(config, overrides.providers || createProviders(config), overrides.budget || new Budget(path.join(config.dataDir, 'budget.json'), config.dailyLimit));
+  let chzzk, vts;
+  const state = () => ({ ...engine.snapshot(), persona, chzzk: chzzk?.status || '미연결', vts: vts?.status || '미연결' });
+  const broadcast = (type, data) => { for (const ws of wss.clients) if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type, data })); };
+  const update = () => broadcast('state', state());
+  const allowedHost = host => [`localhost:${config.port}`, `127.0.0.1:${config.port}`, `[::1]:${config.port}`].includes(host);
+  const allowedOrigin = origin => [`http://localhost:${config.port}`, `http://127.0.0.1:${config.port}`, `http://[::1]:${config.port}`].includes(origin);
+  const validToken = token => typeof token === 'string' && token.length === controlToken.length && timingSafeEqual(Buffer.from(token), Buffer.from(controlToken));
+  app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    if (!allowedHost(req.headers.host)) return res.status(403).json({ error: 'Local host required' });
+    res.set({ 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
+      'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; media-src 'self' blob:; connect-src 'self' ws://localhost:* ws://127.0.0.1:*; frame-ancestors 'none'" });
+    if (req.path.startsWith('/api/') || req.path.startsWith('/auth/')) res.set('Cache-Control', 'no-store');
+    if (req.headers['sec-fetch-site'] === 'cross-site' && req.path !== '/auth/chzzk/callback') return res.status(403).end();
+    next();
+  });
+  app.use(express.json({ limit: '8kb' }));
+  app.use('/api', (req, res, next) => {
+    if (req.method === 'GET') return next();
+    if (!allowedOrigin(req.headers.origin) || !validToken(req.headers.authorization?.replace(/^Bearer /, ''))) return res.status(403).json({ error: '운영 화면에서 다시 시도해 주세요.' });
+    next();
+  });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: 4096 });
+  server.on('upgrade', (req, socket, head) => {
+    if (req.url !== '/events' || !allowedHost(req.headers.host) || !allowedOrigin(req.headers.origin)) { socket.destroy(); return; }
+    wss.handleUpgrade(req, socket, head, ws => wss.emit('connection', ws));
+  });
+  chzzk = new Chzzk(config, event => engine.ingest(event), update);
+  vts = new VTS(config, update);
+  engine.on('state', update);
+  engine.on('stop', () => { vts.setMouth(0); broadcast('stop'); });
+  engine.on('mouth', n => vts.setMouth(n));
+  engine.on('utterance', utterance => {
+    void vts.emotion(utterance.emotion);
+    engine.player?.send(JSON.stringify({ type: 'speak', data: utterance }));
+  });
+  wss.on('connection', ws => {
+    ws.alive = true; ws.on('pong', () => { ws.alive = true; });
+    ws.send(JSON.stringify({ type: 'state', data: state() }));
+    ws.on('message', raw => {
+      try {
+        const m = JSON.parse(raw);
+        if (m.type === 'claim' && validToken(m.token)) ws.send(JSON.stringify({ type: 'claimed', data: engine.claim(ws) }));
+        if (m.type === 'release') engine.release(ws);
+        if (m.type === 'done') engine.ack(ws, m.id, m.ok === true);
+        if (m.type === 'mouth' && ws === engine.player && engine.current && m.id === engine.current.id && Date.now() - (ws.mouthAt || 0) > 55) {
+          ws.mouthAt = Date.now(); vts.setMouth(m.value);
+        }
+      } catch { /* Malformed local frames are ignored. */ }
     });
-
-    let data;
-    try { data = JSON.parse(response.output_text.trim()); }
-    catch { data = { reply: response.output_text.trim(), emotion: 'neutral', emotion_score: 0.5 }; }
-
-    const reply = String(data.reply || '').slice(0, 300);
-    const emotion = ['neutral', 'happy', 'angry', 'sad', 'surprised', 'shy'].includes(data.emotion) ? data.emotion : 'neutral';
-    const emotionScore = Math.max(0, Math.min(1, Number(data.emotion_score) || 0.5));
-    state.emotion = emotion;
-    state.emotionScore = emotionScore;
-    state.lastReply = reply;
-    pushMessage({ type: 'ai', message: reply, emotion, emotionScore, at: Date.now() });
-
-    let audioUrl = null;
-    if (process.env.TTS_ENABLED !== 'false') {
-      const speech = await openai.audio.speech.create({
-        model: process.env.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts',
-        voice: process.env.OPENAI_TTS_VOICE || 'marin',
-        input: reply,
-        instructions: '한국어로 자연스럽고 또렷하게 말한다. 인터넷 방송 진행자처럼 친근하게 말하되 과장된 연기는 하지 않는다.'
-      });
-      const buffer = Buffer.from(await speech.arrayBuffer());
-      const fs = await import('node:fs/promises');
-      const dir = path.join(__dirname, 'public', 'audio');
-      await fs.mkdir(dir, { recursive: true });
-      const id = `${Date.now()}-${Math.random().toString(36).slice(2)}.mp3`;
-      await fs.writeFile(path.join(dir, id), buffer);
-      audioUrl = `/audio/${id}`;
+    ws.on('close', () => engine.release(ws));
+    ws.on('error', () => engine.release(ws));
+  });
+  app.get('/api/bootstrap', (_req, res) => res.json({ token: controlToken, state: state() }));
+  app.get('/api/state', (_req, res) => res.json(state()));
+  app.post('/api/test', (req, res) => res.json(engine.ingest({ kind: 'chat', nickname: '테스트 청취자', message: req.body?.message })));
+  app.post('/api/control', (req, res) => {
+    switch (req.body?.action) {
+      case 'start': engine.start(); break;
+      case 'stop': engine.stop(); break;
+      case 'auto': engine.setAuto(req.body.enabled === true); break;
+      case 'vts': void vts.connect(); break;
+      case 'chzzk': if (config.mode !== 'live') return res.status(400).json({ error: '실제 채팅 연결은 APP_MODE=live에서 사용할 수 있습니다.' }); void chzzk.connect(); break;
+      default: return res.status(400).json({ error: '알 수 없는 동작입니다.' });
     }
-    return { ok: true, reply, emotion, emotionScore, audioUrl };
-  } catch (error) {
-    console.error(error);
-    return { ok: false, error: error.message };
-  } finally { processing = false; }
+    res.json({ ok: true });
+  });
+  app.post('/api/chzzk/auth', (_req, res) => {
+    try {
+      const { url, browserKey } = chzzk.authURL();
+      res.cookie('chzzk_auth', browserKey, { httpOnly: true, sameSite: 'lax', maxAge: 300000, path: '/auth/chzzk/callback' });
+      res.json({ url });
+    } catch (e) { res.status(400).json({ error: e.message }); }
+  });
+  app.get('/auth/chzzk/callback', async (req, res) => {
+    const cookie = req.headers.cookie?.split(';').map(x => x.trim()).find(x => x.startsWith('chzzk_auth='))?.slice(11);
+    try { await chzzk.callback(req.query.code, req.query.state, cookie); res.clearCookie('chzzk_auth', { path: '/auth/chzzk/callback' }); res.redirect('/?authorized=1'); }
+    catch { res.status(400).type('text').send('치지직 인증 실패. 운영 화면에서 다시 인증해 주세요.'); }
+  });
+  app.get('/audio/:file', (req, res) => {
+    const match = /^([0-9a-f-]{36})\.mp3$/.exec(req.params.file); const audio = match && engine.audio.get(match[1]);
+    if (!audio) return res.status(404).end(); res.set('Cache-Control', 'no-store').type('audio/mpeg').send(audio);
+  });
+  app.use(express.static(path.join(root, 'public')));
+  app.use((err, _req, res, _next) => res.status(err.status === 413 ? 413 : 400).json({ error: '요청을 처리할 수 없습니다.' }));
+  const tick = setInterval(() => engine.tick(), 1000);
+  const heartbeat = setInterval(() => { for (const ws of wss.clients) { if (!ws.alive) ws.terminate(); else { ws.alive = false; ws.ping(); } } }, 10000);
+  const close = () => { clearInterval(tick); clearInterval(heartbeat); engine.close(); chzzk.disconnect(); vts.disconnect(); for (const ws of wss.clients) ws.terminate(); wss.close(); };
+  return { app, server, engine, chzzk, vts, close };
 }
-
-async function connectChzzk() {
-  const channelId = process.env.CHZZK_CHANNEL_ID;
-  if (!channelId) { console.log('[CHZZK] channel ID not configured'); return; }
-  const options = {};
-  if (process.env.CHZZK_NID_AUT && process.env.CHZZK_NID_SES) {
-    options.nidAuth = process.env.CHZZK_NID_AUT;
-    options.nidSession = process.env.CHZZK_NID_SES;
-  }
-  const client = new ChzzkClient(options);
-  const chat = client.chat({ channelId, pollInterval: 30_000 });
-  chat.on('connect', (chatChannelId) => {
-    state.connected = true;
-    console.log(`[CHZZK] connected: ${chatChannelId}`);
-    chat.requestRecentChat(30);
-  });
-  chat.on('reconnect', (chatChannelId) => { state.connected = true; console.log(`[CHZZK] reconnected: ${chatChannelId}`); });
-  chat.on('disconnect', () => { state.connected = false; console.log('[CHZZK] disconnected'); });
-  chat.on('chat', async (item) => {
-    if (item.hidden || !item.message?.trim()) return;
-    await handleChat({ nickname: item.profile?.nickname || '시청자', message: item.message });
-  });
-  chat.on('donation', async (item) => {
-    const nickname = item.profile?.nickname || '익명의 후원자';
-    const amount = item.extras?.payAmount || 0;
-    const message = item.message || '';
-    await handleChat({ nickname, message: `${amount}원 후원. ${message || '감사 인사를 해줘.'}`, source: 'donation' });
-  });
-  chat.on('subscription', async (item) => {
-    const nickname = item.profile?.nickname || '시청자';
-    await handleChat({ nickname, message: `${item.extras?.month || 1}개월 구독했어. 감사 인사를 해줘.`, source: 'subscription' });
-  });
-  try { await chat.connect(); }
-  catch (error) { state.connected = false; console.error('[CHZZK] connection failed:', error.message); }
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const config = configFromEnv(); const instance = createApp(config);
+  instance.server.listen(config.port, '127.0.0.1', () => console.log(`월계향 방송국 (${config.mode}) · http://localhost:${config.port}`));
+  instance.server.on('error', () => { console.error('서버를 시작할 수 없습니다. 포트 중복 및 .env 설정을 확인하세요.'); instance.close(); process.exitCode = 1; });
+  for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { instance.close(); instance.server.close(); });
 }
-
-app.listen(port, async () => { console.log(`AI VTuber server: http://localhost:${port}`); await connectChzzk(); });

@@ -3,3 +3,12 @@ temp_wolgyeyang/
 firebase-debug.log
 firebase-config.js
 node_modules/
+
+# Never commit secrets, generated speech, credentials or local runtime state.
+.env
+.env.*
+!.env.example
+.runtime/
+public/audio/
+playwright-report/
+test-results/
