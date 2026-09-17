@@ -1,4 +1,5 @@
-import 'dotenv/config';
+import { existsSync } from 'node:fs';
+import { loadEnvFile } from 'node:process';
 import express from 'express';
 import http from 'node:http';
 import path from 'node:path';
@@ -12,6 +13,7 @@ import { Engine } from './src/engine.js';
 import { Chzzk } from './src/chzzk.js';
 import { VTS } from './src/vts.js';
 import { persona } from './src/persona.js';
+if (existsSync('.env')) loadEnvFile('.env');
 const root = path.dirname(fileURLToPath(import.meta.url));
 export function createApp(config = configFromEnv(), overrides = {}) {
   const app = express(); const server = http.createServer(app);
@@ -113,3 +115,4 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   instance.server.on('error', () => { console.error('서버를 시작할 수 없습니다. 포트 중복 및 .env 설정을 확인하세요.'); instance.close(); process.exitCode = 1; });
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => { instance.close(); instance.server.close(); });
 }
+

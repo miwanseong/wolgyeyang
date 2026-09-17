@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import { emotions, instructions, persona } from './persona.js';
 export function validateReply(data) {
   if (!data || typeof data.reply !== 'string' || !data.reply.trim() || data.reply.length > 180 ||
@@ -9,11 +8,20 @@ export function validateReply(data) {
 }
 export function createProviders(config) {
   const env = config.env;
-  let client;
-  const ai = () => {
+  async function ai(route, body, signal, audio = false) {
     if (!env.OPENAI_API_KEY || env.OPENAI_API_KEY.startsWith('your_')) throw new Error('OPENAI_API_KEY를 .env에 설정해 주세요.');
-    return client ||= new OpenAI({ apiKey: env.OPENAI_API_KEY, maxRetries: 0, timeout: 25000 });
-  };
+    const response = await fetch(`https://api.openai.com/v1/${route}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.any([signal, AbortSignal.timeout(25000)].filter(Boolean))
+    });
+    if (!response.ok) {
+      await response.body?.cancel();
+      throw Object.assign(new Error('OpenAI request failed'), { status: response.status });
+    }
+    return audio ? Buffer.from(await response.arrayBuffer()) : response.json();
+  }
   let demoIndex = 0;
   return {
     async reply(event, history, signal) {
@@ -26,10 +34,10 @@ export function createProviders(config) {
       }
       // Moderation covers all viewer-controlled text, including display names.
       if (event.kind !== 'idle') {
-        const check = await ai().moderations.create({ model: 'omni-moderation-latest', input: `${event.nickname}\n${event.message}` }, { signal });
+        const check = await ai('moderations', { model: 'omni-moderation-latest', input: `${event.nickname}\n${event.message}` }, signal);
         if (!check.results?.length || check.results.some(r => r.flagged)) throw new Error('검토가 필요한 채팅을 건너뛰었습니다.');
       }
-      const response = await ai().responses.create({
+      const response = await ai('responses', {
         model: config.model, store: false, instructions, max_output_tokens: 800,
         input: [...history.slice(-8).flatMap(h => [
           { role: 'user', content: JSON.stringify(h.event) }, { role: 'assistant', content: h.reply }
@@ -38,20 +46,19 @@ export function createProviders(config) {
           type: 'object', additionalProperties: false, required: ['reply', 'emotion', 'emotion_score'],
           properties: { reply: { type: 'string' }, emotion: { type: 'string', enum: emotions }, emotion_score: { type: 'number' } }
         } } }
-      }, { signal });
+      }, signal);
       if (response.status !== 'completed') throw new Error('AI 응답이 완료되지 않았습니다.');
-      const result = validateReply(JSON.parse(response.output_text));
-      const check = await ai().moderations.create({ model: 'omni-moderation-latest', input: result.reply }, { signal });
+      const result = validateReply(JSON.parse((response.output || []).filter(item => item.type === 'message').flatMap(item => item.content || []).filter(part => part.type === 'output_text').map(part => part.text).join('')));
+      const check = await ai('moderations', { model: 'omni-moderation-latest', input: result.reply }, signal);
       if (!check.results?.length || check.results.some(r => r.flagged)) throw new Error('검토가 필요한 AI 발화를 차단했습니다.');
       return result;
     },
     async speech(text, signal) {
       if (config.mode === 'demo' || config.tts === 'none') return null;
       if (config.tts === 'openai') {
-        const speech = await ai().audio.speech.create({ model: env.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts',
+        return ai('audio/speech', { model: env.OPENAI_TTS_MODEL || 'gpt-4o-mini-tts',
           voice: env.OPENAI_TTS_VOICE || 'marin', input: text,
-          instructions: '젊은 성인 여성의 차분하고 또렷한 한국어. 낮은 강도의 자연스러운 대화. 속삭임이나 과장된 애교 없이.' }, { signal });
-        return Buffer.from(await speech.arrayBuffer());
+          instructions: '젊은 성인 여성의 차분하고 또렷한 한국어. 낮은 강도의 자연스러운 대화. 속삭임이나 과장된 애교 없이.' }, signal, true);
       }
       if (!env.NAVER_TTS_CLIENT_ID || !env.NAVER_TTS_CLIENT_SECRET) throw new Error('네이버 TTS 인증 정보를 .env에 설정해 주세요.');
       const response = await fetch('https://naveropenapi.apigw.ntruss.com/tts-premium/v1/tts', {
@@ -67,3 +74,4 @@ export function createProviders(config) {
     }
   };
 }
+
