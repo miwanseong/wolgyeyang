@@ -1,50 +1,9 @@
 <!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI VTuber Control</title>
-  <style>
-    body{font-family:system-ui,sans-serif;background:#101018;color:#eee;margin:0;padding:24px}main{max-width:900px;margin:auto}.grid{display:grid;grid-template-columns:280px 1fr;gap:16px}.card{background:#191923;border:1px solid #30303d;border-radius:16px;padding:18px}.face{height:220px;border-radius:12px;display:grid;place-items:center;font-size:80px;background:linear-gradient(145deg,#27273a,#151520)}.emotion{font-size:28px;margin-top:12px}.bar{height:8px;background:#30303d;border-radius:8px;overflow:hidden}.fill{height:100%;width:50%;background:#9b7cff}.messages{height:390px;overflow:auto}.msg{padding:8px 0;border-bottom:1px solid #2b2b36}.ai{color:#bdaeff}input,button{box-sizing:border-box;border-radius:10px;border:1px solid #3a3a48;padding:11px;background:#111119;color:#fff}input{width:75%}button{width:23%;cursor:pointer}small{color:#888}
-  </style>
-</head>
-<body>
-<main>
-  <h1>AI VTuber MVP</h1>
-  <div class="grid">
-    <section class="card">
-      <div id="face" class="face">😐</div>
-      <div id="emotion" class="emotion">neutral</div>
-      <div class="bar"><div id="fill" class="fill"></div></div>
-      <p id="connection">CHZZK: 확인 중...</p>
-      <small>현재는 3D 모델 없이 감정 상태와 TTS부터 테스트합니다.</small>
-    </section>
-    <section class="card">
-      <div id="messages" class="messages"></div>
-      <div style="margin-top:12px">
-        <input id="input" placeholder="테스트 채팅 입력..." />
-        <button id="send">보내기</button>
-      </div>
-    </section>
-  </div>
-</main>
-<script>
-const faces={neutral:'😐',happy:'😊',angry:'😠',sad:'😢',surprised:'😲',shy:'😳'};
-const $=id=>document.getElementById(id);
-function render(s){
-  $('face').textContent=faces[s.emotion]||'😐';
-  $('emotion').textContent=`${s.emotion} (${Math.round(s.emotionScore*100)}%)`;
-  $('fill').style.width=`${Math.round(s.emotionScore*100)}%`;
-  $('connection').textContent=`CHZZK: ${s.connected?'연결됨':'연결 안 됨'}`;
-  $('messages').innerHTML=s.messages.map(m=>m.type==='chat'
-    ? `<div class="msg"><b>${escapeHtml(m.nickname)}</b>: ${escapeHtml(m.message)}</div>`
-    : `<div class="msg ai"><b>AI</b>: ${escapeHtml(m.message)} <small>[${m.emotion}]</small></div>`).join('');
-  $('messages').scrollTop=$('messages').scrollHeight;
-}
-function escapeHtml(x){return String(x).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-async function refresh(){const r=await fetch('/api/state');render(await r.json());}
-async function send(){const input=$('input');const message=input.value.trim();if(!message)return;input.value='';const r=await fetch('/api/test',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message})});const d=await r.json();if(d.audioUrl)new Audio(d.audioUrl).play().catch(()=>{});await refresh();}
-$('send').onclick=send;$('input').onkeydown=e=>{if(e.key==='Enter')send()};setInterval(refresh,1000);refresh();
-</script>
-</body>
-</html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>월계향 · 심야 방송국</title><link rel="stylesheet" href="/studio.css"></head>
+<body><div class="shell"><aside class="sidebar"><a class="brand" href="/">月<span>WOLGYEYANG<br><small>PRIVATE RADIO STUDIO</small></span></a><nav><a class="selected" href="/">◉ &nbsp; 방송 컨트롤</a><a href="/overlay.html" target="_blank" rel="noopener">▣ &nbsp; OBS 오버레이 ↗</a><a href="/assets/wolgyeyang-design.webp" target="_blank" rel="noopener">◇ &nbsp; 캐릭터 디자인 ↗</a></nav><div class="sidebar-bottom"><span class="dot"></span> LOCAL STUDIO <p>잠들지 못한 사람들을 위한<br>작은 주파수.</p><small>AI 진행자 · 월계향</small></div></aside>
+<main><header><div><div class="eyebrow">MIDNIGHT FREQUENCY / 01</div><h1>오늘 밤도, 여기서.</h1><p>월계향의 심야 방송국 · 운영 콘솔</p></div><div class="mode" id="mode">연결 중</div></header>
+<div class="notice" id="notice">데모는 정해진 예시 대사와 브라우저 음성을 사용합니다. 실제 AI 응답은 .env에서 live 모드를 선택하세요.</div>
+<div class="workspace"><section class="stage card"><div class="stage-top"><span>CHARACTER PREVIEW</span><span id="emotion">NEUTRAL</span></div><div class="character"><img src="/assets/wolgyeyang-design.webp" alt="검은 머리와 공허한 흰 눈, 모던한 차콜 재킷의 월계향 디자인"></div><div class="stage-mark">月<br><span>桂<br>香</span></div><div class="stage-bottom"><small>ILLUSTRATION PREVIEW · LIVE2D 미연결</small><h2>월계향 <span>Wolgyeyang</span></h2><p id="caption">왔구나. 오늘은 무슨 일로 잠을 놓쳤어?</p><div class="meter" id="meter"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></section>
+<section class="conversation card"><div class="section-title"><h2>방송 대화</h2><span id="queue">대기 0</span></div><div id="messages" class="messages" aria-live="polite"><div class="empty">아직 조용한 방송국이에요.<br>음성을 활성화하고 진행을 시작해 보세요.</div></div><form id="chat-form"><label for="input">테스트 채팅</label><div class="input-row"><input id="input" maxlength="500" autocomplete="off" placeholder="월계향에게 말을 걸어 보세요"><button type="submit">보내기 ↗</button></div><small>데모 응답은 예시입니다. 실제 채팅은 치지직 인증 후 연결됩니다.</small></form></section>
+<section class="controls card"><div class="section-title"><h2>방송 진행</h2><span id="run-state">정지</span></div><button id="enable-audio" class="primary">① 이 창에서 음성 활성화</button><button id="start">② 진행 시작</button><button id="stop" class="danger">■ 즉시 정지</button><label class="toggle"><span>조용할 때 자동 진행<small>괴담 · 음악 이야기 · 일상 대화</small></span><input type="checkbox" id="auto"></label><div class="connections"><div><span>치지직</span><strong id="chzzk">미연결</strong></div><div><span>VTube Studio</span><strong id="vts">미연결</strong></div><div><span>음성 재생기</span><strong id="player">미연결</strong></div><div><span>오늘 AI 호출</span><strong id="budget">0 / 200</strong></div></div><div class="connection-buttons"><button id="authorize">치지직 인증 ↗</button><button id="connect-chzzk">채팅 연결</button><button id="connect-vts">VTS 연결</button></div><p class="hint">즉시 정지는 AI 대사와 재생을 멈춥니다. OBS 송출 종료는 OBS에서 해 주세요.</p></section></div>
+<footer><span id="feedback" role="status">음성 활성화 → 진행 시작 → 테스트 채팅 순서로 확인하세요.</span><span>AI GENERATED VOICE · OPERATOR CONTROLLED</span></footer></main></div><script type="module" src="/studio.js"></script></body></html>
