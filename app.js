@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=7a11ca623a48";
-import { MAPS, sight, canMove, worldFor, nearestObject } from "./world.js?v=7a11ca623a48";
-import { locomotion, Pursuer } from "./mechanics.js?v=7a11ca623a48";
-import { AudioDirector, TRACKS } from "./audio.js?v=7a11ca623a48";
+import { Scene, facingDirection } from "./scene.js?v=e33230e235db";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=e33230e235db";
+import { locomotion, Pursuer } from "./mechanics.js?v=e33230e235db";
+import { AudioDirector, TRACKS } from "./audio.js?v=e33230e235db";
 import {
   initial,
   ITEMS,
@@ -10,9 +10,10 @@ import {
   restore,
   unlock,
   repair,
+  canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=7a11ca623a48";
+} from "./state.js?v=e33230e235db";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -257,6 +258,7 @@ function interact() {
     say(o.name,(open?'커튼을 천천히 닫았다. 창에 비치던 방 안의 모습이 천 뒤로 사라진다.':'커튼을 조금 걷었다. 바깥은 어둡고, 창에는 내 뒤의 방만 비친다.')+'\n'+o.description);return;
   }
   if(o.fixture==='mirror'){
+    if(state.flags.power&&!state.flags.mirrorHaunt){state.flags.mirrorHaunt=true;scene.haunt('아직 보고 있어');sound.effect('scrape');}
     say(o.name,'거울이 있다.\n다가선 나의 얼굴이 유리에 비친다.\n고개를 돌렸는데도, 유리 안의 눈은 조금 늦게 따라온다.');
     return;
   }
@@ -351,10 +353,13 @@ function interact() {
         say("분전반", "전류가 낮게 울린다. 관리실과 방송실 회로가 살아 있다.");
         break;
       }
-      if (!repair(state,o)) {
+      if (!canRepair(state,o)) {
         say("분전반", "퓨즈 하나가 비어 있다.\n열린 덮개 안의 두 금속 클립 사이가 비어 있다.\n같은 유리관 퓨즈는 서쪽 창고의 열린 공구함에 보관한다.");
         break;
       }
+      eventActive=true;keys.clear();state.running=false;
+      scene.startFuse(o,()=>{
+        eventActive=false;if(!repair(state,o))return;
       sound.effect("thud");
       state.stamina=100;
       toast("전력 복구 · 방송 장치가 켜졌다");
@@ -366,6 +371,7 @@ function interact() {
         "서하",
         "전기실 벽의 열린 제어 회로함. 비어 있던 홀더의 두 클립 사이에 유리관 퓨즈가 들어맞았다.\n24V 제어 회로 표시등이 켜진다. 복도 끝에서 무언가 움직이는 소리가 들린다.",
       );
+      });
       break;
     case "locker":
       if (state.flags.locker) {
@@ -459,7 +465,7 @@ function interact() {
       sound.effect("glass");
       scene.burst(30*32,4.5*32,"glass");
       huntDelay = 2;
-      scene.impact();
+      scene.impact();scene.haunt("내 목소리 들었잖아");
       say(
         "녹음 속 서윤",
         "「언니. 지하 방화문이 밖에서 잠겼어.\n전화 받았잖아. 관리실에서 내 목소리 들었잖아.\n정우 아저씨 말만 믿고 왜 신고를 취소했어?\n정우가 문을 잠갔다는 것도, 언니가 들었다는 것도… 지우지 마.\n이번에는 접수증하고 이 녹음을 밖으로 가져가 줘.」\n\n나는 기억을 잃은 게 아니었다. 기억하지 않기로 했었다.\n녹음 끝에 미정의 목소리가 이어졌다.\n「유품은 내가 보관했어. 현관 셔터는 정전 때 내려와. 전기를 살리고 조정실 오른쪽 비상 제어반에서 복귀시켜. 이번에는 가지고 나가 줘.」",
@@ -761,7 +767,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=7a11ca623a48", memory: "assets/event-memory.png?v=7a11ca623a48"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=e33230e235db", memory: "assets/event-memory.png?v=e33230e235db"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -820,7 +826,7 @@ function render(t) {
     if(pursuerTrail){
       pursuerTrail.remaining-=dt;
       if(pursuerTrail.remaining<=0){const trail=pursuerTrail;pursuerTrail=null;
-        if(enemy.follow(worldFor(state),trail.entry,state)){sound.effect('apparition');scene.apparition();toast('그가 방금 지나온 문을 밀고 들어왔다.');}
+        if(enemy.follow(worldFor(state),trail.entry,state)){sound.effect('apparition');scene.apparition();scene.haunt('뒤돌아보지 마');toast('그가 방금 지나온 문을 밀고 들어왔다.');}
       }
     }
     huntCooldown = Math.max(0, huntCooldown - dt);
@@ -833,11 +839,15 @@ function render(t) {
       ) {
         if (enemy.spawn(worldFor(state), state)) {
           sound.effect("apparition");
-          scene.apparition();
+          scene.apparition();scene.haunt('문을 닫은 건 너였어');
           lastGhostMotion=null;
           toast("정우의 그림자가 깨어났다. 뛰거나, 불을 끄고 숨자.");
         }
       }
+    }
+    const zone=ECHO_ZONES[state.map];
+    if(zone&&state.flags.power&&!state.hidden&&!state.flags['echo_'+state.map]&&Math.hypot(state.x-zone.x,state.y-zone.y)<zone.radius){
+      state.flags['echo_'+state.map]=true;scene.appear(...zone.at,zone.text);sound.effect('scrape');addNote('echo_'+state.map,'서윤의 잔상. 돌아보려는 순간 얼굴이 나를 향했다. 추격하는 정우와는 다른 모습이었다.');
     }
     const result = enemy.update(worldFor(state), state, dt);
     if (result === "caught") caught();

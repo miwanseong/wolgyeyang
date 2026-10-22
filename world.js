@@ -431,6 +431,30 @@ M.apartment.objects.push(
  prop('kitchen-fridge','fridge',28,9,'주방 냉장고',{kitchenTile:4,w:18,back:36,front:12,description:'전원이 끊긴 냉장고. 문틈의 고무 패킹은 오래전에 굳어 있다.'}),
  prop('kitchen-hood','hood',19,4.5,'가스레인지 위 환풍 후드',{kitchenTile:5,partOf:'kitchen-cabinet',mount:true,solid:false,description:'버너 위에 맞춰 달린 환풍 후드. 스위치를 눌러도 팬은 돌지 않는다.'})
 );
+// Break long repeated shelf runs into compact archives and function-specific furnishings.
+M.upper.objects.find(o=>o.id==='archive-north-c').module.col=2;
+M.upper.objects.find(o=>o.id==='archive-middle-b').module.col=2;
+for(const [id,index,x,y,name,description]of [
+ ['archive-north-d',4,12,6.5,'기록 출력용 프린터','취소된 접수 기록의 출력물이 용지 받침에 남아 있다. 종이 아래에는 서로 다른 사람의 확인 도장이 겹쳤다.'],
+ ['archive-b',6,16,6.5,'녹음테이프 분류 서랍','연도별 녹음테이프가 작은 서랍으로 나뉘어 있다. 서윤 사건의 원본 자리만 비었다. 원본은 관리실 전자 문서함에 있다.'],
+ ['archive-north-f',5,14,4.5,'연도별 보관 위치표','보관 위치표의 2023년 항목만 여러 번 지웠다. 종이에 남은 눌린 자국은 취소 접수 번호다.'],
+ ['archive-north-g',0,19,7,'기록실의 외투 걸이','목 부분이 젖은 작업복 한 벌. 옷 아래 그림자는 발이 두 개가 아니다.'],
+ ['archive-middle-c',9,18.5,13,'덮개 천을 보관한 스툴','서류함을 덮었던 천을 접어 둔 자리. 맨 아래 천만 아직 차갑다.'],
+ ['archive-middle-d',7,35,7,'녹음 부스의 케이블 릴','마이크 케이블을 감은 이동식 릴. 선 끝은 사용하지 않은 채 묶여 있다.']
+]){const o=M.upper.objects.find(o=>o.id===id);delete o.module;Object.assign(o,{details:index,x:x*32,y:y*32,name,description,w:index===0?12:24,back:24,front:12,mount:index===5,solid:index!==5});}
+for(const [m,id,index,x,y,name,description,mount]of [
+ ['lobby','entry-umbrella',1,6.5,22,'현관 우산꽂이','말라붙은 우산 아래에만 새 물방울이 맺혔다.',false],
+ ['lobby','entry-intercom',3,5.5,7.5,'현관 인터폰','수화기를 들어도 연결음은 없다. 내려놓은 뒤에만 숨소리가 들린다.',true],
+ ['management','office-printer',4,21,10,'관리실 프린터','용지 걸림으로 멈춘 프린터. 접수 취소 확인서의 끝부분만 인쇄됐다.',false],
+ ['management','office-board',5,14,3.5,'야간 근무 게시판','근무표와 연락처가 서로 다른 크기의 종이로 붙어 있다. 서하의 이름 옆에 취소 확인 서명이 남았다.',true],
+ ['apartment','bedroom-lamp',8,11,13,'침실 스탠드','전구가 빠져 있다. 갓 안쪽으로 긁은 숫자 04가 남았다.',false],
+ ['apartment','bedroom-linen',9,5.5,13.5,'접어 둔 침구','이삿짐에 넣지 못한 침구. 천 사이에 갇힌 비누 냄새가 아직 남았다.',false],
+ ['basement','utility-mop',2,29,13,'설비실 청소 도구','대걸레와 빈 청소용 버킷. 바닥의 물자국은 버킷에서 떨어진 것이 아니다.',false],
+ ['basement','basement-vent',11,37,4.5,'전기실 환기구','환기 덕트의 날개가 멈췄다. 그 안에서만 바람이 거꾸로 들어온다.',true],
+ ['upper','studio-notice',5,28,4.5,'녹음 순서 메모','서윤이 적은 녹음 순서. 마지막 칸은 증언자 대신 「언니가 듣고 있다」라고 적혀 있다.',true]
+])M[m].objects.push(prop(id,'detail',x,y,name,{details:index,w:16,back:22,front:12,mount,solid:!mount,description}));
+Object.assign(M.upper.objects.find(o=>o.id==='broadcast-chair'),{x:31.5*32,y:14.4*32});
+M.upper.objects.push(prop('archive-reading-table','side-table',12.5,12.5,'독서 자리의 작은 탁자',{decor:5,w:15,h:14,description:'기록을 펼쳐 보던 독서 자리. 수첩에는 23시 41분의 녹음 번호가 여러 번 적혔다.'}),prop('archive-reading-chair','armchair',14.5,12.5,'기록실 독서 의자',{decor:6,w:18,back:22,front:12,description:'작은 탁자와 스탠드 사이에 놓인 의자. 방석에 누군가 앉았던 자국이 서서히 돌아온다.'}),prop('archive-reading-lamp','detail',16,12.5,'독서 자리의 스탠드',{details:8,w:12,back:16,front:10,description:'전원선을 빼도 갓 안쪽의 작은 그림자가 움직인다.'}));
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.
@@ -450,6 +474,22 @@ for (const m of Object.values(M)) {
     o.h ??= o.kind === "chair" ? 10 : 17;
   }
 }
+for(const m of Object.values(M))for(const o of m.objects){
+ if((o.kind==='door'&&!o.internalDoor)||o.kind==='shutter'){const a=wallAnchor(m,o);o.x=a.x;o.y=a.y;}
+ if(o.mount&&!o.facing){const x=Math.floor(o.x/32),y=Math.floor(o.y/32);o.facing=m.grid[y+1]?.[x]===1?'north':m.grid[y-1]?.[x]===1?'south':m.grid[y]?.[x+1]===1?'east':'west';}
+}
+export function wallAnchor(map,o){
+ if(o.kind==='stairs'||o.barrier||o.internalDoor)return {x:o.x,y:o.y};
+ let best=null;const ox=Math.floor(o.x/32),oy=Math.floor(o.y/32);
+ for(let y=oy-3;y<=oy+3;y++)for(let x=ox-3;x<=ox+3;x++)if(map.grid[y]?.[x]===2){const d=Math.hypot(x+.5-o.x/32,y+.5-o.y/32);if(!best||d<best.d)best={x,y,d};}
+ return best?{x:best.x*32+16,y:best.y*32+16}:{x:o.x,y:o.y};
+}
+export const ECHO_ZONES={
+ lobby:{x:30*32,y:14*32,radius:120,at:[31*32,14*32],text:'신고를 취소한 사람'},
+ basement:{x:34*32,y:14*32,radius:100,at:[31*32,14*32],text:'문 뒤에 두고 갔잖아'},
+ apartment:{x:26*32,y:23*32,radius:90,at:[26*32,22.5*32],text:'이번에도 모른 척할 거야'},
+ upper:{x:38*32,y:20*32,radius:110,at:[36*32,19*32],text:'내 목소리를 지우지 마'}
+};
 export const MAPS = M;
 export function nearestObject(map,s){
  return map.objects.filter(o=>!o.partOf&&Math.hypot(o.x-s.x,o.y-s.y)<(o.reach||(o.kind==='stairs'?76:70))&&sight(map,s,o)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;
@@ -494,9 +534,12 @@ export function sight(map, a, b) {
       y = a.y + ((b.y - a.y) * i) / steps;
     if(closedDoorAt(map,x,y)&&Math.hypot(x-b.x,y-b.y)>Math.max(targetDoor?.w||0,targetDoor?.h||0)+1)return false;
     if (opaque(map,Math.floor(x/32),Math.floor(y/32))) {
+      // Handle interaction tolerates the last few pixels of a door jamb. This
+      // endpoint exception applies only to that door, never to actors or rays.
+      if(targetDoor&&Math.hypot(x-b.x,y-b.y)<=Math.max(targetDoor.w,targetDoor.h)+8)continue;
       const mounted =
         map.grid[Math.floor(b.y / 32)]?.[Math.floor(b.x / 32)] === 2;
-      if (!mounted || Math.hypot(x - b.x, y - b.y) > 32) return false;
+      if (!mounted || Math.hypot(x - b.x, y - b.y) > 40) return false;
     }
   }
   return true;

@@ -1,8 +1,8 @@
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=7a11ca623a48";
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=e33230e235db";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 7,
+  layout: 8,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -69,9 +69,9 @@ export function restore(raw) {
     typeof s.flashlight !== "boolean"
   )
     throw Error("유효하지 않은 저장 데이터");
-  if(oldLayout<7 && s.flags.listened)s.flags.shutterOpen=true;
+  if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===7)throw Error("가구 내부의 저장 위치");
+    if(s.layout===8)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -81,7 +81,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:7, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, running: false };
+  return { ...s, layout:8, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
@@ -98,8 +98,9 @@ export function collectFuse(s,o){
   if(!fixtureInReach(s,o,'fuse-source')||o.artRole!=='toolbox'||s.flags.power||s.flags.fuseTaken||s.bag.includes('fuse'))return false;
   take(s,'fuse');s.flags.fuseTaken=true;return true;
 }
+export function canRepair(s,o){return fixtureInReach(s,o,'fuse-socket')&&o.artRole==='fuse-panel'&&!s.flags.power&&s.bag.includes('fuse');}
 export function repair(s,o) {
-  if (!fixtureInReach(s,o,'fuse-socket')||o.artRole!=='fuse-panel'||s.flags.power||!s.bag.includes("fuse")) return false;
+  if (!canRepair(s,o)) return false;
   s.flags.power = true;
   s.flags.fuseInstalled = true;
   s.bag = s.bag.filter((k) => k !== "fuse");
