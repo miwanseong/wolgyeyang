@@ -1,10 +1,10 @@
-import { validPuzzles } from './puzzles.js?v=e129d1941755';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=e129d1941755";
-import { canSurrender } from "./story.js?v=e129d1941755";
+import { validPuzzles } from './puzzles.js?v=abbeb66692c5';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=abbeb66692c5";
+import { canSurrender } from "./story.js?v=abbeb66692c5";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 8,
+  layout: 9,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -78,7 +78,7 @@ export function restore(raw) {
     throw Error("유효하지 않은 저장 데이터");
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===8)throw Error("가구 내부의 저장 위치");
+    if(s.layout===9)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -88,7 +88,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:8, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, running: false };
+  return { ...s, layout:9, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

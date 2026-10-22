@@ -1,4 +1,5 @@
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=e129d1941755";
+import {facilityArt,residentArt} from './facility-art.js?v=abbeb66692c5';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=abbeb66692c5";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -164,30 +165,31 @@ export class Scene {
     this.mask = document.createElement("canvas");
     this.mask.width = canvas.width;
     this.mask.height = canvas.height;
+    this.facilityTiles=facilityArt();this.residentTiles=residentArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=e129d1941755",
-        "assets/seoha-walk.png?v=e129d1941755",
-        "assets/props-painted.png?v=e129d1941755",
-        "assets/floors-painted.png?v=e129d1941755",
-        "assets/jeongwoo-motions.png?v=e129d1941755",
-        "assets/seoha-diagonal.png?v=e129d1941755",
-        "assets/shoe-cabinet.png?v=e129d1941755",
-        "assets/chair-turn.png?v=e129d1941755",
-        "assets/room-modules.png?v=e129d1941755",
-        "assets/dining-table.png?v=e129d1941755",
-        "assets/regional-props.png?v=e129d1941755",
-        "assets/wall-side.png?v=e129d1941755",
-        "assets/architecture.png?v=e129d1941755",
-        "assets/technical-kit.png?v=e129d1941755",
-        "assets/technical-doors.png?v=e129d1941755",
-        "assets/kitchen-kit.png?v=e129d1941755",
-        "assets/decor-kit.png?v=e129d1941755",
-        "assets/supply-kit.png?v=e129d1941755",
-        "assets/room-details.png?v=e129d1941755",
-        "assets/seoyun-echo.png?v=e129d1941755",
-        "assets/relay-floors.png?v=e129d1941755",
-        "assets/haunted-portraits.png?v=e129d1941755",
+        "assets/props-support.png?v=abbeb66692c5",
+        "assets/seoha-walk.png?v=abbeb66692c5",
+        "assets/props-painted.png?v=abbeb66692c5",
+        "assets/floors-painted.png?v=abbeb66692c5",
+        "assets/jeongwoo-motions.png?v=abbeb66692c5",
+        "assets/seoha-diagonal.png?v=abbeb66692c5",
+        "assets/shoe-cabinet.png?v=abbeb66692c5",
+        "assets/chair-turn.png?v=abbeb66692c5",
+        "assets/room-modules.png?v=abbeb66692c5",
+        "assets/dining-table.png?v=abbeb66692c5",
+        "assets/regional-props.png?v=abbeb66692c5",
+        "assets/wall-side.png?v=abbeb66692c5",
+        "assets/architecture.png?v=abbeb66692c5",
+        "assets/technical-kit.png?v=abbeb66692c5",
+        "assets/technical-doors.png?v=abbeb66692c5",
+        "assets/kitchen-kit.png?v=abbeb66692c5",
+        "assets/decor-kit.png?v=abbeb66692c5",
+        "assets/supply-kit.png?v=abbeb66692c5",
+        "assets/room-details.png?v=abbeb66692c5",
+        "assets/seoyun-echo.png?v=abbeb66692c5",
+        "assets/relay-floors.png?v=abbeb66692c5",
+        "assets/haunted-portraits.png?v=abbeb66692c5",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits]) => {
       Object.assign(this, {
@@ -277,6 +279,20 @@ export class Scene {
     const c = this.ctx,
       changed = propState(o, s);
     const facing=wallFacing(this.map,o);
+    if(o.shadowProfile){
+      c.save();c.fillStyle='#0008';c.beginPath();c.moveTo(o.x-9,o.y-36);c.lineTo(o.x+38,o.y-13);c.lineTo(o.x+52,o.y+29);c.lineTo(o.x+4,o.y+16);c.closePath();c.fill();
+      c.fillStyle='#17191a';c.fillRect(o.x-13,o.y-78,21,88);c.fillStyle='#3b3e3e';c.beginPath();c.moveTo(o.x-13,o.y-78);c.lineTo(o.x-5,o.y-86);c.lineTo(o.x+13,o.y-78);c.lineTo(o.x+8,o.y-72);c.fill();c.fillStyle='#252828';c.fillRect(o.x+7,o.y-72,6,79);c.fillStyle='#85858055';c.fillRect(o.x+7,o.y-72,1,76);c.restore();return;
+    }
+    if(o.facility!==undefined){
+      const sizes=[[100,91],[82,114],[80,77],[76,104],[44,74],[92,87],[62,104],[62,104],[100,94]],[w,h]=sizes[o.facility];
+      c.fillStyle='#0006';c.beginPath();c.ellipse(o.x,o.y+9,w*.42,5,0,0,7);c.fill();c.drawImage(this.facilityTiles[o.facility],o.x-w/2,o.y+13-h,w,h);return;
+    }
+    if(o.yardVisual==='sign'){
+      c.fillStyle='#454948';c.fillRect(o.x-15,o.y-65,3,72);c.fillRect(o.x+12,o.y-65,3,72);c.fillStyle='#242a2a';c.fillRect(o.x-32,o.y-70,64,40);c.strokeStyle='#858e88';c.strokeRect(o.x-32,o.y-70,64,40);c.fillStyle='#bdc4ba';c.font='8px sans-serif';c.textAlign='center';c.fillText(o.id.includes('bus')?'← 산길 · 정류장':'안내·접수동 →',o.x,o.y-51);c.textAlign='start';return;
+    }
+    if(o.yardVisual==='car'){
+      c.fillStyle='#0008';c.fillRect(o.x-24,o.y-60,52,81);c.fillStyle=o.variant===1?'#6b706d':'#303735';c.fillRect(o.x-22,o.y-66,44,82);c.fillStyle='#111a1b';c.fillRect(o.x-17,o.y-55,34,16);c.fillRect(o.x-17,o.y-9,34,14);c.fillStyle='#555f5c';c.fillRect(o.x-18,o.y-35,36,25);c.fillStyle='#a4aaa1';c.fillRect(o.x-18,o.y-65,9,3);c.fillRect(o.x+10,o.y-65,9,3);c.fillStyle='#090c0c';c.fillRect(o.x-26,o.y-45,5,17);c.fillRect(o.x+21,o.y-45,5,17);return;
+    }
     if(o.chapterVisual){
       this.prop({...o,chapterVisual:null},s,t,dt);
       const type=o.chapterVisual;
@@ -555,6 +571,11 @@ export class Scene {
     ambient.addColorStop(1, "#fff0");
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
+    if(this.map.outdoor){
+      for(const [x,y]of [[12,19],[30,13],[24,7]]){
+        const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,95*z);g.addColorStop(0,'#ffffffb0');g.addColorStop(1,'#fff0');m.fillStyle=g;m.fillRect(xx-95*z,yy-95*z,190*z,190*z);
+      }
+    }
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
       const grip=handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1),beamX=px+grip.x*z,beamY=py+grip.y*z;
       m.filter = "blur(7px)";
@@ -664,6 +685,11 @@ export class Scene {
         x++
       ) {
         const v = map.grid[y][x];
+        if (map.outdoor) {
+          if(v===1){c.fillStyle=(x+y)%2?'#343a39':'#303735';c.fillRect(x*32,y*32,32,32);c.strokeStyle='#727d7430';c.strokeRect(x*32,y*32,32,32);if((x*13+y*7)%11===0){c.fillStyle='#bec8bb25';c.fillRect(x*32+5,y*32+12,20,1);}}
+          else if(v===2){c.fillStyle='#121917';c.fillRect(x*32,y*32,32,32);c.fillStyle='#606f6355';for(let k=0;k<5;k++)c.fillRect(x*32+k*7,y*32,1,32);c.fillStyle='#8c97885a';c.fillRect(x*32,y*32+8,32,2);if(x===36&&y>=7&&y<=22){c.fillStyle='#333635';c.fillRect(x*32,y*32,32,32);c.fillStyle='#7c807b';c.fillRect(x*32,y*32,3,32);}}
+          continue;
+        }
         if (v === 1) {
           const i = (x * 7 + y * 11) % 4;
           c.drawImage(
@@ -740,6 +766,17 @@ export class Scene {
         c.fillStyle='#111b';c.fillRect(28*32,23*32,18*32,6);c.fillRect(46*32,12*32,6,11*32);
       }
     }
+    if(map.outdoor){
+      c.strokeStyle='#a5afa16a';c.lineWidth=2;
+      for(let i=0;i<3;i++)c.strokeRect((7+i*5)*32,6*32,4*32,5*32);
+      c.fillStyle='#0c161950';for(let i=0;i<6;i++){c.beginPath();c.ellipse((9+i*4)*32,18*32,32+i*3,9,0,0,7);c.fill();}
+      c.fillStyle='#79857777';c.font='12px sans-serif';c.fillText('안내 · 접수동 →',26*32,18*32);c.fillText('← 산길 / 정류장',6*32,26*32);
+      c.fillStyle='#a4ada14a';for(let i=0;i<14;i++)c.fillRect((31+(i%3)*.3)*32,(17+i*.6)*32,3,5);
+    }
+    if(map.chapter===2&&!map.outdoor){
+      const labels={relayEntry:['← 안내·접수','당직 휴게 · 지하계단 →'],relayArchive:['← 원본 보존·열람','대조·청취 →'],relayPlant:['← 펌프·순환','절체·정비 →'],relaySignal:['← 원본 청취','송출 제어 →']}[map.id];
+      c.fillStyle='#c0c2b657';c.font='10px sans-serif';c.fillText(labels[0],9*32,(map.id==='relaySignal'?28:26)*32);c.fillText(labels[1],30*32,(map.id==='relaySignal'?28:26)*32);
+    }
     // Architectural room treatments, each aligned to the same tile grid as the furniture.
     const rugs={management:[[7,8,6,5]],apartment:[[11,6,6,5],[25,21,4,4]],upper:[[29,11,5,4]]}[map.id]||[];
     for(const [rx,ry,rw,rh] of rugs){
@@ -769,6 +806,12 @@ export class Scene {
       y: o.y,
       draw: () => this.prop(o, s, t, dt),
     }));
+    for(const n of this.npcs){drawables.push({y:n.y,draw:()=>{
+      c.save();c.fillStyle='#0007';c.beginPath();c.ellipse(n.x,n.y+3,12,4,0,0,7);c.fill();
+      const frame=n.moving?Math.floor(n.walk)%2:0,tile=this.residentTiles[n.direction*6+n.column*2+frame];
+      c.translate(n.x,n.y);if(n.phase===2&&!this.reduced)c.transform(1,0,Math.sin(t*.002+n.column)*.07,1,0,0);
+      c.globalAlpha=n.phase===2?.83:1;c.drawImage(tile,-24,-69,48,72);c.restore();
+    }});}
     if (!s.hidden)
       drawables.push({
         y: s.y,

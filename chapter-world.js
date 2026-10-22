@@ -3,10 +3,11 @@
 export function addRelayChapter(M,map,prop,door){
  const rooms={
   relayEntry:['02 · 산북중계소 / 접수동',52,36,'stone',[[4,23,43,6],[8,7,13,15],[25,7,18,15],[41,29,6,3],[4,17,4,8]]],
-  relayArchive:['02 · 산북중계소 / 대조 기록동',58,38,'wood',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4],[51,18,5,10]]],
-  relayPlant:['02 · 산북중계소 / 지하 냉각 설비',58,38,'concrete',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4],[7,29,14,6]]],
+  relayArchive:['02 · 산북중계소 / 대조 기록동',58,38,'wood',[[4,24,49,6],[5,6,17,17],[29,6,21,17],[46,30,7,4],[51,18,5,10]]],
+  relayPlant:['02 · 산북중계소 / 지하 냉각 설비',58,38,'concrete',[[4,24,49,6],[5,6,17,17],[29,6,21,17],[46,30,7,4],[7,29,14,6]]],
   relaySignal:['02 · 산북중계소 / 비상 송출층',56,40,'carpet',[[4,26,47,5],[5,7,17,18],[26,7,22,18],[43,31,8,4],[7,30,13,7]]],
  };
+ rooms.relayYard=['02 · 산북중계소 / 외부 진입 마당',40,32,'concrete',[[4,5,32,23]]];
  for(const [id,[name,w,h,floor,rects]]of Object.entries(rooms)){M[id]=map(id,name,w,h,floor,rects);M[id].chapter=2;}
  function put(m,id,kind,x,y,name,extra={}){const o=prop(id,kind,x,y,name,extra);M[m].objects.push(o);return o;}
  function leaf(m,id,x,y,name){
@@ -23,6 +24,12 @@ export function addRelayChapter(M,map,prop,door){
  // Reception: two enclosed offices open onto a wide, furnished waiting corridor.
  leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');
  leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');
+ // A private sleeping room is separated from the public duty/tea space.
+ for(let x=25;x<=33;x++)M.relayEntry.grid[15][x]=2;
+ for(let y=15;y<=21;y++)M.relayEntry.grid[y][33]=2;
+ leaf('relayEntry','relay-sleep-inner-door',30,15,'당직 침상실 안쪽 문');
+ leaf('relayEntry','relay-duty-common-door',39,22,'당직 휴게·탕비실 문');
+
  link('relayEntry','relay-entry-archive',14,6,'연결 통로 · 기록동','relayArchive',[49,32],{requires:'relayBadge'});
  link('relayEntry','relay-entry-plant',32,9,'내려가는 계단 · 설비동','relayPlant',[49,32],{kind:'stairs',label:'B1 ↓'});
  action('relayEntry','relay-register','desk',13,11,'해린의 야간 인계대','register','인수 대상: 월계동 신고 접수 원본. 기록동 출입증은 인계대 서랍에 남겨 두었다.',{w:38,back:30,front:14});
@@ -31,7 +38,7 @@ export function addRelayChapter(M,map,prop,door){
  furniture('relayEntry','relay-entry-chair','chair',13,13,'접수대 회전 의자','의자는 바깥 문을 등지고 있다.',{swivel:true,w:12,h:10});
  shelf('relayEntry','relay-entry-files',18,17,0);
  wall('relayEntry','relay-entry-curtain',0,18,6.5,'접수실 암막 커튼','유리에 산길 대신 현관 복도가 비친다.',{decor:0,fixture:'curtain'});
- action('relayEntry','relay-duty-note','desk',30.5,13,'미정의 당직 수첩','dutyNote','02:13. 중계소에는 연락하지 않았다. 녹음이 먼저 도착해 있었다.',{w:38,back:30,front:14});
+ action('relayEntry','relay-duty-note','desk',30.5,13,'미정의 당직 수첩','dutyNote','02:13. 원본 대조 동행 확인. 서하가 해린에게 연락했고 미정·도현이 함께 도착했다.',{w:38,back:30,front:14});
  furniture('relayEntry','relay-duty-sofa','bench',30.5,18,'당직용 긴 의자','접힌 담요가 하나. 서윤이 잠들었던 자리가 아니라, 서윤을 기다리던 자리다.',{w:39,back:24,front:10});
  detail('relayEntry','relay-duty-linen',9,36,18,'갈아 놓은 침구','담요는 마른 상태인데, 밑에 남은 자국만 젖어 있다.');
  detail('relayEntry','relay-duty-coat',0,39,10,'미정의 외투 걸이','산길에서 입었던 외투. 주머니에는 여섯 이름을 적은 종이 조각이 있다.',{w:12});
@@ -84,6 +91,16 @@ export function addRelayChapter(M,map,prop,door){
  action('relaySignal','relay-six-names','desk',44,19,'송출 확인 명부','names','서하, 서윤, 정우, 해린, 도현, 미정. 여섯 이름 중 비워 둔 칸은 없다.',{w:31,back:28,front:12});
  hide('relaySignal',47,23);
  put('relayEntry','relay-final-exit','exit',44.5,32.5,'중계소 남쪽 외부 출입문',{chapterAction:'leaveRelay',solid:false,doorType:'service'});
+ // Outdoor forecourt is connected through a real side entrance, not a menu teleport.
+ link('relayEntry','relay-entry-yard',4,25,'서쪽 출입구 · 외부 마당','relayYard',[33,15],{doorType:'service'});
+ link('relayYard','relay-yard-entry',35,15,'안내·접수동 출입문','relayEntry',[6,25],{doorType:'service'});
+ M.relayYard.outdoor=true;
+ for(const [i,x]of [9,14,19].entries())furniture('relayYard','relay-yard-car-'+i,'car',x,10,'동행자의 주차 차량','해린·미정·도현이 타고 온 차량. 보행 진입로 밖의 주차 구획에 세워져 있다.',{yardVisual:'car',variant:i,w:23,back:64,front:17});
+ furniture('relayYard','relay-yard-map','sign',30,13,'야간 원본 대조 안내','해린·미정·도현의 동행 서명이 남았다.\n동쪽 문: 안내·접수동 → 북쪽 연결문: 기록동 / 접수동 당직실 계단: 지하 설비 → 송출층.',{w:18,back:14,front:10,yardVisual:'sign'});
+ furniture('relayYard','relay-yard-bus','sign',8,24,'진입 도로 · 버스 정류장 방향','서쪽 산길에서 왔다. 지금은 원본 대조를 마쳐야 한다. 돌아가는 길은 여기 남아 있다.',{w:16,back:12,front:10,yardVisual:'sign',chapterAction:'leaveRelay'});
+ furniture('relayYard','relay-yard-bench','bench',12,20,'외부 휴게 의자','세 사람이 잠시 놓아 둔 장갑과 물병이 있다. 시설은 폐허가 아니라 야간 제한 운영 중이다.',{w:38,back:22,front:10});
+ furniture('relayYard','relay-yard-service','cabinet',30,7,'외부 인입함','방수함의 덮개가 닫혀 있다. 출입구와 보행로를 피해 설치된 인입 배관.',{w:22,back:26,front:10,facility:7});
+ M.relayYard.rooms.push({x:4,y:20,w:14,h:7,name:'외부 · 산길과 휴게 구역'},{x:24,y:10,w:11,h:9,name:'안내·접수동 현관 앞'});
  // Furniture is arranged as work and rest groups, leaving the door approaches clear.
  for(const [m,id,kind,x,y,name,description,extra]of [
   ['relayEntry','relay-reception-cabinet','cabinet',10,8,'인계 서류장','접수대에서 손을 뻗어 꺼낼 수 있도록 놓인 서류장.',{w:22,back:30,front:10}],
@@ -114,8 +131,8 @@ export function addRelayChapter(M,map,prop,door){
  wall('relayPlant','relay-cooling-vent',11,18,5.5,'순환실 배기구','바람은 멈췄는데 안쪽에서 물소리가 난다.');
  wall('relaySignal','relay-channel-board',5,30,6.5,'송출 회선 배치도','회선은 번호별로 분리되어 있다. 기록을 지우는 대신 원본과 수정 이력을 함께 보낸다.');
  // Bent side galleries and a lower maintenance bay distinguish the silhouettes.
- wall('relayArchive','relay-archive-portrait',0,53,17.5,'사라지는 초상','눈동자가 내가 움직이는 쪽을 향한다. 밀판을 복원한 뒤 그림 속 사람이 사라졌다.',{decor:7,hauntedPortrait:true});
- wall('relaySignal','relay-gallery-portrait',0,13,37.5,'귀환 복도의 초상','액자 안의 여자는 복도 끝을 보고 있다. 내가 돌아서자 시선이 달라졌다.',{decor:7,hauntedPortrait:true,facing:'south'});
+ wall('relayArchive','relay-archive-portrait',0,53,17.5,'문서 보존 구역 배치도','서가 사이의 작업 통로와 공조 장비 위치가 표시되어 있다.',{details:5});
+ wall('relaySignal','relay-gallery-portrait',0,13,37.5,'야간 대피 동선도','외부 마당에서 동행자와 합류할 것. 피난 통로에는 장비를 적치하지 않는다.',{details:5,facing:'south'});
  wall('relayEntry','relay-portrait-notice',5,6,16.5,'인계 사진 보관 안내','사진의 눈이 나를 따라온다. 기록을 맞춘 뒤에도 여자가 안에 있는지 확인하고 싶지 않다.');
  detail('relayArchive','relay-gallery-box',6,54,22,'복원 대기 문서 상자','복원 번호가 찍힌 문서 상자. 밀판의 인쇄 번호는 왼쪽 위에서 오른쪽 아래로 읽는다.');
  furniture('relaySignal','relay-gallery-seat','bench',10,34,'초상 맞은편 긴 의자','앉은 사람의 윤곽만 먼지에서 지워졌다.',{w:38,back:18,front:10});
@@ -127,10 +144,30 @@ export function addRelayChapter(M,map,prop,door){
  M.relayArchive.rooms.push({x:51,y:18,w:5,h:10,name:'동쪽 복원 사진 보관 통로'});
  M.relayPlant.rooms.push({x:7,y:30,w:14,h:5,name:'집수정 점검 구역'});
  M.relaySignal.rooms.push({x:7,y:31,w:13,h:6,name:'초상이 걸린 귀환 통로'});
+ for(const [m,id,patch]of [
+ ['relayEntry','relay-register',{facility:0}],
+ ['relayEntry','relay-duty-sofa',{kind:'bed',name:'당직자용 단일 침대',description:'접수 당직자가 교대 때 사용하는 좁은 침대. 침구와 머리맡이 벽 쪽에 정돈되어 있다.',facility:1,x:29*32,y:19*32,w:25,back:58,front:14}],
+ ['relayEntry','relay-duty-table',{facility:2,x:36*32,y:20*32,w:30,back:26,front:10,name:'당직실 탕비대'}],
+ ['relayArchive','relay-shelf-a',{facility:3}],['relayArchive','relay-shelf-c',{facility:3}],
+ ['relayArchive','relay-copy-cabinet',{facility:4,name:'문서 보존용 제습기',w:18,back:20,front:10}],
+ ['relayPlant','relay-pipe-west',{facility:5,name:'순환 펌프',w:26,back:28,front:12}],
+ ['relaySignal','relay-equipment-a',{facility:6,name:'송출 장비용 UPS 전원함'}],
+ ['relaySignal','relay-equipment-d',{facility:7,name:'송출 회선 인입함'}],
+ ['relayPlant','relay-pressure',{facility:8,name:'정비 계측대와 도현의 관찰지'}],
+ ])Object.assign(M[m].objects.find(o=>o.id===id),patch);
+ for(const id of ['relay-duty-linen','relay-duty-lamp'])M.relayEntry.objects=M.relayEntry.objects.filter(o=>o.id!==id);
+ for(const id of ['relay-shelf-b','relay-shelf-d','relay-shelf-e'])M.relayArchive.objects=M.relayArchive.objects.filter(o=>o.id!==id);
+ furniture('relayArchive','relay-left-shelving','shelf',5.7,14,'왼쪽 벽의 높은 보존 서가','옆면과 바닥에 드리운 그림자만 보이는 보존 서가. 서가 사이를 작업 통로로 남겨 두었다.',{w:13,back:45,front:16,shadowProfile:true});
+ furniture('relayPlant','relay-left-tools','cabinet',5.7,14,'벽면 공구 보관장 옆면','출입문 앞을 비우고 벽에 붙인 공구장. 이 방향에서는 정면 문짝이 보이지 않는다.',{w:13,back:35,front:14,shadowProfile:true});
+ M.relayEntry.rooms.push({x:8,y:7,w:13,h:15,name:'안내·접수실'},{x:25,y:7,w:18,h:15,name:'당직 휴게실 · 침상·탕비'});
+ M.relayEntry.rooms.push({x:25,y:16,w:8,h:6,name:'문으로 분리된 당직 침상실'},{x:34,y:15,w:9,h:7,name:'당직 휴게·탕비실'});
+ M.relayArchive.rooms.push({x:5,y:6,w:20,h:17,name:'원본 보존·열람실'},{x:29,y:6,w:21,h:17,name:'기록 대조·청취실'});
+ M.relayPlant.rooms.push({x:5,y:6,w:20,h:17,name:'냉각 펌프·순환실'},{x:29,y:6,w:21,h:17,name:'전원 절체·정비실'});
+ M.relaySignal.rooms.push({x:5,y:7,w:17,h:18,name:'원본 청취 부스'},{x:26,y:7,w:22,h:18,name:'송출 제어·장비실'});
  const work=M.relayPlant.objects.find(o=>o.id==='relay-handwheel');
  Object.assign(work,{module:{row:2,col:1,group:'relay-maintenance-work'},w:31,back:40,front:16});
  for(const [x,col]of [[8,0],[12,2]])furniture('relayPlant','relay-maintenance-end-'+col,'desk',x,10,'정비대 작업 공간','핸들 받침 양옆에 정비 도구를 정리한 작업대.',{module:{row:2,col,group:'relay-maintenance-work'},partOf:'relay-handwheel',w:31,back:40,front:16});
- for(const id of Object.keys(rooms)){
+ for(const id of Object.keys(rooms).filter(id=>id!=='relayYard')){
   M[id].rooms.push({x:4,y:id==='relaySignal'?26:id==='relayEntry'?23:24,w:42,h:5,name:'방화문이 이어지는 연결 복도'});
   wall(id,id+'-extinguisher',11,id==='relayEntry'?22:6,id==='relaySignal'?25.5:id==='relayEntry'?22.5:23.5,'연결 복도 소화기함','압력계와 안전핀이 그대로다.',{technical:11,details:undefined});
  }

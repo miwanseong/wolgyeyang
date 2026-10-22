@@ -1,11 +1,12 @@
-import { PuzzlePanel } from './puzzles.js?v=e129d1941755';
-import { CaptureAnimation, checkpoints } from './capture.js?v=e129d1941755';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=e129d1941755";
-import { Scene, facingDirection } from "./scene.js?v=e129d1941755";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=e129d1941755";
-import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=e129d1941755";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=e129d1941755";
-import { AudioDirector, TRACKS } from "./audio.js?v=e129d1941755";
+import {Residents,residentDialogue} from './residents.js?v=abbeb66692c5';
+import { PuzzlePanel } from './puzzles.js?v=abbeb66692c5';
+import { CaptureAnimation, checkpoints } from './capture.js?v=abbeb66692c5';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=abbeb66692c5";
+import { Scene, facingDirection } from "./scene.js?v=abbeb66692c5";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=abbeb66692c5";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=abbeb66692c5";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=abbeb66692c5";
+import { AudioDirector, TRACKS } from "./audio.js?v=abbeb66692c5";
 import {
   initial,
   ITEMS,
@@ -17,7 +18,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=e129d1941755";
+} from "./state.js?v=abbeb66692c5";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -47,6 +48,8 @@ const puzzlePanel=new PuzzlePanel($("puzzle-modal"),{
 });
 const scene = new Scene(canvas, MAPS.lobby),
   stillness = new StillnessHaunt(),
+  progressHaunt = new ProgressHaunt(),
+  residents = new Residents(),
   enemy = new Pursuer(),
   sound = new AudioDirector((message) => toast(message));
 function toast(text) {
@@ -60,7 +63,7 @@ function cue() {
   if(!$('story-sequence').hidden&&forcedCue)return forcedCue;
   return enemy.active
     ? enemy.mode === "chase" ? "chase" : "hunt"
-    : pursuerTrail || stillness.active ? "hunt" : state.ending
+    : pursuerTrail || stillness.active || progressHaunt.warned ? "hunt" : state.ending
       ? ["witness","surrender","signal","fragment"].includes(state.ending)
         ? "aftermath"
         : "reliefAlt"
@@ -71,6 +74,7 @@ function cue() {
           apartment: state.flags.seen_home_desk ? "warm" : "home",
           basement: state.flags.power ? "motif" : "basement",
           upper: state.flags.listened ? "panic" : "upper",
+          relayYard: "missing",
           relayEntry: "missing",
           relayArchive: "deduction",
           relayPlant: "basement",
@@ -177,8 +181,8 @@ function openRelayAction(o,choice=null){
 function startChapterTwo(){
  if(!enterChapterTwo(state))return;
  closeDialog();enemy.reset();pursuerTrail=null;huntDelay=0;huntCooldown=45;stillness.reset();
- scene.begin(state,worldFor(state));revealRoom('제2장 · 회신을 기다리는 곳');
- say('제2장 · 산북 시설중계소',state.notes.find(n=>n.id==='chapter2-arrival').text+'\n\n접수동은 남쪽 대기실, 북서쪽 접수실, 북동쪽 당직실로 나뉜다. 먼저 서쪽 접수실의 인계 기록을 확인하자.\n\nTab: 휴대폰 · 기록/소지품/지도 · 저장 슬롯은 이전 챕터와 함께 사용할 수 있다.');
+ scene.begin(state,worldFor(state));revealRoom('제2장 · 외부 진입 마당');
+ say('제2장 · 산북 시설중계소',state.notes.find(n=>n.id==='chapter2-arrival').text+'\n\n동쪽 현관이 안내·접수동이다. 해린은 안내실, 미정은 당직 휴게실, 도현은 지하 설비실에서 기다린다. 안내실 인계대의 출입증부터 찾자. 표지와 바닥 방향 표시를 따라갈 수 있다.\n\nTab: 휴대폰 · 기록/소지품/지도 · 저장 슬롯은 이전 챕터와 함께 사용할 수 있다.');
 }
 function objective() {
   if(state.flags.chapter2&&!state.hidden&&!enemy.active)return relayObjective(state);
@@ -288,6 +292,11 @@ function interact() {
   if (enemy.active && enemy.mode === "chase") {
     toast("지금은 조사할 수 없다. 먼저 따돌려야 한다.");
     return;
+  }
+  if(o.npc){
+    const text=residentDialogue(state,o);state.flags['talked_'+o.id]=true;
+    addNote('person_'+o.id+'_'+o.phase,o.name+' · '+text);
+    say(o.name,text+'\n\n지금 확인할 곳: '+objective());return;
   }
   scene.inspect(o);
   state.flags["seen_" + id] = true;
@@ -675,7 +684,7 @@ function app(name) {
               content.append(confirm, cancel);
             } else write();
           } else {
-            state = migrateStorySave(restore(slot(i)));
+            state = migrateStorySave(restore(slot(i)));progressHaunt.reset();residents.reset();
             pursuerTrail=null;
             enemy.reset();
             huntDelay =
@@ -707,7 +716,7 @@ function app(name) {
         "\n\n기록과 물건을 조사하면 단서가 이곳에 남는다.";
   if (name === "map")
     content.textContent =
-      (state.flags.chapter2?"산북 시설중계소 · 구역 안내\n\n접수동: 남쪽 대기실 / 서쪽 접수실 / 동쪽 당직실\n서쪽 접수실 북문 ↔ 기록동: 서쪽 접수 원본 / 동쪽 대조 청취실\n동쪽 당직실 계단 ↓ 설비동: 서쪽 냉각 순환 / 동쪽 전원 절체\n설비동 동쪽 계단 ↑ 송출층: 서쪽 최종 청취 / 동쪽 송출 콘솔\n\n현재: ":"월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: ") +
+      (state.flags.chapter2?"산북 시설중계소 · 구역 안내\n\n외부 마당 ↔ 접수동 서쪽 현관\n해린: 안내실 / 미정: 당직 휴게실 / 도현: 지하 정비실\n접수동: 남쪽 대기실 / 서쪽 접수실 / 동쪽 당직실\n서쪽 접수실 북문 ↔ 기록동: 서쪽 접수 원본 / 동쪽 대조 청취실\n동쪽 당직실 계단 ↓ 설비동: 서쪽 냉각 순환 / 동쪽 전원 절체\n설비동 동쪽 계단 ↑ 송출층: 서쪽 최종 청취 / 동쪽 송출 콘솔\n\n현재: ":"월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: ") +
       worldFor(state).name +
       "\n\n" +
       objective() +
@@ -785,7 +794,7 @@ function begin(load = false) {
       return;
     }
   }
-  state = next;
+  state = next;progressHaunt.reset();residents.reset();
   stillness.reset();
   addNote(
     "orientation",
@@ -820,7 +829,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=e129d1941755", memory: "assets/event-memory.png?v=e129d1941755"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=abbeb66692c5", memory: "assets/event-memory.png?v=abbeb66692c5"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -862,7 +871,7 @@ function recoverAfterCapture() {
   $("phone-modal").hidden=true;$("dialog").hidden=true;
   forcedCue=null;
   if(!deathCheckpoint){begin(false);return;}
-  state=migrateStorySave(deathCheckpoint.state);
+  state=migrateStorySave(deathCheckpoint.state);progressHaunt.reset();residents.reset();
   scene.begin(state,worldFor(state));
   huntDelay=canHunt()?8:0;
   $("phone-hint").hidden=!!state.flags.phoneLearned;
@@ -964,8 +973,16 @@ function render(t) {
     )
       huntDelay = state.flags.chapter2 ? 55 : 14;
   }
+  const urge=progressHaunt.update(state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!state.hidden&&!enemy.active&&!pursuerTrail&&!state.ending&&document.hasFocus());
+  if(urge?.kind==='warning'){sound.effect('giggle',.55);scene.haunt('언제까지 모른 척할 거야');toast('웃음이 끊겼다. '+objective());}
+  if(urge?.kind==='insist'){
+    if(canHunt()&&enemy.spawn(worldFor(state),state)){sound.effect('apparition');scene.apparition();scene.haunt('대답할 때까지 기다릴게');}
+    else{
+      const map=worldFor(state);for(let i=0;i<8;i++){const angle=state.facing+Math.PI+i*Math.PI/4,x=state.x+Math.cos(angle)*110,y=state.y+Math.sin(angle)*110;if(canMove(map,x,y)&&sight(map,state,{x,y})){scene.appear(x,y,'찾아 줘. 아직 여기 있어');sound.effect('scrape',.5);break;}}
+    }
+  }
   const idle=stillness.update(worldFor(state),state,dt,Math.hypot(dx,dy),!eventActive&&!dialog&&!phone&&!traveling&&!state.hidden&&!enemy.active&&!pursuerTrail&&!state.ending&&document.hasFocus());
-  if(idle?.kind==='warning'){sound.effect('scrape',.35);toast('가만히 있는데, 다른 사람의 숨소리가 가까워진다.');}
+  if(idle?.kind==='warning'){sound.effect('giggle',.65);toast('가만히 있는데, 다른 사람의 숨소리가 가까워진다.');}
   if(idle?.kind==='appear'){scene.appear(idle.x,idle.y,'왜 여기서 기다려');scene.echo.idle=true;scene.echo.duration=6.4;sound.effect('apparition');toast('정우가 아니다. 서윤의 잔상이 한 걸음씩 다가온다. 움직여서 벗어나자.');}
   if(idle?.kind==='disperse'&&scene.echo?.idle){scene.echo=null;toast('움직이자, 뒤의 숨소리가 끊겼다.');}
   if(!stillness.active&&scene.echo?.idle)scene.echo=null;
@@ -997,7 +1014,10 @@ function render(t) {
   }else{ghostStepClock=0;lastGhostMotion=null;}
   const map = worldFor(state);
   scene.map=map;
+  scene.npcs=residents.update(map,state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!enemy.active);
   nearest = state.hidden ? null : nearestObject(map,state);
+  const person=!state.hidden?residents.nearest(map,state):null;
+  if(person&&(!nearest||Math.hypot(person.x-state.x,person.y-state.y)<Math.hypot(nearest.x-state.x,nearest.y-state.y)-8))nearest=person;
   $("interaction").hidden =
     (!nearest && !state.hidden) || dialog || phone || traveling;
   $("interaction").querySelector("span").textContent = state.hidden
@@ -1006,12 +1026,15 @@ function render(t) {
   $("objective").textContent = objective();
   if ($("room-name").textContent !== map.name) {
     $("room-name").textContent = map.name;
+    document.querySelector('.game-top .eyebrow').textContent=state.flags.chapter2?'원본 대조 · 2026.11.04 02:13 / 산북중계소':'철거 예정 06:00 / 현재 23:41';
     document.querySelector('.chapter').textContent=state.flags.chapter2?'CHAPTER 02 · 회신을 기다리는 곳':'NIGHT 01 · 마지막 입주자';
-    const floor={basement:'B1F',upper:'02F',relayPlant:'B1F',relaySignal:'02F'}[state.map]||'01F';
+    const floor={basement:'B1F',upper:'02F',relayPlant:'B1F',relaySignal:'02F',relayYard:'OUTSIDE'}[state.map]||'01F';
     document.querySelector('.stage-label').replaceChildren(document.createTextNode(state.flags.chapter2?'SANBUK RELAY STATION ':'WOLGYE APARTMENT '),Object.assign(document.createElement('span'),{textContent:floor}));
     canvas.setAttribute('aria-label',map.name+' 탐색 지도');
     revealRoom(map.name);
   }
+  const area=map.rooms.filter(r=>state.x>=r.x*32&&state.x<(r.x+r.w)*32&&state.y>=r.y*32&&state.y<(r.y+r.h)*32).at(-1);
+  $("area-name").textContent=area?.name||map.name;
   $("status").textContent = state.hidden
     ? "숨을 죽이고 있다."
     : enemy.active

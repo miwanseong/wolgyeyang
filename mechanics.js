@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=e129d1941755";
+import { canMove, sight, findPath } from "./world.js?v=abbeb66692c5";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -157,4 +157,21 @@ export class Pursuer {
       return "caught";
     return null;
   }
+}
+
+const PROGRESS_FLAGS=['power','locker','listened','shutterOpen','chapter2','relayIncoming','relayCancel','relayOverride','relayCompared','relaySlide','relayLogic','relayPipes','relayCooling','relayIsolated','relayPower','relayLastVoice','relayErasure','relayProofTimeline','relayProofAccount'];
+export function progressSignature(s){return JSON.stringify([s.bag.slice().sort(),s.notes.map(n=>n.id).sort(),PROGRESS_FLAGS.map(k=>!!s.flags[k])]);}
+export class ProgressHaunt{
+ constructor(){this.reset();}
+ reset(){this.signature=null;this.elapsed=0;this.warned=false;this.cooldown=0;}
+ update(s,dt,allowed=true){
+  const signature=progressSignature(s);
+  if(this.signature!==signature){this.signature=signature;this.elapsed=0;this.warned=false;return null;}
+  if(!allowed||s.ending)return null;
+  this.cooldown=Math.max(0,this.cooldown-dt);if(this.cooldown)return null;
+  this.elapsed+=dt;
+  if(this.elapsed>=110){this.elapsed=0;this.warned=false;this.cooldown=150;return {kind:'insist'};}
+  if(this.elapsed>=90&&!this.warned){this.warned=true;return {kind:'warning'};}
+  return null;
+ }
 }

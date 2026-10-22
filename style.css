@@ -1407,3 +1407,7 @@ button:active:not(:disabled) {
 .puzzle-board.pipes:after{content:'↓';position:absolute;left:14%;bottom:-25px;color:#ddd}
 .puzzle-board.pipes button{padding:0;overflow:hidden}
 .puzzle-board.pipes svg{display:block;width:100%;height:100%}
+.area-name{position:absolute;left:22px;top:68px;color:#c8c8bc99;font-size:10px;letter-spacing:.12em;pointer-events:none}
+@media(max-width:600px){.area-name{top:56px;left:14px;font-size:9px;max-width:75%}}
+.area-name{left:auto;right:22px;top:22px;text-align:right;max-width:52%;line-height:1.6}
+@media(max-width:600px){.area-name{left:auto;right:12px;top:18px;max-width:45%;font-size:8px}}

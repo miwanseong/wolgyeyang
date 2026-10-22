@@ -18,6 +18,7 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  giggle: "fx_female_giggle.wav",
   puzzleSlide: "fx_puzzle_slide.wav",
   puzzleTurn: "fx_puzzle_turn.wav",
   paper: "fx_paper.wav",

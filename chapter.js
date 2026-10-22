@@ -1,7 +1,7 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=e129d1941755";
-import { MAPS, sight, worldFor } from "./world.js?v=e129d1941755";
-import { take, note } from "./state.js?v=e129d1941755";
-export const RELAY_MAPS=['relayEntry','relayArchive','relayPlant','relaySignal'];
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=abbeb66692c5";
+import { MAPS, sight, worldFor } from "./world.js?v=abbeb66692c5";
+import { take, note } from "./state.js?v=abbeb66692c5";
+export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
  const ids={register:'relay-register',dutyNote:'relay-duty-note',incoming:'relay-incoming',cancel:'relay-cancel',override:'relay-override',erasure:'relay-erasure',pressure:'relay-pressure',lastVoice:'relay-last-voice',names:'relay-six-names'};
@@ -21,12 +21,14 @@ export function migrateStorySave(s){
 export function enterChapterTwo(s){
  if(s.ending!=='return'||!s.flags.denial||s.flags.chapter2)return false;
  s.flags.originalKept=hasOriginals(s);s.flags.chapter2=true;s.ending=null;
- s.map='relayEntry';s.x=44*32;s.y=30*32;s.stamina=100;s.hidden=false;s.running=false;
+ s.map='relayYard';s.x=28*32;s.y=16*32;s.stamina=100;s.hidden=false;s.running=false;
  take(s,'flashlight');s.flashlight=true;
- note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라왔다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
+ note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라 해린에게 원본 대조를 요청했다. 해린은 설비 담당 도현과 건물 관리인 미정을 불렀다. 세 사람의 야간 동행 서명이 현관에 남아 있다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
  return true;
 }
 export function relayObjective(s){
+ if(s.map==='relayYard'&&s.bag.includes('relayExport'))return '외부 마당 서쪽 산길·정류장 표지 · 증거를 가지고 떠난다';
+ if(s.map==='relayYard'&&!s.flags.relayLastVoice)return '동쪽 현관 → 안내·접수동 · 인계대와 해린을 찾는다';
  if(s.flags.relayComplete)return '제출된 기록';
  if(s.bag.includes('relayExport'))return '접수동 남쪽 외부 출입문 · 증거 봉투를 가지고 밖으로 나간다';
  if(!s.bag.includes('relayBadge'))return '접수동 서쪽 접수실 · 해린의 인계대에서 출입증과 인계 기록을 찾는다';
