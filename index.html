@@ -1,21 +1,241 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111110"><title>잔류 — 마지막 입주자</title><link rel="stylesheet" href="style.css"></head>
-<body>
-<div class="grain"></div>
-<header><a class="wordmark" href="./">잔류<span>殘留</span></a><div class="chapter">CHAPTER 00 <i></i> 마지막 입주자</div><button id="phone-open" class="quiet">휴대폰 <kbd>Tab</kbd></button></header>
-<main>
-<section id="title-screen" class="title-screen">
-<div class="title-copy"><p class="eyebrow">A MONOCHROME HORROR STORY</p><h1>아무도 떠나지<br>않은 집.</h1><p class="intro">철거까지 남은 시간, 하룻밤.<br>돌아온 집에는 내 이름의 유품이 남아 있었다.</p><button id="new-game" class="primary">문을 열다 <span>↗</span></button><button id="continue" class="text-button">남겨 둔 기억 불러오기</button><p class="edition">잔류 — 마지막 입주자 <span>첫 번째 밤 · VISUAL EDITION</span></p></div>
-<div class="title-art"><div class="moon"></div><div class="building"><div class="roof">月桂 APARTMENT</div><div class="windows" id="windows"></div><div class="entry">101</div></div><div class="art-caption">1998. 11. 04 <span>월계아파트 · 철거 전야</span></div></div>
-</section>
-<section id="play-screen" hidden>
-<div class="game-top"><div><p class="eyebrow">월계아파트 / 1층</p><h2 id="room-name">중앙 복도</h2></div><p id="objective">관리실에서 보관함을 찾으세요.</p></div>
-<div class="stage"><canvas id="world" width="1120" height="640" aria-label="월계아파트 탐색 지도"></canvas><div class="vignette"></div><div id="room-reveal" class="room-reveal" aria-live="polite"></div><div id="interaction" class="interaction" hidden><kbd>E</kbd><span></span></div><div class="stage-label">WOLGYE APARTMENT <span>01F</span></div></div>
-<footer class="game-footer"><p><span class="status-dot"></span><span id="status">누군가 당신을 기억합니다.</span></p><div><span>이동 <kbd>W A S D</kbd></span><span>조사 <kbd>E</kbd></span><button id="sound">소리 켜기</button></div></footer>
-<div class="touch-controls"><button data-move="up" aria-label="위로 이동">↑</button><div><button data-move="left" aria-label="왼쪽 이동">←</button><button id="touch-interact">조사</button><button data-move="right" aria-label="오른쪽 이동">→</button></div><button data-move="down" aria-label="아래로 이동">↓</button></div>
-</section>
-</main>
-<div id="dialog" class="modal" hidden><section class="dialog-box" role="dialog" aria-modal="true" aria-labelledby="speaker"><div class="dialog-heading"><span id="speaker"></span><span class="eyebrow">기억의 조각</span></div><div class="dialog-content"><img id="portrait" src="assets/seoha.png" alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상" hidden><p id="dialog-text"></p></div><div class="dialog-bottom"><span class="dialog-hint">E · 문장 넘기기</span><div id="dialog-actions"></div></div></section></div>
-<div id="phone-modal" class="modal phone-modal" hidden><button id="phone-close" class="phone-dismiss">휴대폰 내려놓기 <kbd>Esc</kbd></button><div class="hand"><img class="hand-back" src="assets/hand.png" alt=""><div class="phone"><div class="island"></div><div class="phone-status"><span>23:41</span><span>••• ▰</span></div><p class="phone-date">11월 4일 수요일</p><h2>남겨진 것들</h2><div class="apps"><button data-app="save"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg></b>기억 저장</button><button data-app="load"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10a8 8 0 1 1 1 8M4 4v6h6"/></svg></b>기억 복원</button><button data-app="bag"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16v13H4zM8 7V4h8v3"/></svg></b>소지품</button><button data-app="notes"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4"/></svg></b>기록</button><button data-app="map"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2zm6-2v16m6-14v16"/></svg></b>층별 안내</button><button data-app="settings"><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg></b>설정</button></div><div id="phone-content" class="phone-content" aria-live="polite">통신 서비스 없음<br><small>저장된 기억은 이 기기에 남습니다.</small></div><div class="home-bar"></div></div><img class="hand-thumb" src="assets/hand.png" alt=""></div></div>
-<div id="toast" role="status" hidden></div>
-<script type="module" src="app.js"></script></body></html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#111110" />
+    <title>잔류 — 마지막 입주자</title>
+    <link rel="stylesheet" href="style.css?v=7b5bc40c7b84" />
+  </head>
+  <body>
+    <div class="grain"></div>
+    <header>
+      <a class="wordmark" href="./">잔류<span>殘留</span></a>
+      <div class="chapter">NIGHT 01 <i></i> 마지막 입주자</div>
+      <button id="phone-open" class="quiet">휴대폰 <kbd>Tab</kbd></button>
+    </header>
+    <main>
+      <section id="title-screen" class="title-screen">
+        <div class="title-copy">
+          <p class="eyebrow">A MONOCHROME HORROR STORY</p>
+          <h1>아무도 떠나지<br />않은 집.</h1>
+          <p class="intro">
+            철거까지 남은 시간, 하룻밤.<br />돌아온 집에는 내 이름의 유품이 남아
+            있었다.
+          </p>
+          <button id="new-game" class="primary">
+            문을 열다 <span>↗</span></button
+          ><button id="continue" class="text-button">
+            남겨 둔 기억 불러오기
+          </button>
+          <p class="edition">
+            잔류 — 마지막 입주자 <span>첫 번째 밤 · SURVIVAL EDITION</span>
+          </p>
+        </div>
+        <div class="title-art">
+          <div class="moon"></div>
+          <div class="building">
+            <div class="roof">月桂 APARTMENT</div>
+            <div class="windows" id="windows"></div>
+            <div class="entry">101</div>
+          </div>
+          <div class="art-caption">
+            1998. 11. 04 <span>월계아파트 · 철거 전야</span>
+          </div>
+        </div>
+      </section>
+      <section id="play-screen" hidden>
+        <div class="game-top">
+          <div>
+            <p class="eyebrow">철거까지 06:00 / 현재 23:41</p>
+            <h2 id="room-name">중앙 복도</h2>
+          </div>
+          <p id="objective">관리실에서 보관함을 찾으세요.</p>
+        </div>
+        <div class="stage">
+          <div id="travel" class="travel" hidden></div>
+          <div id="threat" class="threat" role="status" hidden></div>
+          <canvas
+            id="world"
+            width="1120"
+            height="640"
+            aria-label="월계아파트 탐색 지도"
+          ></canvas>
+          <div class="vignette"></div>
+          <div id="room-reveal" class="room-reveal" aria-live="polite"></div>
+          <div id="interaction" class="interaction" hidden>
+            <kbd>E</kbd><span></span>
+          </div>
+          <div class="survival-hud">
+            <div id="stamina">
+              <span>STAMINA</span>
+              <div class="stamina-track"><i id="stamina-fill"></i></div>
+              <small id="stamina-value">100%</small>
+            </div>
+            <span id="flash-state">LIGHT / ON</span>
+          </div>
+          <div class="stage-label">WOLGYE APARTMENT <span>01F</span></div>
+        </div>
+        <footer class="game-footer">
+          <p>
+            <span class="status-dot"></span
+            ><span id="status">누군가 당신을 기억합니다.</span>
+          </p>
+          <div>
+            <span>이동 <kbd>W A S D</kbd></span
+            ><span>달리기 <kbd>Shift</kbd></span
+            ><span>손전등 <kbd>F</kbd></span
+            ><span>조사 <kbd>E</kbd></span
+            ><button id="sound">소리 켜기</button>
+          </div>
+        </footer>
+        <div class="touch-controls">
+          <button data-move="up" aria-label="위로 이동">↑</button>
+          <div>
+            <button data-move="left" aria-label="왼쪽 이동">←</button
+            ><button id="touch-interact">조사</button
+            ><button data-move="right" aria-label="오른쪽 이동">→</button>
+          </div>
+          <button data-move="down" aria-label="아래로 이동">↓</button>
+          <div class="survival-touch">
+            <button id="touch-run">달리기<br />누르고 있기</button
+            ><button id="touch-light">손전등 F</button>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="dialog" class="modal" hidden>
+      <section
+        class="dialog-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="speaker"
+      >
+        <div class="dialog-heading">
+          <span id="speaker"></span><span class="eyebrow">기억의 조각</span>
+        </div>
+        <div class="dialog-content">
+          <img
+            id="portrait"
+            src="assets/seoha.png?v=7b5bc40c7b84"
+            alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상"
+            hidden
+          />
+          <p id="dialog-text"></p>
+        </div>
+        <div class="dialog-bottom">
+          <span class="dialog-hint">E · 문장 넘기기</span>
+          <div id="dialog-actions"></div>
+        </div>
+      </section>
+    </div>
+    <div id="phone-modal" class="modal phone-modal" hidden>
+      <button id="phone-close" class="phone-dismiss">
+        휴대폰 내려놓기 <kbd>Esc</kbd>
+      </button>
+      <div class="hand">
+        <img class="hand-back" src="assets/hand.png?v=7b5bc40c7b84" alt="" />
+        <div class="phone">
+          <div class="island"></div>
+          <div class="phone-status"><span>23:41</span><span>••• ▰</span></div>
+          <p class="phone-date">11월 4일 수요일</p>
+          <h2>남겨진 것들</h2>
+          <div class="apps">
+            <button data-app="save">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4" /></svg></b
+              >기억 저장</button
+            ><button data-app="load">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 10a8 8 0 1 1 1 8M4 4v6h6" /></svg></b
+              >기억 복원</button
+            ><button data-app="bag">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M4 7h16v13H4zM8 7V4h8v3" /></svg></b
+              >소지품</button
+            ><button data-app="notes">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M6 4h12v16H6zM9 8h6M9 12h6M9 16h4" /></svg></b
+              >기록</button
+            ><button data-app="map">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2zm6-2v16m6-14v16"
+                  /></svg></b
+              >층별 안내</button
+            ><button data-app="settings">
+              <b
+                ><svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8ZM12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"
+                  /></svg></b
+              >설정
+            </button>
+          </div>
+          <div id="phone-content" class="phone-content" aria-live="polite">
+            통신 서비스 없음<br /><small
+              >저장된 기억은 이 기기에 남습니다.</small
+            >
+          </div>
+          <div class="home-bar"></div>
+        </div>
+        <img class="hand-thumb" src="assets/hand.png?v=7b5bc40c7b84" alt="" />
+      </div>
+    </div>
+    <div id="toast" role="status" hidden></div>
+    <script type="module" src="app.js?v=7b5bc40c7b84"></script>
+  </body>
+</html>
