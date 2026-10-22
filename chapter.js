@@ -1,6 +1,6 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=7a030f85f62d";
-import { MAPS, sight, worldFor } from "./world.js?v=7a030f85f62d";
-import { take, note } from "./state.js?v=7a030f85f62d";
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=e129d1941755";
+import { MAPS, sight, worldFor } from "./world.js?v=e129d1941755";
+import { take, note } from "./state.js?v=e129d1941755";
 export const RELAY_MAPS=['relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -13,6 +13,9 @@ export function migrateStorySave(s){
   s.ending=null;
   s.notes=s.notes.filter(n=>!['relay-ending','relay-proof-time','relay-proof-account','relay-export'].includes(n.id));
  }
+ if(s.bag.includes('relayCopy'))s.flags.relaySlide=true;
+ if(s.bag.includes('relayWheel')||s.flags.relayCooling)s.flags.relayLogic=true;
+ if(s.flags.relayCooling)s.flags.relayPipes=true;
  s.flags.storyV3=true;return s;
 }
 export function enterChapterTwo(s){
@@ -28,6 +31,7 @@ export function relayObjective(s){
  if(s.bag.includes('relayExport'))return '접수동 남쪽 외부 출입문 · 증거 봉투를 가지고 밖으로 나간다';
  if(!s.bag.includes('relayBadge'))return '접수동 서쪽 접수실 · 해린의 인계대에서 출입증과 인계 기록을 찾는다';
  if(!s.flags.relayIncoming||!s.flags.relayCancel||!s.flags.relayOverride)return '기록동 · 최초 접수지, 취소 통화, 원격 회신을 각각 조사한다';
+ if(!s.bag.includes('relayCopy')&&!s.flags.relaySlide&&s.flags.relayIncoming&&s.flags.relayCancel&&s.flags.relayOverride)return '기록동 동쪽 대조대 · 밀판 도면을 복원한 뒤 세 시각을 대조한다';
  if(!s.bag.includes('relayCopy'))return '기록동 동쪽 대조대 · 세 기록을 실제 시각 순으로 대조한다';
  if(!s.flags.relayCooling)return s.bag.includes('relayWheel')?'설비동 서쪽 순환실 · 수동 핸들을 빈 냉각 밸브 축에 연결한다':'접수동 당직실 계단 ↓ · 설비동 정비대의 수동 핸들을 챙긴다';
  if(!s.flags.relayIsolated)return '설비동 동쪽 절체실 · 기존 입력 분리 스위치를 내린다';
@@ -97,6 +101,7 @@ export function relayAction(s,o,choice=null){
  if(action==='compare'){
   if(s.bag.includes('relayCopy'))return result(o.name,'대조를 마친 사본은 소지품과 기록 앱에 남아 있다. 다음은 접수동 당직실의 계단 아래, 냉각 설비다.');
   if(!s.flags.relayIncoming||!s.flags.relayCancel||!s.flags.relayOverride)return result(o.name,'서류와 데크 세 곳을 먼저 조사해야 한다.\n서쪽 최초 접수지 / 동쪽 취소 통화 데크 / 동쪽 원격 회신 단말.');
+  if(!s.flags.relaySlide)return result(o.name,'대조 장치의 밀판이 어긋나 있다.',{puzzle:'slide'});
   if(choice===null)return result(o.name,'세 기록은 한 번의 통화가 아니다. 실제로 일어난 순서대로 대조한다.\n기록 앱에 각 시각과 발신 내용이 남아 있다.',{choices:[['접수 → 취소 → 잠금 유지 회신','chronological'],['접수 → 잠금 유지 회신 → 취소','wrong'],['취소 → 접수 → 잠금 유지 회신','wrong']]});
   if(choice!=='chronological')return result(o.name,'시각이 맞지 않는다. 23:41, 23:43, 23:47의 순서와 각 발신 내용을 다시 확인하자. 기록은 사라지지 않았다.');
   take(s,'relayCopy');s.flags.relayCompared=true;note(s,'relay-comparison','23:41 접수 → 23:43 취소 → 23:47 잠금 유지. 취소가 개방을 뜻하지 않았다. 해린의 삭제 이력을 붙인 사본을 확보했다.');
@@ -104,11 +109,13 @@ export function relayAction(s,o,choice=null){
  }
  if(action==='wheel'){
   if(s.flags.relayCooling||s.bag.includes('relayWheel'))return result(o.name,'핸들이 있던 받침만 남았다. 설치 위치는 이 방 동쪽의 냉각 순환 밸브다.');
+  if(!s.flags.relayLogic)return result(o.name,'핸들은 검증 표지가 붙은 세 잠금함 중 하나에 보관되어 있다.',{puzzle:'logic'});
   take(s,'relayWheel');return result(o.name,'정비대에서 사각 홈의 수동 핸들을 챙겼다.\n같은 방 동쪽 배관의 빈 축에 맞는다.',{sound:'item'});
  }
  if(action==='cooling'){
   if(s.flags.relayCooling)return result(o.name,'핸들이 고정되어 있고 순환 밸브가 열려 있다. 다음은 동쪽 절체실의 기존 입력 분리 스위치다.');
   if(!s.bag.includes('relayWheel'))return result(o.name,'손으로 돌릴 수 없는 사각 축이 드러나 있다. 이 방 서쪽 정비대에서 분리 보관한 핸들을 찾아야 한다.');
+  if(!s.flags.relayPipes)return result(o.name,'점검판의 배관이 분리되어 있다. 회전 관을 연결해야 한다.',{puzzle:'pipes'});
   s.bag=s.bag.filter(k=>k!=='relayWheel');s.flags.relayCooling=true;
   note(s,'relay-cooling','수동 핸들을 냉각 밸브 축에 연결하고 개방했다. 기존 입력을 분리한 다음 비상 회선을 투입한다.');
   return result(o.name,'사각 홈을 맞추고 핸들을 돌렸다. 배관 안쪽으로 물이 흐른다.\n맞은편 절체실로 가 기존 입력부터 분리하자.',{sound:'door'});

@@ -1,10 +1,11 @@
-import { CaptureAnimation, latestCheckpoint } from './capture.js?v=7a030f85f62d';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=7a030f85f62d";
-import { Scene, facingDirection } from "./scene.js?v=7a030f85f62d";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=7a030f85f62d";
-import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=7a030f85f62d";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=7a030f85f62d";
-import { AudioDirector, TRACKS } from "./audio.js?v=7a030f85f62d";
+import { PuzzlePanel } from './puzzles.js?v=e129d1941755';
+import { CaptureAnimation, checkpoints } from './capture.js?v=e129d1941755';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=e129d1941755";
+import { Scene, facingDirection } from "./scene.js?v=e129d1941755";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=e129d1941755";
+import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=e129d1941755";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=e129d1941755";
+import { AudioDirector, TRACKS } from "./audio.js?v=e129d1941755";
 import {
   initial,
   ITEMS,
@@ -16,7 +17,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=7a030f85f62d";
+} from "./state.js?v=e129d1941755";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -40,6 +41,10 @@ let state = initial(),
   forcedCue = null;
 const captureAnimation = new CaptureAnimation($("capture-animation"));
 let deathCheckpoint=null, captureFinished=false;
+const puzzlePanel=new PuzzlePanel($("puzzle-modal"),{
+ sound:name=>sound.effect(name),wrong:()=>scene.haunt('누가 거짓말을 했지'),
+ close:()=>{$("puzzle-modal").hidden=true;eventActive=false;keys.clear();canvas.focus();}
+});
 const scene = new Scene(canvas, MAPS.lobby),
   stillness = new StillnessHaunt(),
   enemy = new Pursuer(),
@@ -165,6 +170,7 @@ function openRelayAction(o,choice=null){
  if(r.hunt)huntDelay=r.hunt;
  if(r.exported){enemy.reset();pursuerTrail=null;huntDelay=0;stillness.reset();}
  if(r.cinematic){playCinematic(r.cinematic);return;}
+ if(r.puzzle){closeDialog();eventActive=true;keys.clear();puzzlePanel.open(state,r.puzzle,()=>{scene.haunt(r.puzzle==='slide'?'나를 빼지 마':'누가 보고 있어');openRelayAction(o);});return;}
  const actions=r.choices?[...r.choices.map(([label,key])=>[label,()=>openRelayAction(o,key)]),['돌아가기',closeDialog]]:undefined;
  say(r.title,r.text,actions);
 }
@@ -814,7 +820,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=7a030f85f62d", memory: "assets/event-memory.png?v=7a030f85f62d"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=e129d1941755", memory: "assets/event-memory.png?v=e129d1941755"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -826,13 +832,27 @@ function showEvent(kind, title, caption, after = () => {}) {
 function caught() {
   if(eventActive)return;
   eventActive=true;keys.clear();state.running=false;
-  deathCheckpoint=latestCheckpoint(slot);captureFinished=false;
+  deathCheckpoint=checkpoints(slot)[0]||null;captureFinished=false;
   captureAnimation.reset();
   $("death-screen").hidden=false;$("death-screen").tabIndex=-1;$("death-screen").focus();
   $("death-result").hidden=true;$("death-retry").disabled=true;
   sound.effect("rush");sound.effect("capture");
   updateSound();
 }
+function renderDeathSlots(){
+ const valid=checkpoints(slot),list=$("death-slots");list.replaceChildren();
+ for(let i=1;i<=3;i++){
+  const entry=valid.find(v=>v.slot===i),button=document.createElement('button');
+  button.disabled=!entry;button.setAttribute('aria-pressed',String(!!entry&&entry.slot===deathCheckpoint?.slot));
+  const date=entry?.savedAt?new Intl.DateTimeFormat('ko-KR',{dateStyle:'short',timeStyle:'short'}).format(entry.savedAt):'시각 미기록';
+  button.textContent=entry?`${i}번 · ${MAPS[entry.state.map].name} · ${date}`:`${i}번 · 빈 슬롯 또는 읽을 수 없는 저장`;
+  button.onclick=()=>{deathCheckpoint=entry;renderDeathSlots();list.querySelectorAll('button')[i-1].focus();};list.append(button);
+ }
+ $("death-checkpoint").textContent=deathCheckpoint?`${deathCheckpoint.slot}번을 선택했습니다. 저장 이후의 진행은 사라집니다.`:'불러올 수 있는 저장이 없습니다. 처음부터 시작합니다.';
+ $("death-retry").textContent=deathCheckpoint?'선택한 저장 불러오기':'처음부터 시작하기';
+ $("death-new").hidden=!valid.length;
+}
+$("death-new").onclick=()=>{deathCheckpoint=null;recoverAfterCapture();};
 function recoverAfterCapture() {
   if(!captureFinished)return;
   $("death-screen").hidden=true;eventActive=false;keys.clear();
@@ -868,10 +888,7 @@ function render(t) {
     const pose=captureAnimation.draw(dt,scene.reduced);
     if(pose.done&&!captureFinished){
       captureFinished=true;$("death-result").hidden=false;
-      $("death-checkpoint").textContent=deathCheckpoint
-        ? `${deathCheckpoint.slot}번 저장 지점에서 이어집니다. 저장 이후의 진행은 사라집니다.`
-        : "불러올 수 있는 저장이 없습니다. 이야기의 처음부터 시작합니다.";
-      $("death-retry").textContent=deathCheckpoint?"저장 지점에서 이어하기":"처음부터 시작하기";
+      renderDeathSlots();
       $("death-retry").disabled=false;$("death-retry").focus();
     }
     return;
@@ -914,6 +931,19 @@ function render(t) {
     const zone=ECHO_ZONES[state.map];
     if(zone&&state.flags.power&&!state.hidden&&!state.flags['echo_'+state.map]&&Math.hypot(state.x-zone.x,state.y-zone.y)<zone.radius){
       state.flags['echo_'+state.map]=true;scene.appear(...zone.at,zone.text);sound.effect('scrape');addNote('echo_'+state.map,'서윤의 잔상. 돌아보려는 순간 얼굴이 나를 향했다. 추격하는 정우와는 다른 모습이었다.');
+    }
+    if(state.flags.chapter2&&!state.hidden&&!enemy.active){
+      const map=worldFor(state),portrait=map.objects.find(o=>o.hauntedPortrait&&Math.hypot(state.x-o.x,state.y-o.y)<170&&sight(map,state,o));
+      if(portrait){
+        const seen='portrait_seen_'+portrait.id,escaped='portrait_gone_'+portrait.id;
+        if(!state.flags.relaySlide)state.flags[seen]=true;
+        if(state.flags.relaySlide&&state.flags[seen]&&!state.flags[escaped]){
+          state.flags[escaped]=true;sound.effect('apparition');scene.haunt('그림 안에는 아무도 없어');
+          const x=state.x-Math.cos(state.facing)*70,y=state.y-Math.sin(state.facing)*70;
+          if(canMove(map,x,y)&&sight(map,state,{x,y}))scene.appear(x,y,'뒤에서 보고 있어');
+          toast('액자는 비어 있다. 내 뒤에서 옷자락 소리가 났다.');
+        }
+      }
     }
     const result = enemy.update(worldFor(state), state, dt);
     if (result === "caught") caught();
@@ -976,6 +1006,10 @@ function render(t) {
   $("objective").textContent = objective();
   if ($("room-name").textContent !== map.name) {
     $("room-name").textContent = map.name;
+    document.querySelector('.chapter').textContent=state.flags.chapter2?'CHAPTER 02 · 회신을 기다리는 곳':'NIGHT 01 · 마지막 입주자';
+    const floor={basement:'B1F',upper:'02F',relayPlant:'B1F',relaySignal:'02F'}[state.map]||'01F';
+    document.querySelector('.stage-label').replaceChildren(document.createTextNode(state.flags.chapter2?'SANBUK RELAY STATION ':'WOLGYE APARTMENT '),Object.assign(document.createElement('span'),{textContent:floor}));
+    canvas.setAttribute('aria-label',map.name+' 탐색 지도');
     revealRoom(map.name);
   }
   $("status").textContent = state.hidden
@@ -1036,8 +1070,9 @@ function flashlight() {
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   if (eventActive) {
+    if(!$("puzzle-modal").hidden){puzzlePanel.key(e);if(!["enter"," ","tab"].includes(k))e.preventDefault();return;}
     if(!$("death-screen").hidden){
-      if(k==='tab'){e.preventDefault();if(captureFinished)$("death-retry").focus();}
+      if(k==='tab'){e.preventDefault();if(captureFinished){const bs=[...$('death-result').querySelectorAll('button:not(:disabled):not([hidden])')],i=bs.indexOf(document.activeElement);bs[(i+(e.shiftKey?-1:1)+bs.length)%bs.length]?.focus();}}
       else if(!captureFinished)e.preventDefault();
       return;
     }

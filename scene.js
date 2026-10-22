@@ -1,4 +1,4 @@
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=7a030f85f62d";
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=e129d1941755";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -166,34 +166,37 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=7a030f85f62d",
-        "assets/seoha-walk.png?v=7a030f85f62d",
-        "assets/props-painted.png?v=7a030f85f62d",
-        "assets/floors-painted.png?v=7a030f85f62d",
-        "assets/jeongwoo-motions.png?v=7a030f85f62d",
-        "assets/seoha-diagonal.png?v=7a030f85f62d",
-        "assets/shoe-cabinet.png?v=7a030f85f62d",
-        "assets/chair-turn.png?v=7a030f85f62d",
-        "assets/room-modules.png?v=7a030f85f62d",
-        "assets/dining-table.png?v=7a030f85f62d",
-        "assets/regional-props.png?v=7a030f85f62d",
-        "assets/wall-side.png?v=7a030f85f62d",
-        "assets/architecture.png?v=7a030f85f62d",
-        "assets/technical-kit.png?v=7a030f85f62d",
-        "assets/technical-doors.png?v=7a030f85f62d",
-        "assets/kitchen-kit.png?v=7a030f85f62d",
-        "assets/decor-kit.png?v=7a030f85f62d",
-        "assets/supply-kit.png?v=7a030f85f62d",
-        "assets/room-details.png?v=7a030f85f62d",
-        "assets/seoyun-echo.png?v=7a030f85f62d",
+        "assets/props-support.png?v=e129d1941755",
+        "assets/seoha-walk.png?v=e129d1941755",
+        "assets/props-painted.png?v=e129d1941755",
+        "assets/floors-painted.png?v=e129d1941755",
+        "assets/jeongwoo-motions.png?v=e129d1941755",
+        "assets/seoha-diagonal.png?v=e129d1941755",
+        "assets/shoe-cabinet.png?v=e129d1941755",
+        "assets/chair-turn.png?v=e129d1941755",
+        "assets/room-modules.png?v=e129d1941755",
+        "assets/dining-table.png?v=e129d1941755",
+        "assets/regional-props.png?v=e129d1941755",
+        "assets/wall-side.png?v=e129d1941755",
+        "assets/architecture.png?v=e129d1941755",
+        "assets/technical-kit.png?v=e129d1941755",
+        "assets/technical-doors.png?v=e129d1941755",
+        "assets/kitchen-kit.png?v=e129d1941755",
+        "assets/decor-kit.png?v=e129d1941755",
+        "assets/supply-kit.png?v=e129d1941755",
+        "assets/room-details.png?v=e129d1941755",
+        "assets/seoyun-echo.png?v=e129d1941755",
+        "assets/relay-floors.png?v=e129d1941755",
+        "assets/haunted-portraits.png?v=e129d1941755",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits]) => {
       Object.assign(this, {
         props,
         actor,
         painted,
         floors,
         monster,
+        hauntedPortraits,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -218,6 +221,7 @@ export class Scene {
       // scaling large illustrations for every floor cell on every animation frame.
       const floorTiles=document.createElement('canvas');floorTiles.width=256;floorTiles.height=256;
       const fc=floorTiles.getContext('2d');fc.imageSmoothingEnabled=false;fc.drawImage(this.floors,0,0,256,256);this.floors=floorTiles;
+      this.relayFloors=document.createElement('canvas');this.relayFloors.width=256;this.relayFloors.height=256;const rc=this.relayFloors.getContext('2d');rc.imageSmoothingEnabled=false;rc.drawImage(relayFloors,0,0,256,256);
       this.moduleTiles=document.createElement('canvas');this.moduleTiles.width=384;this.moduleTiles.height=576;
       const mc=this.moduleTiles.getContext('2d');mc.imageSmoothingEnabled=false;
       const xs=[30,364,727,1058],ys=[[30,390],[412,710],[730,1018],[1040,1410]],heights=[72,60,58,72];
@@ -310,6 +314,14 @@ export class Scene {
     if(o.kitchenTile!==undefined){
       const tile=this.kitchenTiles[o.kitchenTile],w=o.kitchenTile===4?40:64,h=o.kitchenTile===4?82:o.kitchenTile===5?52:68;
       const g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y-h+14,w,h};c.drawImage(tile,g.x,g.y,g.w,g.h);return;
+    }
+    if(o.hauntedPortrait){
+      const g=mountedGeometry(this.map,o,58,58),distance=Math.hypot(s.x-o.x,s.y-o.y),gone=s.flags.relaySlide;
+      const dx=s.x-o.x,frame=gone?3:Math.abs(dx)<24?0:dx<0?1:2;
+      const sw=this.hauntedPortraits.width/2,sh=this.hauntedPortraits.height/2;
+      const sway=this.reduced?0:Math.sin(t*.002)*.018;
+      c.save();c.translate(g.x+g.w/2,g.y+g.h/2);c.rotate(sway);c.drawImage(this.hauntedPortraits,(frame%2)*sw,Math.floor(frame/2)*sh,sw,sh,-g.w/2,-g.h/2,g.w,g.h);c.restore();
+      return;
     }
     if(o.decor!==undefined){
       const decor=o.fixture==='curtain'?((s.flags['curtain_'+o.id]??o.decor===1)?1:0):o.decor,tile=this.decorTiles[decor],sizes={0:[o.id.startsWith('vanity')?32:64,80],1:[o.id.startsWith('vanity')?32:64,80],2:[48,72],3:[68,60],4:[54,58],5:[36,44],6:[46,54],7:[38,42]},[w,h]=sizes[o.decor],y=o.mount?o.y-h-4:o.y+12-h;
@@ -655,7 +667,7 @@ export class Scene {
         if (v === 1) {
           const i = (x * 7 + y * 11) % 4;
           c.drawImage(
-            this.floors,
+            map.chapter===2?this.relayFloors:this.floors,
             i * sw,
             (map.id === "upper" && x >= 26 && y < 17
               ? 3
@@ -677,6 +689,16 @@ export class Scene {
           const top=(floorBelow||floorAbove)?face.y:y*32,height=(floorBelow||floorAbove)?face.h:32;
           c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,top,32,height);
           c.fillStyle='#0009';c.fillRect(x*32,top,32,height);
+          if(map.chapter===2){
+            c.save();c.beginPath();c.rect(x*32,top,32,height);c.clip();
+            c.fillStyle=map.id==='relayEntry'?'#c8c4b025':map.id==='relayArchive'?'#0c0b0b90':map.id==='relayPlant'?'#14191d88':'#101014aa';c.fillRect(x*32,top,32,height);
+            c.strokeStyle=map.id==='relayEntry'?'#c0c0b050':'#aaaaaa35';c.lineWidth=1;
+            if(map.id==='relayEntry'){c.fillStyle='#797a7150';c.fillRect(x*32,top+height*.6,32,height*.4);c.fillStyle='#c9c7bc70';c.fillRect(x*32,top+height*.6,32,2);}
+            if(map.id==='relayArchive'){for(let xx=0;xx<32;xx+=8){c.beginPath();c.moveTo(x*32+xx,top);c.lineTo(x*32+xx,top+height);c.stroke();}}
+            if(map.id==='relayPlant'){c.fillStyle='#666';c.fillRect(x*32,top+height*.3,32,4);c.fillStyle='#aaa';c.fillRect(x*32,top+height*.3,32,1);c.fillStyle='#333';c.fillRect(x*32+12,top+height*.3-2,3,8);}
+            if(map.id==='relaySignal'){for(let yy=4;yy<height;yy+=6)for(let xx=3;xx<32;xx+=6){c.fillStyle='#96969635';c.fillRect(x*32+xx,top+yy,1,1);}}
+            c.restore();
+          }
           if(floorBelow||floorAbove){
             const home=map.id==='apartment',studio=map.id==='upper'&&x>=26;
             c.save();c.beginPath();c.rect(x*32,top,32,height);c.clip();
@@ -703,6 +725,21 @@ export class Scene {
       }
     }
     c.save();c.beginPath();for(let yy=0;yy<map.h;yy++)for(let xx=0;xx<map.w;xx++)if(map.grid[yy][xx]===1)c.rect(xx*32,yy*32,32,32);c.clip();
+    if(map.chapter===2){
+      if(map.id==='relayEntry'){
+        c.fillStyle='#15151533';for(let x=5;x<46;x++)if(x%2===0)c.fillRect(x*32,24*32,32,3*32);
+        c.strokeStyle='#dddddd45';c.strokeRect(5*32,24*32,40*32,3*32);
+      }else if(map.id==='relayArchive'){
+        c.fillStyle='#beb8ad25';c.fillRect(5*32,25*32,47*32,2);c.fillRect(5*32,28*32,47*32,2);
+      }else if(map.id==='relayPlant'){
+        c.fillStyle='#05090b88';c.fillRect(8*32,31*32,12*32,18);c.fillRect(6*32,26*32,45*32,7);
+        c.strokeStyle='#b4bdc435';for(let i=0;i<18;i++){c.beginPath();c.moveTo((8+i*.65)*32,31*32);c.lineTo((8+i*.65)*32,31*32+18);c.stroke();}
+        c.fillStyle='#bbbbbb13';for(let i=0;i<12;i++){c.beginPath();c.ellipse((8+i*3.5)*32,27*32,23,5+Math.sin(t*.002+i)*2,0,0,7);c.fill();}
+      }else{
+        c.strokeStyle='#a3a3a33a';c.lineWidth=2;c.strokeRect(28*32,12*32,18*32,11*32);
+        c.fillStyle='#111b';c.fillRect(28*32,23*32,18*32,6);c.fillRect(46*32,12*32,6,11*32);
+      }
+    }
     // Architectural room treatments, each aligned to the same tile grid as the furniture.
     const rugs={management:[[7,8,6,5]],apartment:[[11,6,6,5],[25,21,4,4]],upper:[[29,11,5,4]]}[map.id]||[];
     for(const [rx,ry,rw,rh] of rugs){

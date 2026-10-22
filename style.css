@@ -1379,3 +1379,31 @@ button:active:not(:disabled) {
 #death-retry:focus-visible{outline:2px solid #eee;outline-offset:5px}
 @keyframes death-reveal{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#death-result{animation:none}}
+#death-result{max-width:650px;width:min(90vw,650px)}
+#death-slots{display:grid;gap:7px;text-align:left;margin:18px 0}
+#death-slots button,#death-new{padding:11px 14px;background:#111;border:1px solid #424242;color:#ccc;font-size:12px;line-height:1.6;text-align:left;cursor:pointer}
+#death-slots button[aria-pressed=true]{border-color:#e0d9d0;background:#252322;color:#fff}
+#death-slots button:disabled{opacity:.35;cursor:default}
+#death-new{display:block;margin:15px auto;text-align:center}#death-new[hidden]{display:none}
+#puzzle-modal{position:fixed;inset:0;z-index:130;background:#050506ed;display:grid;place-items:center;overflow:auto;padding:20px}
+#puzzle-modal[hidden]{display:none}
+.puzzle-body{width:min(90vw,570px);padding:24px;border:1px solid #655f55;background:linear-gradient(130deg,#242320,#121313);box-shadow:0 30px 90px #000;color:#ddd}
+.puzzle-body h2{font-size:20px;font-weight:400;letter-spacing:.06em}
+.puzzle-body p{font-size:13px;line-height:1.8;color:#b8b4ae}
+.puzzle-board{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:min(100%,330px);margin:22px auto}
+.puzzle-board button{aspect-ratio:1;background:repeating-linear-gradient(35deg,#373632 0px,#373632 4px,#33322f 5px,#33322f 6px);border:1px solid #8b8577;color:#e5e0d2;font:26px Georgia,serif;cursor:pointer;box-shadow:inset 0 0 12px #0008}
+.puzzle-board .blank{background:#080808;border-color:#30302d;box-shadow:inset 0 0 14px #000}
+.puzzle-board.pipes button{font:70px monospace;background:#242627;color:#b7babc;line-height:1}
+.puzzle-board.logic{grid-template-columns:1fr;width:100%}
+.puzzle-board.logic button{aspect-ratio:auto;padding:18px;font:14px sans-serif;text-align:left}
+.puzzle-body button:focus-visible,#death-slots button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.puzzle-back,.puzzle-body>button{padding:12px 18px;color:#ddd;border:1px solid #666;background:#171717;cursor:pointer}
+@media(max-height:650px){.puzzle-body{padding:12px}.puzzle-board{width:210px;margin:8px auto}.puzzle-body p{margin:5px 0}.puzzle-board.pipes button{font-size:48px}#death-result{padding:12px}#death-result h2{margin:12px 0}}
+.puzzle-board.slide button{position:relative;background:linear-gradient(90deg,transparent 48%,#c0b9a128 49%,#c0b9a128 51%,transparent 52%),linear-gradient(transparent 48%,#c0b9a128 49%,#c0b9a128 51%,transparent 52%),#32312d}
+.puzzle-board.slide small{display:block;font:10px sans-serif;letter-spacing:.13em;margin-top:5px;color:#c4bfaf}
+.puzzle-board.slide .blank{background:#080808}
+.puzzle-board.pipes{position:relative;margin:30px auto}
+.puzzle-board.pipes:before{content:'→';position:absolute;left:-24px;top:9%;color:#ddd}
+.puzzle-board.pipes:after{content:'↓';position:absolute;left:14%;bottom:-25px;color:#ddd}
+.puzzle-board.pipes button{padding:0;overflow:hidden}
+.puzzle-board.pipes svg{display:block;width:100%;height:100%}

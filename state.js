@@ -1,5 +1,6 @@
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=7a030f85f62d";
-import { canSurrender } from "./story.js?v=7a030f85f62d";
+import { validPuzzles } from './puzzles.js?v=e129d1941755';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=e129d1941755";
+import { canSurrender } from "./story.js?v=e129d1941755";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -40,6 +41,7 @@ export function restore(raw) {
   let s = JSON.parse(raw);
   if (!s || ![1, VERSION].includes(s.version))
     throw Error("지원하지 않는 기억");
+  if(!validPuzzles(s.puzzles))throw Error("유효하지 않은 퍼즐 기록");
   const oldLayout=s.layout;
   if (s.version === 1) {
     s = {

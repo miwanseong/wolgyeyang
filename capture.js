@@ -1,17 +1,18 @@
-import { restore } from './state.js?v=7a030f85f62d';
+import { restore } from './state.js?v=e129d1941755';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
-export function latestCheckpoint(read) {
+export function checkpoints(read) {
   const valid=[];
   for(let slot=1;slot<=3;slot++){
     try{
       const raw=read(slot);if(!raw)continue;
       const data=JSON.parse(raw),state=restore(raw);
-      valid.push({slot,state,savedAt:Number.isFinite(data.savedAt)?data.savedAt:0});
+      valid.push({slot,state,savedAt:Number.isFinite(data.savedAt)&&data.savedAt>0&&data.savedAt<=8.64e15?data.savedAt:0});
     }catch{}
   }
-  return valid.sort((a,b)=>b.savedAt-a.savedAt||a.slot-b.slot)[0]||null;
+  return valid.sort((a,b)=>b.savedAt-a.savedAt||a.slot-b.slot);
 }
+export function latestCheckpoint(read){return checkpoints(read)[0]||null;}
 export function capturePose(seconds) {
   // Anticipation, impact, sustained struggle, release, then loss of vision.
   const ends=[.22,.42,.62,.88,1.15,1.45,1.85,2.25,2.7,3.15,3.6,4.25];
@@ -21,7 +22,7 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=7a030f85f62d';
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=e129d1941755';
     this.ready=this.image.decode().catch(()=>{});
   }
   reset(){this.time=0;}

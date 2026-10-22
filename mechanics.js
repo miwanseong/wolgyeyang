@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=7a030f85f62d";
+import { canMove, sight, findPath } from "./world.js?v=e129d1941755";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}

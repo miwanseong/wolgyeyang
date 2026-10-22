@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=7a030f85f62d";
-import { addRelayChapter } from "./chapter-world.js?v=7a030f85f62d";
+import { STORY } from "./story.js?v=e129d1941755";
+import { addRelayChapter } from "./chapter-world.js?v=e129d1941755";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {

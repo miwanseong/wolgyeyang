@@ -18,6 +18,8 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  puzzleSlide: "fx_puzzle_slide.wav",
+  puzzleTurn: "fx_puzzle_turn.wav",
   paper: "fx_paper.wav",
   pen: "fx_pen.wav",
   stamp: "fx_stamp.wav",

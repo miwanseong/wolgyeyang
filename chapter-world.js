@@ -2,10 +2,10 @@
 // the apartment's fuse, locker or shutter actions.
 export function addRelayChapter(M,map,prop,door){
  const rooms={
-  relayEntry:['02 · 산북중계소 / 접수동',52,36,'stone',[[4,23,43,6],[8,7,13,15],[25,7,18,15],[41,29,6,3]]],
-  relayArchive:['02 · 산북중계소 / 대조 기록동',58,38,'wood',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4]]],
-  relayPlant:['02 · 산북중계소 / 지하 냉각 설비',58,38,'concrete',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4]]],
-  relaySignal:['02 · 산북중계소 / 비상 송출층',56,40,'carpet',[[4,26,47,5],[5,7,17,18],[26,7,22,18],[43,31,8,4]]],
+  relayEntry:['02 · 산북중계소 / 접수동',52,36,'stone',[[4,23,43,6],[8,7,13,15],[25,7,18,15],[41,29,6,3],[4,17,4,8]]],
+  relayArchive:['02 · 산북중계소 / 대조 기록동',58,38,'wood',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4],[51,18,5,10]]],
+  relayPlant:['02 · 산북중계소 / 지하 냉각 설비',58,38,'concrete',[[4,24,49,6],[5,6,20,17],[29,6,21,17],[46,30,7,4],[7,29,14,6]]],
+  relaySignal:['02 · 산북중계소 / 비상 송출층',56,40,'carpet',[[4,26,47,5],[5,7,17,18],[26,7,22,18],[43,31,8,4],[7,30,13,7]]],
  };
  for(const [id,[name,w,h,floor,rects]]of Object.entries(rooms)){M[id]=map(id,name,w,h,floor,rects);M[id].chapter=2;}
  function put(m,id,kind,x,y,name,extra={}){const o=prop(id,kind,x,y,name,extra);M[m].objects.push(o);return o;}
@@ -110,14 +110,28 @@ export function addRelayChapter(M,map,prop,door){
   ['relaySignal','relay-booth-bench','bench',9,21,'청취실 대기 의자','혼자 듣지 못할 때 곁에 앉으라고 놓은 의자.',{w:38,back:22,front:10}],
   ['relaySignal','relay-booth-coat','detail',18,9,'청취실 외투 걸이','여섯 사람 중 누구의 옷도 걸려 있지 않다.',{details:0,w:12,back:22,front:10}],
  ])furniture(m,id,kind,x,y,name,description,extra);
- wall('relayEntry','relay-reception-frame',0,15,6.5,'접수실 벽의 액자','유리에 서하의 모습만 흐리게 비친다.',{decor:7,reflective:true});
+ wall('relayEntry','relay-reception-frame',0,15,6.5,'접수실 벽의 액자','유리에 서하의 모습만 흐리게 비친다.',{decor:7,hauntedPortrait:true});
  wall('relayPlant','relay-cooling-vent',11,18,5.5,'순환실 배기구','바람은 멈췄는데 안쪽에서 물소리가 난다.');
  wall('relaySignal','relay-channel-board',5,30,6.5,'송출 회선 배치도','회선은 번호별로 분리되어 있다. 기록을 지우는 대신 원본과 수정 이력을 함께 보낸다.');
+ // Bent side galleries and a lower maintenance bay distinguish the silhouettes.
+ wall('relayArchive','relay-archive-portrait',0,53,17.5,'사라지는 초상','눈동자가 내가 움직이는 쪽을 향한다. 밀판을 복원한 뒤 그림 속 사람이 사라졌다.',{decor:7,hauntedPortrait:true});
+ wall('relaySignal','relay-gallery-portrait',0,13,37.5,'귀환 복도의 초상','액자 안의 여자는 복도 끝을 보고 있다. 내가 돌아서자 시선이 달라졌다.',{decor:7,hauntedPortrait:true,facing:'south'});
+ wall('relayEntry','relay-portrait-notice',5,6,16.5,'인계 사진 보관 안내','사진의 눈이 나를 따라온다. 기록을 맞춘 뒤에도 여자가 안에 있는지 확인하고 싶지 않다.');
+ detail('relayArchive','relay-gallery-box',6,54,22,'복원 대기 문서 상자','복원 번호가 찍힌 문서 상자. 밀판의 인쇄 번호는 왼쪽 위에서 오른쪽 아래로 읽는다.');
+ furniture('relaySignal','relay-gallery-seat','bench',10,34,'초상 맞은편 긴 의자','앉은 사람의 윤곽만 먼지에서 지워졌다.',{w:38,back:18,front:10});
+ wall('relayPlant','relay-sump-guide',5,12,35.5,'배관 점검도','점검판 좌상단 왼쪽으로 유입 → 아홉 관 순환 → 좌하단 아래로 배출. 열린 관 끝은 누수다.',{facing:'south'});
+ detail('relayPlant','relay-sump-tools',2,9,33,'집수정 청소 도구','배수 트렌치 주변에만 바퀴 자국이 남아 있다.');
+ wall('relayPlant','relay-locker-guide',5,17,5.5,'정비대 검증 표지','잠금함 A·B·C의 문장 중 정확히 하나만 참이다. 핸들 위치 하나를 가정하고 참인 문장을 세어 볼 것.');
+ for(const [m,id,x,y]of [['relayEntry','relay-entry-clock',30,6.5],['relayArchive','relay-archive-clock',20,5.5],['relaySignal','relay-signal-clock',43,6.5]])wall(m,id,5,x,y,'멈춘 점검 시계','초침이 한 칸 되돌아간다. 원본 기록의 시각은 이 시계가 아니라 접수지에 남아 있다.');
+ M.relayEntry.rooms.push({x:4,y:17,w:4,h:7,name:'꺾인 인계 사진 통로'});
+ M.relayArchive.rooms.push({x:51,y:18,w:5,h:10,name:'동쪽 복원 사진 보관 통로'});
+ M.relayPlant.rooms.push({x:7,y:30,w:14,h:5,name:'집수정 점검 구역'});
+ M.relaySignal.rooms.push({x:7,y:31,w:13,h:6,name:'초상이 걸린 귀환 통로'});
  const work=M.relayPlant.objects.find(o=>o.id==='relay-handwheel');
  Object.assign(work,{module:{row:2,col:1,group:'relay-maintenance-work'},w:31,back:40,front:16});
  for(const [x,col]of [[8,0],[12,2]])furniture('relayPlant','relay-maintenance-end-'+col,'desk',x,10,'정비대 작업 공간','핸들 받침 양옆에 정비 도구를 정리한 작업대.',{module:{row:2,col,group:'relay-maintenance-work'},partOf:'relay-handwheel',w:31,back:40,front:16});
  for(const id of Object.keys(rooms)){
   M[id].rooms.push({x:4,y:id==='relaySignal'?26:id==='relayEntry'?23:24,w:42,h:5,name:'방화문이 이어지는 연결 복도'});
-  wall(id,id+'-extinguisher',11,6,id==='relaySignal'?25.5:id==='relayEntry'?22.5:23.5,'연결 복도 소화기함','압력계와 안전핀이 그대로다.',{technical:11,details:undefined});
+  wall(id,id+'-extinguisher',11,id==='relayEntry'?22:6,id==='relaySignal'?25.5:id==='relayEntry'?22.5:23.5,'연결 복도 소화기함','압력계와 안전핀이 그대로다.',{technical:11,details:undefined});
  }
 }
