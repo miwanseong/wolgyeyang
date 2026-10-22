@@ -1,4 +1,5 @@
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=006f099ffcd5";
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=55c5ee831762";
+import { canSurrender } from "./story.js?v=55c5ee831762";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -13,7 +14,7 @@ export const initial = () => ({
   hidden: false,
   bag: [],
   notes: [],
-  flags: {},
+  flags: {storyV3:true},
   ending: null,
 });
 export const ITEMS = {
@@ -27,6 +28,7 @@ export const ITEMS = {
   relayBadge: "산북중계소 기록동 출입증",
   relayCopy: "시각과 삭제 이력을 대조한 회신 사본",
   relayWheel: "냉각 밸브의 수동 핸들",
+  relayExport: "원본 대조 로그와 23:44 통화를 담은 증거 매체",
 };
 export function take(s, key) {
   if (!s.bag.includes(key)) s.bag.push(key);
@@ -64,7 +66,7 @@ export function restore(raw) {
     typeof s.flags !== "object" ||
     Array.isArray(s.flags) ||
     !Object.values(s.flags).every((v) => typeof v === "boolean") ||
-    ![null, "witness", "return", "signal", "fragment", "silence"].includes(s.ending) ||
+    ![null, "witness", "return", "surrender", "signal", "fragment", "silence"].includes(s.ending) ||
     !Number.isFinite(s.stamina) ||
     s.stamina < 0 ||
     s.stamina > 100 ||
@@ -111,8 +113,11 @@ export function repair(s,o) {
 }
 export function finish(s, choice) {
   if (!s.flags.shutterOpen) return false;
-  if(choice==="witness" && (!s.flags.listened || !s.bag.includes("evidence")))return false;
-  if (!["witness", "return"].includes(choice)) return false;
-  s.ending = choice;
+  if(['witness','surrender'].includes(choice)&&!canSurrender(s))return false;
+  if(choice==='return'&&(!s.flags.listened||!s.bag.includes('tape')))return false;
+  if (!["witness", "return", "surrender"].includes(choice)) return false;
+  s.ending = choice==='witness'?'surrender':choice;
+  if(choice==='return')s.flags.denial=true;
+  else s.flags.chapter1Submitted=true;
   return true;
 }

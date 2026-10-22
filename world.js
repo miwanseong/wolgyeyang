@@ -1,4 +1,5 @@
-import { addRelayChapter } from "./chapter-world.js?v=006f099ffcd5";
+import { STORY } from "./story.js?v=55c5ee831762";
+import { addRelayChapter } from "./chapter-world.js?v=55c5ee831762";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -457,6 +458,9 @@ for(const [m,id,index,x,y,name,description,mount]of [
 Object.assign(M.upper.objects.find(o=>o.id==='broadcast-chair'),{x:31.5*32,y:14.4*32});
 M.upper.objects.push(prop('archive-reading-table','side-table',12.5,12.5,'독서 자리의 작은 탁자',{decor:5,w:15,h:14,description:'기록을 펼쳐 보던 독서 자리. 수첩에는 23시 41분의 녹음 번호가 여러 번 적혔다.'}),prop('archive-reading-chair','armchair',14.5,12.5,'기록실 독서 의자',{decor:6,w:18,back:22,front:12,description:'작은 탁자와 스탠드 사이에 놓인 의자. 방석에 누군가 앉았던 자국이 서서히 돌아온다.'}),prop('archive-reading-lamp','detail',16,12.5,'독서 자리의 스탠드',{details:8,w:12,back:16,front:10,description:'전원선을 빼도 갓 안쪽의 작은 그림자가 움직인다.'}));
 addRelayChapter(M,map,prop,door);
+M.lobby.objects.find(o=>o.id==='arrival-letter').description='발신인 미정. 서윤의 유품과 사고 접수 기록은 관리실 전자 보관함에 있다. 06:00 철거 반출 예정. 미정의 메모: 「나도 열쇠를 건넸다는 말로 기다린 시간을 덮었어. 원본을 보지도 않은 채 또 내 탓만 빼고 말할 수는 없어. 예비 열쇠는 101호 현관 신발장에 있다.」';
+M.management.objects.find(o=>o.id==='manager-files').description='2024년 사고 보고서. 정우는 추가 빗장의 흔적을 철거하러 폐쇄된 지하에 들어갔다가 노출 배선에 감전되어 사망했다. 소방 점검표의 원본과 원격 제어 로그는 철거 목록에 없었다. 근무가 끝난 뒤에도 순찰하는 형상이 그를 닮았다.';
+M.apartment.objects.find(o=>o.id==='kitchen').description=STORY.receipt;
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.

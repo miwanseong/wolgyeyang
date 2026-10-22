@@ -18,6 +18,9 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  paper: "fx_paper.wav",
+  pen: "fx_pen.wav",
+  stamp: "fx_stamp.wav",
   apparition: "fx_apparition.wav",
   scrape: "fx_ghost_scrape.wav",
   rush: "fx_ghost_rush.wav",

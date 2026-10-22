@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#111110" />
     <title>잔류 — 마지막 입주자</title>
-    <link rel="stylesheet" href="style.css?v=006f099ffcd5" />
+    <link rel="stylesheet" href="style.css?v=55c5ee831762" />
   </head>
   <body>
     <div class="grain"></div>
@@ -119,7 +119,7 @@
         <div class="dialog-content">
           <img
             id="portrait"
-            src="assets/seoha.png?v=006f099ffcd5"
+            src="assets/seoha.png?v=55c5ee831762"
             alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상"
             hidden
           />
@@ -136,7 +136,7 @@
         휴대폰 내려놓기 <kbd>Esc</kbd>
       </button>
       <div class="hand">
-        <img class="hand-back" src="assets/hand.png?v=006f099ffcd5" alt="" />
+        <img class="hand-back" src="assets/hand.png?v=55c5ee831762" alt="" />
         <div class="phone">
           <div class="island"></div>
           <div class="phone-status"><span>23:41</span><span>••• ▰</span></div>
@@ -242,7 +242,15 @@
       <img id="event-image" alt="손전등이 떨어진 어두운 복도에서 뒤의 그림자를 알아차린 서하" />
       <div class="event-copy"><small>잔류 · MEMORY</small><h2 id="event-title"></h2><p id="event-caption"></p><button id="event-continue">기억에서 깨어나기</button></div>
     </section>
+    <section id="story-sequence" class="story-sequence" role="dialog" aria-modal="true" aria-labelledby="story-heading" hidden>
+      <div id="story-art" class="story-art" aria-hidden="true"></div>
+      <div class="story-grain" aria-hidden="true"></div>
+      <div class="story-letterbox top" aria-hidden="true"></div>
+      <div class="story-letterbox bottom" aria-hidden="true"></div>
+      <div class="story-caption"><small id="story-kicker"></small><h2 id="story-heading"></h2><p id="story-line"></p><div id="story-actions"></div><p id="story-evidence"></p></div>
+      <span id="story-stamp" class="story-stamp" hidden>증거 접수</span>
+    </section>
     <div id="toast" role="status" hidden></div>
-    <script type="module" src="app.js?v=006f099ffcd5"></script>
+    <script type="module" src="app.js?v=55c5ee831762"></script>
   </body>
 </html>

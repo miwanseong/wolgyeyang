@@ -24,7 +24,7 @@ export function addRelayChapter(M,map,prop,door){
  leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');
  leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');
  link('relayEntry','relay-entry-archive',14,6,'연결 통로 · 기록동','relayArchive',[49,32],{requires:'relayBadge'});
- link('relayEntry','relay-entry-plant',32,9,'내려가는 계단 · 설비동','relayPlant',[49,32],{kind:'stairs',label:'B1 ↓',requires:'relayCopy'});
+ link('relayEntry','relay-entry-plant',32,9,'내려가는 계단 · 설비동','relayPlant',[49,32],{kind:'stairs',label:'B1 ↓'});
  action('relayEntry','relay-register','desk',13,11,'해린의 야간 인계대','register','인수 대상: 월계동 신고 접수 원본. 기록동 출입증은 인계대 서랍에 남겨 두었다.',{w:38,back:30,front:14});
  detail('relayEntry','relay-register-printer',4,18,11,'접수실 프린터','23:41 접수 / 23:43 취소 / 23:47 원격 잠금 유지. 세 장 모두 같은 번호를 가리킨다.');
  wall('relayEntry','relay-entry-board',5,12,6.5,'시설 구역 안내','접수동 → 기록동에서 취소 이력 대조 → 지하 냉각 회로 복구 → 송출층. 비상 송출은 복원 기록과 냉각 확인이 모두 필요하다.');
@@ -59,7 +59,7 @@ export function addRelayChapter(M,map,prop,door){
  leaf('relayPlant','relay-cooling-door',15,23,'냉각 순환실 방화문');
  leaf('relayPlant','relay-switch-door',39,23,'전원 절체실 방화문');
  link('relayPlant','relay-plant-back',49,32,'계단 · 접수동','relayEntry',[32,9],{kind:'stairs',label:'접수동 ↑'});
- link('relayPlant','relay-plant-signal',39,8,'계단 · 송출층','relaySignal',[47,33],{kind:'stairs',label:'송출층 ↑',requires:'relayPower'});
+ link('relayPlant','relay-plant-signal',39,8,'계단 · 송출층','relaySignal',[47,33],{kind:'stairs',label:'송출층 ↑'});
  action('relayPlant','relay-handwheel','desk',10,10,'정비대의 수동 핸들','wheel','분리 보관한 냉각 밸브 핸들. 연결 축의 사각 홈과 맞는다.',{w:31,back:24,front:12,chapterVisual:'wheel-source'});
  action('relayPlant','relay-cooling','rack',18,16,'핸들이 빠진 냉각 순환 밸브','cooling','빈 밸브 축이 배관 앞에 보인다. 억지로 전원을 올리기 전에 순환 밸브를 열어야 한다.',{regional:6,w:30,back:27,front:13,chapterVisual:'valve'});
  detail('relayPlant','relay-mop',2,7,19,'누수 정리 도구','양동이에 떨어지는 물방울과 배관 안쪽 소리가 반 박자 어긋난다.');
@@ -73,16 +73,17 @@ export function addRelayChapter(M,map,prop,door){
  leaf('relaySignal','relay-booth-door',14,25,'최종 청취실 방음문');
  leaf('relaySignal','relay-control-door',37,25,'비상 송출실 방화문');
  link('relaySignal','relay-signal-back',47,33,'계단 · 설비동','relayPlant',[39,8],{kind:'stairs',label:'설비동 ↓'});
- link('relaySignal','relay-shortcut-out',32,6,'비상 연결문 · 접수동','relayEntry',[41,8],{requires:'relayLastVoice'});
- link('relayEntry','relay-shortcut-in',41,6,'안쪽에서 잠긴 송출층 연결문','relaySignal',[32,8],{requires:'relayLastVoice'});
+ link('relaySignal','relay-shortcut-out',32,6,'비상 연결문 · 접수동','relayEntry',[41,8],{unlockShortcut:true});
+ link('relayEntry','relay-shortcut-in',41,6,'안쪽에서 잠긴 송출층 연결문','relaySignal',[32,8],{requires:'relayShortcut'});
  action('relaySignal','relay-last-voice','player',13,13,'서윤의 마지막 회신','lastVoice','건물에서 들은 녹음 이후의 목소리. 서윤은 신고가 취소된 뒤에도 회신을 기다렸다.',{technical:6,w:46,back:30,front:16});
  wall('relaySignal','relay-booth-curtain',0,13,6.5,'청취실 차음 커튼','문 밖의 소리를 가리기 위한 커튼. 안쪽 소리는 복도로 새고 있다.',{decor:0,fixture:'curtain'});
  furniture('relaySignal','relay-booth-chair','chair',13,16,'회신을 기다리는 의자','서윤이 앉았던 의자가 아니다. 서하가 앉을 자리다.',{swivel:true,w:12,h:10});
  detail('relaySignal','relay-mic-reel',7,18,19,'마이크 케이블','선은 제어실 벽 안쪽으로 이어진다.');
  for(const [x,id]of [[30,'a'],[34,'b'],[39,'c'],[44,'d']])furniture('relaySignal','relay-equipment-'+id,'panel',x,10,'비상 송출 장비 랙','서로 다른 회선 번호를 담당하는 랙. 초록 불빛 대신 작은 흰 표시등이 켜졌다.',{technical:7,w:20,back:36,front:12});
- action('relaySignal','relay-transmitter','player',36,19,'원본 송출 콘솔','transmit','원본·취소 이력·잠금 회신을 하나의 기록으로 송출한다.',{technical:6,w:46,back:30,front:16});
+ action('relaySignal','relay-transmitter','player',36,19,'원본 대조·내보내기 콘솔','transmit','원본·취소 이력·잠금 회신을 하나의 기록으로 송출한다.',{technical:6,w:46,back:30,front:16});
  action('relaySignal','relay-six-names','desk',44,19,'송출 확인 명부','names','서하, 서윤, 정우, 해린, 도현, 미정. 여섯 이름 중 비워 둔 칸은 없다.',{w:31,back:28,front:12});
  hide('relaySignal',47,23);
+ put('relayEntry','relay-final-exit','exit',44.5,32.5,'중계소 남쪽 외부 출입문',{chapterAction:'leaveRelay',solid:false,doorType:'service'});
  // Furniture is arranged as work and rest groups, leaving the door approaches clear.
  for(const [m,id,kind,x,y,name,description,extra]of [
   ['relayEntry','relay-reception-cabinet','cabinet',10,8,'인계 서류장','접수대에서 손을 뻗어 꺼낼 수 있도록 놓인 서류장.',{w:22,back:30,front:10}],

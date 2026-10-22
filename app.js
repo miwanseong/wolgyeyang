@@ -1,8 +1,9 @@
-import { Scene, facingDirection } from "./scene.js?v=006f099ffcd5";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=006f099ffcd5";
-import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=006f099ffcd5";
-import { enterChapterTwo, relayObjective, relayAction } from "./chapter.js?v=006f099ffcd5";
-import { AudioDirector, TRACKS } from "./audio.js?v=006f099ffcd5";
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=55c5ee831762";
+import { Scene, facingDirection } from "./scene.js?v=55c5ee831762";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=55c5ee831762";
+import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=55c5ee831762";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=55c5ee831762";
+import { AudioDirector, TRACKS } from "./audio.js?v=55c5ee831762";
 import {
   initial,
   ITEMS,
@@ -14,7 +15,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=006f099ffcd5";
+} from "./state.js?v=55c5ee831762";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -47,10 +48,11 @@ function toast(text) {
   toastTimer = setTimeout(() => ($("toast").hidden = true), 3200);
 }
 function cue() {
+  if(!$('story-sequence').hidden&&forcedCue)return forcedCue;
   return enemy.active
     ? enemy.mode === "chase" ? "chase" : "hunt"
     : pursuerTrail || stillness.active ? "hunt" : state.ending
-      ? ["witness","signal","fragment"].includes(state.ending)
+      ? ["witness","surrender","signal","fragment"].includes(state.ending)
         ? "aftermath"
         : "reliefAlt"
       : forcedCue ||
@@ -149,7 +151,7 @@ function pickup(key) {
   }
 }
 function canHunt(mapId=state.map){
- if(state.ending)return false;
+ if(state.ending||state.bag.includes('relayExport'))return false;
  return state.flags.chapter2?state.flags.relayPower&&['relayArchive','relayPlant','relaySignal'].includes(mapId):state.flags.power&&['basement','upper'].includes(mapId);
 }
 function openRelayAction(o,choice=null){
@@ -157,7 +159,8 @@ function openRelayAction(o,choice=null){
  if(r.sound)sound.effect(r.sound);
  if(r.haunt)scene.haunt(r.haunt);
  if(r.hunt)huntDelay=r.hunt;
- if(r.ending){enemy.reset();pursuerTrail=null;huntDelay=0;stillness.reset();}
+ if(r.exported){enemy.reset();pursuerTrail=null;huntDelay=0;stillness.reset();}
+ if(r.cinematic){playCinematic(r.cinematic);return;}
  const actions=r.choices?[...r.choices.map(([label,key])=>[label,()=>openRelayAction(o,key)]),['돌아가기',closeDialog]]:undefined;
  say(r.title,r.text,actions);
 }
@@ -165,7 +168,7 @@ function startChapterTwo(){
  if(!enterChapterTwo(state))return;
  closeDialog();enemy.reset();pursuerTrail=null;huntDelay=0;huntCooldown=45;stillness.reset();
  scene.begin(state,worldFor(state));revealRoom('제2장 · 회신을 기다리는 곳');
- say('제2장 · 산북 재난중계소',state.notes.find(n=>n.id==='chapter2-arrival').text+'\n\n접수동은 남쪽 대기실, 북서쪽 접수실, 북동쪽 당직실로 나뉜다. 먼저 서쪽 접수실의 인계 기록을 확인하자.\n\nTab: 휴대폰 · 기록/소지품/지도 · 저장 슬롯은 이전 챕터와 함께 사용할 수 있다.');
+ say('제2장 · 산북 시설중계소',state.notes.find(n=>n.id==='chapter2-arrival').text+'\n\n접수동은 남쪽 대기실, 북서쪽 접수실, 북동쪽 당직실로 나뉜다. 먼저 서쪽 접수실의 인계 기록을 확인하자.\n\nTab: 휴대폰 · 기록/소지품/지도 · 저장 슬롯은 이전 챕터와 함께 사용할 수 있다.');
 }
 function objective() {
   if(state.flags.chapter2&&!state.hidden&&!enemy.active)return relayObjective(state);
@@ -187,6 +190,7 @@ function objective() {
   if (!state.flags.locker) return "1층 관리실 · 날짜와 월 단서로 보관함을 연다";
   if (!state.flags.listened)
     return "동쪽 계단 ↑ 2층 방송실 · 테이프를 재생한다";
+  if(state.flags.listened&&!state.bag.includes("receipt"))return "101호 주방 식탁 · 원본 접수증을 챙겨 취소 서명과 안내를 확인한다";
   if(!state.flags.shutterOpen)return "2층 방송 조정실 · 오른쪽 비상 제어반으로 현관 셔터를 연다";
   return "1층 현관으로 돌아가 기록의 운명을 결정한다";
 }
@@ -251,8 +255,9 @@ function interact() {
   }
   if (o.to) {
     if(o.requires&&!state.bag.includes(o.requires)&&!state.flags[o.requires]){
-      say(o.name,({relayBadge:'기록동 출입증이 필요하다. 서쪽 접수실의 인계대 서랍을 확인하자.',relayCopy:'회신 대조 사본이 필요하다. 기록동에서 최초 접수·취소 통화·원격 회신을 대조해야 한다.',relayPower:'비상 회선이 꺼져 있다. 냉각 밸브 개방 → 기존 입력 분리 → 비상 회선 투입을 마쳐야 한다.',relayLastVoice:'송출층 안쪽에서 잠긴 연결문이다. 설비동 계단으로 돌아가 마지막 회신을 확인해야 한다.'})[o.requires]);return;
+      say(o.name,({relayBadge:'기록동 출입증이 필요하다. 서쪽 접수실의 인계대 서랍을 확인하자.',relayCopy:'회신 대조 사본이 필요하다. 기록동에서 최초 접수·취소 통화·원격 회신을 대조해야 한다.',relayPower:'비상 회선이 꺼져 있다. 냉각 밸브 개방 → 기존 입력 분리 → 비상 회선 투입을 마쳐야 한다.',relayShortcut:'송출층 안쪽에서 잠긴 연결문이다. 반대편으로 돌아가 내부 빗장을 열어야 한다.'})[o.requires]);return;
     }
+    if(o.unlockShortcut){state.flags.relayShortcut=true;toast("내부 빗장을 밀어 접수동 연결문을 열었다.");}
     state.flags["seen_"+id]=true;
     transition(o.to, o.spawn, o);
     return;
@@ -355,14 +360,7 @@ function interact() {
       );
       break;
     case "records":
-      addNote(
-        "records",
-        "2023년 11월 4일: 서윤은 지하 방화문 개방을 요청했다. 정우는 잠금을 유지했고, 해린은 접수 기록을 지웠다. 도현은 문 뒤의 소리를 들었다. 미정은 예비 열쇠를 넘겼다. 신고를 취소한 확인자는 서하. 2026년 철거 통지에서 여섯 이름을 다시 발견했다.",
-      );
-      say(
-        "입주 기록철",
-        "2023년 11월 4일, 23시 41분.\n서윤은 주민 안전 증언을 녹음하다 지하에 갇혔다.\n정우는 무단 출입 방지를 이유로 방화문 사슬을 풀지 않았다.\n해린은 구조 요청을 방송 시험으로 처리해 접수 기록을 지웠다.\n도현은 지하 문을 두드리는 소리를 신고했다.\n미정이 예비 열쇠를 가져왔을 때는 이미 늦었다.\n마지막 줄: 「취소 확인 — 서하」.\n서윤은 퇴거한 것이 아니었다. 우리는 문 뒤에 남겨 두었다.",
-      );
+      addNote('records',STORY.records);say('사고 처리 기록철',STORY.records);
       break;
     case "box":
       if (state.bag.includes("fuse") || state.flags.power) {
@@ -471,7 +469,7 @@ function interact() {
       state.flags.shutterOpen=true;
       sound.effect("door");
       addNote("shutter","방송 조정실 비상 제어반으로 현관 셔터를 수동 복귀했다. 출구는 1층. 기록을 남길지는 내가 결정한다.");
-      say("수동 복귀","복귀 스위치를 끝까지 누른다. 아래층에서 모터와 쇠사슬이 울린다.\n현관 셔터가 올라갔다. 녹음과 기록을 확인하지 않고도 떠날 수 있다. 하지만 그날의 일은 다시 묻힌다.");
+      say("수동 복귀","복귀 스위치를 끝까지 누른다. 아래층에서 모터와 쇠사슬이 울린다.\n현관 셔터가 올라갔다. 밖으로 나가기 전에 원본 접수증과 녹음, 입주 기록을 챙기자.");
       break;
     case "player":
       if (!state.flags.power) {
@@ -487,20 +485,10 @@ function interact() {
       }
       state.flags.listened = true;
       state.stamina=100;
-      addNote(
-        "tape",
-        "서윤의 마지막 녹음: 지하 방화문이 밖에서 잠겨 있다. 서하는 전화를 받았지만 신고를 취소했다. 서윤이 남긴 부탁은 접수증과 녹음을 건물 밖으로 가져가 달라는 것.",
-      );
-      pendingEvent = () => showEvent("memory", "녹음에 남은 밤", "불이 꺼진 복도. 그날의 나는, 돌아보지 말았어야 했다.");
-      forcedCue = "memory";
-      sound.effect("glass");
-      scene.burst(30*32,4.5*32,"glass");
-      huntDelay = 2;
-      scene.impact();scene.haunt("내 목소리 들었잖아");
-      say(
-        "녹음 속 서윤",
-        "「언니. 지하 방화문이 밖에서 잠겼어.\n전화 받았잖아. 관리실에서 내 목소리 들었잖아.\n정우 아저씨 말만 믿고 왜 신고를 취소했어?\n정우가 문을 잠갔다는 것도, 언니가 들었다는 것도… 지우지 마.\n이번에는 접수증하고 이 녹음을 밖으로 가져가 줘.」\n\n나는 기억을 잃은 게 아니었다. 기억하지 않기로 했었다.\n녹음 끝에 미정의 목소리가 이어졌다.\n「유품은 내가 보관했어. 현관 셔터는 정전 때 내려와. 전기를 살리고 조정실 오른쪽 비상 제어반에서 복귀시켜. 이번에는 가지고 나가 줘.」",
-      );
+      addNote('tape',STORY.firstTape);
+      pendingEvent=()=>showEvent('memory','잘린 녹음','23시 43분 뒤의 일분이 빠져 있었다.');
+      forcedCue='memory';huntDelay=2;scene.impact();scene.haunt('확인했다고 말했잖아');
+      say('보관된 녹음',STORY.firstTape);
       break;
     case "mirror":
       say(
@@ -536,15 +524,7 @@ function interact() {
         );
         break;
       }
-      say(
-        "서하",
-        "문은 열렸다. 기록을 가져가면, 누구도 이 밤을 지울 수 없다.\n두고 가면… 나는 다시 아무것도 모르는 사람이 된다.",
-        [
-          ...(state.flags.listened&&state.bag.includes("evidence")?[["기록을 가지고 나간다", () => ending("witness")]]:[]),
-          ["기록을 두고 떠난다", () => ending("return")],
-          ["아직 돌아본다", closeDialog],
-        ],
-      );
+      showDeparture();
       break;
     default:
       if (id === "home-desk") {
@@ -560,35 +540,62 @@ function interact() {
       break;
   }
 }
-function ending(choice) {
-  if (!finish(state, choice)) return;
-  enemy.reset();
-  pursuerTrail=null;huntDelay=0;
-  forcedCue = choice === "witness" ? "aftermath" : "reliefAlt";
-  say(
-    choice === "witness" ? "결말 01 — 증언" : "결말 02 — 귀환",
-    choice === "witness"
-      ? "나는 여섯 사람의 이름을 하나도 빠뜨리지 않고 적었다.\n누군가 문을 닫았다는 사실도. 내가 그 신고를 취소했다는 사실도.\n\n접수증 뒷면에 다른 주소가 있었다.\n「산북 재난중계소 · 미송신 회신 보관처」\n서윤이 기다리던 답은 아직 이 건물 밖에 남아 있었다."
-      : "내 손에는 아무것도 없었다. 휴대폰에 발신자 없는 메시지가 도착했다.\n「언니. 이번에도 잊었어?」\n\n두고 온 접수증의 뒷면에 적힌 주소만 떠올랐다.\n산북 재난중계소. 원본 없이 가더라도, 이번에는 회신이 남은 곳까지 가야 한다.",
-    [
-      ["2챕터 · 산북중계소로 간다",startChapterTwo],
-      [
-        "다시 탐색한다",
-        () => {
-          state.ending = null;
-          closeDialog();
-        },
-      ],
-      [
-        "휴대폰",
-        () => {
-          closeDialog();
-          openPhone();
-        },
-      ],
-    ],
-  );
+function storyScreen(mode){
+  finishTyping();pendingEvent=null;dialog=false;scene.focus=null;phone=false;phoneApp=null;
+  $('dialog').hidden=true;$('phone-modal').hidden=true;$('event-cg').hidden=true;
+  eventActive=true;keys.clear();state.running=false;stillness.reset();
+  const screen=$('story-sequence');screen.hidden=false;screen.dataset.mode=mode;screen.dataset.shot='0';
+  $('story-stamp').hidden=true;$('story-evidence').textContent='';$('story-actions').replaceChildren();
+  $('story-art').style.backgroundImage='';return screen;
 }
+function storyButton(label,fn,disabled=false){
+  const b=document.createElement('button');b.textContent=label;b.disabled=disabled;b.onclick=fn;$('story-actions').append(b);return b;
+}
+function showDeparture(){
+  storyScreen('departure');$('story-art').style.backgroundImage=`url(${canvas.toDataURL('image/png')})`;
+  $('story-kicker').textContent='월계아파트 · 열린 현관';$('story-heading').textContent='내 이름이 적힌 봉투';
+  $('story-line').textContent='나는 문이 열렸다고 확인했다.\n그 확인이 거짓이었다는 목소리가 봉투 안에 있다.';
+  storyButton('원본을 모두 가지고 경찰서에 가서 자수한다',()=>ending('surrender'),!canSurrender(state));
+  storyButton('「내가 죽인 건 아니야」 · 원격 기록을 확인하러 간다',()=>ending('return'),!state.flags.listened||!state.bag.includes('tape'));
+  storyButton('아직 챙길 것이 있다 · 건물로 돌아간다',()=>{eventActive=false;$('story-sequence').hidden=true;canvas.focus();});
+  $('story-evidence').textContent=ORIGINALS.map(k=>(state.bag.includes(k)?'✓ ':'미확보 · ')+ITEMS[k]).join('   /   ')+(state.flags.listened?'':'\n방송실에서 테이프를 먼저 들어야 한다.');
+  $('story-actions').querySelector('button:not(:disabled)')?.focus();
+}
+function ending(choice){
+  if(!finish(state,choice))return;
+  playCinematic(choice==='return'?'denial':'surrender');
+}
+let storyTimer;
+function playCinematic(id){
+  const film=CINEMATICS[id];if(!film)return;
+  const screen=storyScreen('cinematic');screen.dataset.film=id;enemy.reset();pursuerTrail=null;huntDelay=0;
+  forcedCue=film.cue;updateSound();$('story-art').dataset.panel=film.panel;
+  const beats=film.beats.map(b=>[...b]);
+  if(id==='denial'&&!state.bag.includes('receipt'))beats[2]=['보관 쪽지','「원격 명령 원본은 산북 시설중계소.」\n접수증도 확인하지 않은 채 나는 결백을 증명하러 가고 있었다.','보관 쪽지를 펼친다'];
+  let index=0;
+  const show=()=>{
+    clearTimeout(storyTimer);screen.dataset.shot=String(index);if(film.panel===0&&index===2)sound.effect('stamp');$('story-kicker').textContent=id==='denial'?'잔류 · 제2장으로':'잔류 · 새벽';
+    const [heading,line,action]=beats[index];$('story-heading').textContent=heading;$('story-line').textContent=line;
+    $('story-stamp').hidden=!(film.panel===0&&index>=2);$('story-actions').replaceChildren();
+    const last=index===beats.length-1;
+    const button=storyButton(action||(last?(id==='denial'?'중계소에 도착한다':'장면을 마친다'):'다음 장면'),()=>{
+      if(index<beats.length-1){if(action)sound.effect(film.panel===0&&index===1?'pen':'paper');index++;show();return;}
+      if(id==='denial'){screen.hidden=true;eventActive=false;startChapterTwo();return;}
+      screen.dataset.mode='final';$('story-stamp').hidden=true;$('story-kicker').textContent='ENDING';$('story-heading').textContent=film.label;
+      $('story-line').textContent='';$('story-actions').replaceChildren();storyButton('처음으로',()=>location.reload()).focus();
+      try{const raw=JSON.parse(localStorage.getItem('janryu-endings')||'[]');localStorage.setItem('janryu-endings',JSON.stringify([...new Set([...(Array.isArray(raw)?raw:[]),id])]));}catch{}
+    },true);
+    storyTimer=setTimeout(()=>{button.disabled=false;button.focus();},scene.reduced?350:1800);
+  };show();
+}
+function resumeConclusion(){
+  if(state.ending==='return'){state.flags.denial=true;playCinematic('denial');}
+  else if(state.ending==='witness'){
+    if(canSurrender(state)){state.ending='surrender';playCinematic('surrender');}
+    else{state.ending=null;toast('접수증 원본까지 챙긴 뒤 출구에서 진술할지 결정하자.');}
+  }else if(CINEMATICS[state.ending])playCinematic(state.ending);
+}
+
 function slot(i) {
   try {
     return localStorage.getItem(`janryu-save-${i}`);
@@ -658,7 +665,7 @@ function app(name) {
               content.append(confirm, cancel);
             } else write();
           } else {
-            state = restore(slot(i));
+            state = migrateStorySave(restore(slot(i)));
             pursuerTrail=null;
             enemy.reset();
             huntDelay =
@@ -668,7 +675,7 @@ function app(name) {
             scene.begin(state, worldFor(state));
             stillness.reset();
             closePhone();
-            if(["witness","return"].includes(state.ending))ending(state.ending);
+            if(state.ending)resumeConclusion();
             updateSound();
             toast("기억을 복원했다.");
           }
@@ -690,7 +697,7 @@ function app(name) {
         "\n\n기록과 물건을 조사하면 단서가 이곳에 남는다.";
   if (name === "map")
     content.textContent =
-      (state.flags.chapter2?"산북 재난중계소 · 구역 안내\n\n접수동: 남쪽 대기실 / 서쪽 접수실 / 동쪽 당직실\n서쪽 접수실 북문 ↔ 기록동: 서쪽 접수 원본 / 동쪽 대조 청취실\n동쪽 당직실 계단 ↓ 설비동: 서쪽 냉각 순환 / 동쪽 전원 절체\n설비동 동쪽 계단 ↑ 송출층: 서쪽 최종 청취 / 동쪽 송출 콘솔\n\n현재: ":"월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: ") +
+      (state.flags.chapter2?"산북 시설중계소 · 구역 안내\n\n접수동: 남쪽 대기실 / 서쪽 접수실 / 동쪽 당직실\n서쪽 접수실 북문 ↔ 기록동: 서쪽 접수 원본 / 동쪽 대조 청취실\n동쪽 당직실 계단 ↓ 설비동: 서쪽 냉각 순환 / 동쪽 전원 절체\n설비동 동쪽 계단 ↑ 송출층: 서쪽 최종 청취 / 동쪽 송출 콘솔\n\n현재: ":"월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: ") +
       worldFor(state).name +
       "\n\n" +
       objective() +
@@ -762,7 +769,7 @@ function begin(load = false) {
       return;
     }
     try {
-      next = restore(slot(1));
+      next = migrateStorySave(restore(slot(1)));
     } catch {
       toast("저장된 기억을 읽지 못했다.");
       return;
@@ -791,9 +798,9 @@ function begin(load = false) {
   if (!load)
     say(
       "서하",
-      "2026년 11월 3일, 23시 41분. 철거까지 여섯 시간.\n3년 전 이 집에서 동생 서윤이 사라졌다. 오늘은 내 이름으로 유품 보관 통지서가 왔다.\n그때 나는 야간 관리실에서 서윤의 구조 신고를 취소했다. 사고라는 말을 믿고, 동생의 전화를 외면했다.\n유품 통지서를 들고 들어오자 정전과 함께 현관 셔터가 떨어졌다. 마지막 녹음과 접수 기록을 찾아 밖으로 나가야 한다.\n서윤의 메모에는 「열쇠는 101호 신발장에」라고 적혀 있다.\n\n접수대 충전 거치대에서 손전등부터 챙기자.\nWASD 이동 · Shift 달리기 · F 손전등(획득 후) · E 조사\nTab 휴대폰: 저장·소지품·목표와 단서. 위험할 때는 불을 끄고 숨자.",
+      STORY.prologue,
     );
-  if(load&&["witness","return"].includes(state.ending))ending(state.ending);
+  if(load&&state.ending)resumeConclusion();
   if (state.flags.relocated) toast("새 가구 배치 옆의 안전한 위치로 옮겼다. 소지품과 기록은 그대로다.");
   if (state.flags.migrated)
     toast("옛 기억의 위치를 새 현관으로 옮겼다. 소지품과 단서는 보존했다.");
@@ -803,7 +810,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=006f099ffcd5", memory: "assets/event-memory.png?v=006f099ffcd5"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=55c5ee831762", memory: "assets/event-memory.png?v=55c5ee831762"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1007,7 +1014,14 @@ function flashlight() {
 }
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
-  if (eventActive) { if (!["tab","enter"," "].includes(k)) e.preventDefault(); return; }
+  if (eventActive) {
+    if(!$('story-sequence').hidden&&k==='tab'){
+      e.preventDefault();const buttons=[...$('story-actions').querySelectorAll('button:not(:disabled)')];
+      if(buttons.length){const i=buttons.indexOf(document.activeElement);buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}return;
+    }
+    if(!$('story-sequence').hidden&&$('story-sequence').dataset.mode==='departure'&&k==='escape'){$('story-actions').querySelector('button:last-child').click();return;}
+    if (!["tab","enter"," "].includes(k))e.preventDefault();return;
+  }
   if (e.target.matches("input,select") && k !== "escape") return;
   if (k === "escape") {
     if (dialog) closeDialog();
