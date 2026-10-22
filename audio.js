@@ -10,13 +10,17 @@ export const TRACKS = {
   evidence: "dread_rooms.wav",
   missing: "dread_depths.wav",
   motif: "dread_depths.wav",
-  chase: "bgm_violin_dread.mp3",
+  hunt: "hunt_search.wav",
+  chase: "hunt_pursuit.wav",
   panic: "dread_depths.wav",
   aftermath: "bgm_atfermath.mp3",
   relief: "dread_hall.wav",
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  apparition: "fx_apparition.wav",
+  scrape: "fx_ghost_scrape.wav",
+  rush: "fx_ghost_rush.wav",
   flashlightOn: "fx_flashlight_on.wav",
   flashlightOff: "fx_flashlight_off.wav",
   item: "fx_item.wav",
@@ -91,14 +95,15 @@ export class AudioDirector {
     this.cue = cue;
     const old = this.element,
       oldGain = this.currentGain,
-      now = this.ctx.currentTime;
+      now = this.ctx.currentTime,
+      fade = ["hunt","chase"].includes(cue) ? 0.12 : 1.2;
     const el = new Audio("assets/audio/" + TRACKS[cue] + new URL(import.meta.url).search);
     el.loop = true;
     el.preload = "auto";
     const source = this.ctx.createMediaElementSource(el),
       gain = this.ctx.createGain();
     gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1, now + 1.2);
+    gain.gain.linearRampToValueAtTime(1, now + fade);
     source.connect(gain).connect(this.musicBus);
     this.element = el;
     this.currentGain = gain;
@@ -114,16 +119,16 @@ export class AudioDirector {
     if (old) {
       oldGain.gain.cancelScheduledValues(now);
       oldGain.gain.setValueAtTime(oldGain.gain.value, now);
-      oldGain.gain.linearRampToValueAtTime(0, now + 1.1);
+      oldGain.gain.linearRampToValueAtTime(0, now + fade);
       setTimeout(() => {
         old.pause();
         old.removeAttribute("src");
         old.load();
         oldGain.disconnect();
-      }, 1300);
+      }, fade*1000+100);
     }
   }
-  async effect(name) {
+  async effect(name, level=1) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;
     try {
       let buffer = this.buffers.get(name);
@@ -135,7 +140,9 @@ export class AudioDirector {
       }
       const s = this.ctx.createBufferSource();
       s.buffer = buffer;
-      s.connect(this.fxBus);
+      const gain=this.ctx.createGain();gain.gain.value=Math.max(0,Math.min(1,level));
+      s.connect(gain).connect(this.fxBus);
+      s.onended=()=>gain.disconnect();
       s.start();
       this.playedEffects++;
     } catch {

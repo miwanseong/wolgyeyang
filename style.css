@@ -1323,3 +1323,13 @@ button:active:not(:disabled) {
 /* The illustrated hand stays entirely behind the opaque device. */
 .hand{isolation:isolate}.hand-back{z-index:0}.phone{z-index:2;background:#cecece;background-image:linear-gradient(140deg,#ddd,#bababa);opacity:1}.hand-thumb{display:none}
 .phone-hint{position:absolute;right:24px;top:24px;z-index:5;padding:12px 16px;background:#111e;border:1px solid #777;color:#ddd;font-size:12px;line-height:1.8}.phone-hint[hidden]{display:none}.phone-hint kbd{color:white;border-color:#aaa}.phone-hint button{display:block;margin-top:8px;padding:3px 0;color:#aaa;background:none;border:0;font-size:11px;cursor:pointer}
+
+/* The device shell never grows with app content. Only the app pane scrolls. */
+.phone {width:310px;height:620px;min-height:0;max-height:none;overflow:hidden;display:flex;flex-direction:column;flex-shrink:0;padding:18px 20px 24px;}
+.phone>.island{flex:none}.phone-status,.phone-date,.phone h2,.phone .apps,.phone .home-bar{flex-shrink:0;}
+.phone-content{flex:1 1 0;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;margin-top:18px;padding-top:14px;padding-right:3px;overflow-wrap:anywhere;}
+.home-bar{margin-top:16px;}
+@media(max-width:600px){.phone{width:295px;height:600px;height:min(600px,calc(100dvh - 96px));min-height:0;padding-top:18px;padding-bottom:16px;}.phone h2{margin-top:8px;margin-bottom:12px}.phone-date{margin-bottom:5px}.apps{gap:8px}.apps b{width:42px;height:42px}.phone-content{margin-top:12px;padding-top:10px}.hand{margin:48px 0}.phone .home-bar{margin-top:10px}}
+
+.phone{height:min(620px,calc(100dvh - 96px));}
+@media(max-height:600px){.phone{height:calc(100dvh - 40px);padding:10px 16px 12px;border-radius:28px}.phone-date{display:none}.phone h2{font-size:17px;margin:10px 0 8px}.phone .apps{grid-template-columns:repeat(6,1fr);gap:4px}.phone .apps button{font-size:8px}.phone .apps b{width:30px;height:30px;border-radius:8px;margin-bottom:4px}.phone .apps svg{width:16px;height:16px}.phone-content{margin-top:8px;padding-top:8px}.phone .island{display:none}.phone .phone-status{margin:0;font-size:10px}.hand{margin:20px 0}.phone .home-bar{margin-top:8px}.phone-dismiss{top:5px;right:10px}}

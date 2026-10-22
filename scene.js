@@ -1,4 +1,4 @@
-import { sight } from "./world.js?v=e60559d105cc";
+import { sight } from "./world.js?v=adb1e9307bad";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -47,6 +47,13 @@ export function facingDirection(dx, dy) {
   return Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 2) : dy < 0 ? 3 : 0;
 }
 export const PROP_SIZES = {shoe:66, chair:45, player:38, box:48, panel:63, desk:96, locker:76, bed:112, shelf:100, bench:94, cabinet:82, crates:66, rack:88, radiator:66};
+export function ghostFrame(enemy,t){
+ const motion=enemy.motion||'search';
+ if(motion==='rise')return {row:1,col:Math.min(3,Math.floor((enemy.age||0)/1.2*4))};
+ if(motion==='windup')return {row:1,col:2};
+ if(motion==='lunge')return {row:2,col:Math.min(3,Math.floor((.65-enemy.rush)/.65*4))};
+ return {row:motion==='crawl'?0:3,col:Math.floor(t/(motion==='crawl'?115:270))%4};
+}
 export function portalAnchor(map,o) {
   if(o.kind==='stairs'||o.barrier)return {x:o.x,y:o.y};
   let best=null;
@@ -103,6 +110,7 @@ export class Scene {
     this.lastStep = 0;
     this.focus = null;
     this.shake = 0;
+    this.shock = 0;
     this.fade = 1;
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.ready = false;
@@ -112,18 +120,19 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=e60559d105cc",
-        "assets/seoha-walk.png?v=e60559d105cc",
-        "assets/props-painted.png?v=e60559d105cc",
-        "assets/floors-painted.png?v=e60559d105cc",
-        "assets/jeongwoo.png?v=e60559d105cc",
-        "assets/seoha-diagonal.png?v=e60559d105cc",
-        "assets/shoe-cabinet.png?v=e60559d105cc",
-        "assets/chair-turn.png?v=e60559d105cc",
-        "assets/room-modules.png?v=e60559d105cc",
-        "assets/dining-table.png?v=e60559d105cc",
+        "assets/props-support.png?v=adb1e9307bad",
+        "assets/seoha-walk.png?v=adb1e9307bad",
+        "assets/props-painted.png?v=adb1e9307bad",
+        "assets/floors-painted.png?v=adb1e9307bad",
+        "assets/jeongwoo-motions.png?v=adb1e9307bad",
+        "assets/seoha-diagonal.png?v=adb1e9307bad",
+        "assets/shoe-cabinet.png?v=adb1e9307bad",
+        "assets/chair-turn.png?v=adb1e9307bad",
+        "assets/room-modules.png?v=adb1e9307bad",
+        "assets/dining-table.png?v=adb1e9307bad",
+        "assets/regional-props.png?v=adb1e9307bad",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps]) => {
       Object.assign(this, {
         props,
         actor,
@@ -134,6 +143,11 @@ export class Scene {
         shoeCabinet,
         chairSheet, roomModules, diningTable,
         ready: true,
+      });
+      const rects=[[14,58,390,270],[442,24,300,306],[825,30,220,300],[1105,10,330,325],[25,390,354,300],[425,378,330,322],[780,350,310,350],[1110,332,330,370],[10,736,430,310],[465,704,265,345],[780,714,310,336],[1123,692,305,360]];
+      this.regionalTiles=rects.map(([x,y,w,h],index)=>{
+        const tile=document.createElement('canvas');tile.dataset.asset='regional-'+index;tile.width=128;tile.height=Math.ceil(128*h/w);
+        const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(regionalProps,x,y,w,h,0,0,tile.width,tile.height);return tile;
       });
       // Cache static tile sampling at its actual game resolution once, rather than
       // scaling large illustrations for every floor cell on every animation frame.
@@ -170,12 +184,27 @@ export class Scene {
   burst(x,y,kind='dust') {
     for(let i=0;i<(kind==='spark'?22:14);i++)this.particles.push({x,y:y-18,vx:(Math.random()-.5)*(kind==='spark'?110:65),vy:-15-Math.random()*70,life:.45+Math.random()*.55,kind});
   }
+  apparition() {
+    this.shock=this.reduced?0:1.3;
+    this.shake=this.reduced?0:.65;
+  }
   impact() {
     this.shake = this.reduced ? 0 : 0.4;
   }
   prop(o, s, t, dt) {
     const c = this.ctx,
       changed = propState(o, s);
+    if(o.regional!==undefined){
+      const tile=this.regionalTiles[o.regional],width=o.regionalWidth||(o.module?64:[96,60,40,40,56,64,56,64,96,54,60,56][o.regional]),height=width*tile.height/tile.width;
+      c.drawImage(tile,o.x-width/2,o.y+12-height,width,height);
+      if(o.contents==='fuse'&&!s.bag.includes('fuse')&&!s.flags.power){c.fillStyle='#555';c.fillRect(o.x-7,o.y-27,14,5);c.fillStyle='#aaa';c.fillRect(o.x-7,o.y-27,3,5);c.fillRect(o.x+4,o.y-27,3,5);}
+      if(o.id==='player'){
+        const sw=this.painted.width/4,sh=this.painted.height/4;
+        c.drawImage(this.painted,(2+(s.flags.listened?1:0))*sw,2*sh,sw,sh,o.x-14,o.y-40,28,28);
+      }
+      if(changed&&[8,9,11].includes(o.regional)){c.fillStyle='#aaa';c.beginPath();c.arc(o.x+width*.2,o.y-12,1,0,Math.PI*2);c.fill()}
+      return;
+    }
     if (o.module) {
       c.drawImage(this.moduleTiles,o.module.col*128,o.module.row*144,128,144,o.x-32,o.y-56,64,72);
       // Contents lie on a worktop and disappear only when physically collected.
@@ -536,20 +565,15 @@ export class Scene {
       drawables.push({
         y: enemy.y,
         draw: () => {
-          const sw = this.monster.width / 4,
-            sh = this.monster.height;
-          c.globalAlpha = 0.94;
-          c.drawImage(
-            this.monster,
-            (Math.floor(t / 190) % 4) * sw,
-            0,
-            sw,
-            sh,
-            enemy.x - 34,
-            enemy.y - 124,
-            68,
-            136,
-          );
+          const frame=ghostFrame(enemy,t),sw=this.monster.width/4,
+            bounds=[0,.226,.498,.708,1],grounds=[.222,.49,.704,.977],
+            sy=bounds[frame.row]*this.monster.height,sh=(bounds[frame.row+1]-bounds[frame.row])*this.monster.height,
+            scale=112/sw,ground=(grounds[frame.row]*this.monster.height-sy)*scale;
+          c.save();c.translate(enemy.x,enemy.y);
+          if(enemy.target?.x<enemy.x)c.scale(-1,1);
+          c.globalAlpha=Math.min(.98,.15+(enemy.age||0)*.7);
+          c.drawImage(this.monster,frame.col*sw,sy,sw,sh,-56,-ground,112,sh*scale);
+          c.restore();
           c.globalAlpha = 1;
         },
       });
@@ -569,6 +593,13 @@ export class Scene {
     for(const p of this.particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=80*dt;c.globalAlpha=Math.max(0,Math.min(1,p.life*1.7));c.fillStyle=p.kind==='spark'?'#eee':'#aaa';c.fillRect(p.x,p.y,p.kind==='glass'?3:1,p.kind==='glass'?1:2)}c.globalAlpha=1;
     c.restore();
     this.light(s, cx, cy, z, enemy, t);
+    this.shock=Math.max(0,this.shock-dt);
+    if(this.shock){
+      const intensity=this.shock/1.3;
+      c.fillStyle=`rgba(0,0,0,${intensity*.45})`;c.fillRect(0,0,w,h);
+      c.strokeStyle=`rgba(190,190,190,${intensity*.13})`;c.lineWidth=1;
+      for(let i=0;i<5;i++){c.beginPath();c.moveTo(w*(i+.3)/5,0);c.lineTo(w*(i+.4)/5,h*.13*intensity);c.stroke()}
+    }
     this.fade = Math.max(0, this.fade - dt * 1.4);
     if (this.fade) {
       c.fillStyle = `rgba(5,5,5,${this.fade})`;

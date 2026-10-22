@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=e60559d105cc";
-import { MAPS, sight, canMove } from "./world.js?v=e60559d105cc";
-import { locomotion, Pursuer } from "./mechanics.js?v=e60559d105cc";
-import { AudioDirector, TRACKS } from "./audio.js?v=e60559d105cc";
+import { Scene, facingDirection } from "./scene.js?v=adb1e9307bad";
+import { MAPS, sight, canMove } from "./world.js?v=adb1e9307bad";
+import { locomotion, Pursuer } from "./mechanics.js?v=adb1e9307bad";
+import { AudioDirector, TRACKS } from "./audio.js?v=adb1e9307bad";
 import {
   initial,
   ITEMS,
@@ -11,7 +11,7 @@ import {
   unlock,
   repair,
   finish,
-} from "./state.js?v=e60559d105cc";
+} from "./state.js?v=adb1e9307bad";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -26,6 +26,8 @@ let state = initial(),
   traveling = false,
   stepClock = 0,
   heartClock = 0,
+  ghostStepClock = 0,
+  lastGhostMotion = null,
   huntDelay = 0,
   huntCooldown = 0,
   forcedCue = null;
@@ -40,7 +42,7 @@ function toast(text) {
 }
 function cue() {
   return enemy.active
-    ? "chase"
+    ? enemy.mode === "chase" ? "chase" : "hunt"
     : state.ending
       ? state.ending === "witness"
         ? "aftermath"
@@ -713,7 +715,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=e60559d105cc", memory: "assets/event-memory.png?v=e60559d105cc"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=adb1e9307bad", memory: "assets/event-memory.png?v=adb1e9307bad"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -777,8 +779,9 @@ function render(t) {
         ["basement", "upper"].includes(state.map)
       ) {
         if (enemy.spawn(MAPS[state.map], state)) {
-          sound.effect("thud");
-          scene.impact();
+          sound.effect("apparition");
+          scene.apparition();
+          lastGhostMotion=null;
           toast("정우의 그림자가 깨어났다. 뛰거나, 불을 끄고 숨자.");
         }
       }
@@ -818,6 +821,15 @@ function render(t) {
       sound.heartbeat();
     }
   }
+  if(enemy.active&&!eventActive&&!dialog&&!phone){
+    const distance=Math.hypot(enemy.x-state.x,enemy.y-state.y);
+    ghostStepClock+=dt;
+    if(enemy.motion==='lunge'&&lastGhostMotion!=='lunge'){sound.effect('rush');scene.impact();}
+    if(distance<420&&ghostStepClock>(enemy.motion==='lunge'?.18:enemy.motion==='crawl'?.38:.7)){
+      ghostStepClock=0;sound.effect('scrape',Math.max(.1,1-distance/460));
+    }
+    lastGhostMotion=enemy.motion;
+  }else{ghostStepClock=0;lastGhostMotion=null;}
   const map = MAPS[state.map];
   nearest = state.hidden
     ? null

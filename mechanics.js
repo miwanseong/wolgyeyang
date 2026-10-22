@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=e60559d105cc";
+import { canMove, sight, findPath } from "./world.js?v=adb1e9307bad";
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),
@@ -38,17 +38,22 @@ export class Pursuer {
     this.stunned = 0;
     this.grace = 3;
     this.mode = "idle";
+    this.age=0;this.motion="search";this.rushClock=4.5;this.windup=0;this.rush=0;
   }
   spawn(map, s) {
     this.reset();
     const possible = [];
-    for (let y = 2; y < map.h - 2; y++)
+    const entrances=map.id==='basement'?[[13.5,17.5],[33.5,17.5],[38,24]]:map.id==='upper'?[[12.5,17.5],[33.5,17.5],[38,23]]:[];
+    for(const [x,y] of entrances){
+      const p={x:x*32,y:y*32},d=Math.hypot(p.x-s.x,p.y-s.y);
+      if(d<220||d>650||!canMove(map,p.x,p.y))continue;
+      const path=findPath(map,p,s);if(path.length)possible.push({...p,score:path.length});
+    }
+    if(!possible.length)for (let y = 2; y < map.h - 2; y++)
       for (let x = 2; x < map.w - 2; x++) {
-        const p = { x: x * 32 + 16, y: y * 32 + 16 },
-          d = Math.hypot(p.x - s.x, p.y - s.y);
+        const p = { x: x * 32 + 16, y: y * 32 + 16 },d = Math.hypot(p.x - s.x, p.y - s.y);
         if(d>260&&d<550&&canMove(map,p.x,p.y)){
-          const path=findPath(map,p,s);
-          if(path.length)possible.push({...p,score:path.length+(sight(map,p,s)?3:0)});
+          const path=findPath(map,p,s);if(path.length)possible.push({...p,score:path.length+(sight(map,p,s)?3:0)});
         }
       }
     if(!possible.length)return false;
@@ -59,9 +64,10 @@ export class Pursuer {
   }
   update(map, s, dt) {
     if (!this.active) return null;
+    this.age+=dt;
     this.grace = Math.max(0, this.grace - dt);
     this.stunned = Math.max(0, this.stunned - dt);
-    if (this.stunned) return null;
+    if (this.stunned) {this.motion="search";return null;}
     const d = Math.hypot(s.x - this.x, s.y - this.y),
       visible =
         !s.hidden && d < (s.flashlight ? 300 : 180) && sight(map, this, s),
@@ -80,6 +86,13 @@ export class Pursuer {
         return "escaped";
       }
     }
+    this.windup=Math.max(0,this.windup-dt);this.rush=Math.max(0,this.rush-dt);
+    if(this.motion==='windup'&&!this.windup)this.rush=.65;
+    if(this.mode==='chase'&&!s.hidden){
+      this.rushClock+=dt;
+      if(this.rushClock>4.5&&!this.grace&&d<170&&!this.rush&&!this.windup){this.windup=.65;this.rushClock=0;}
+    }else{this.rushClock=4.5;this.windup=0;this.rush=0;}
+    this.motion=this.age<1.2&&this.grace>0?'rise':this.windup>0?'windup':this.rush>0?'lunge':this.mode==='chase'?'crawl':'search';
     this.repath -= dt;
     if (this.target && this.repath <= 0) {
       this.path = findPath(map, this, this.target);
@@ -91,7 +104,7 @@ export class Pursuer {
       const dx = next.x - this.x,
         dy = next.y - this.y,
         dist = Math.hypot(dx, dy),
-        speed = this.mode === "chase" ? 125 : 85;
+        speed = this.motion==="rise"?25:this.motion==="windup"?12:this.motion==="lunge"?170:this.mode === "chase" ? 125 : 85;
       if (dist < 5) this.path.shift();
       else {
         const step = Math.min(dist, speed * dt);

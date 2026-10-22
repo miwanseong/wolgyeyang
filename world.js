@@ -285,6 +285,20 @@ for(const [i,x] of [16,22,34].entries())M.lobby.objects.push(prop('sealed-unit-'
 for(const [i,x] of [22,28].entries())M.lobby.objects.push(prop('sealed-store-'+i,'door',x,17,'폐쇄된 공용실 문',{solid:false,sealed:true,description:'사건 뒤 폐쇄한 공용실. 문틈을 막은 종이에는 2023년 11월 4일의 접수 번호가 적혀 있다.'}));
 M.management.rooms=[{x:3,y:4,w:24,h:15,name:'관리실 · 접수와 문서 보관'}];
 M.apartment.rooms=[{x:4,y:5,w:14,h:13,name:'101호 · 침실과 공부방'},{x:18,y:5,w:11,h:7,name:'101호 · 부엌'}];
+// Regional materials and silhouettes differ while the layout retains shared grid lines.
+for(const [m,id,index] of [
+ ['apartment','living-bench',0],['apartment','bedside',2],
+ ['basement','basement-crates-a',4],['basement','basement-crates-b',5],['basement','basement-rack',6],
+ ['upper','speaker-rack',10],['upper','broadcast-rack-b',11],['upper','broadcast-rack-c',9],['upper','broadcast-rack-d',10],['upper','mirror',11],['upper','broadcast-rack-f',9],['upper','broadcast-rack-g',11],
+ ['upper','broadcast-work-left',9],['upper','player',8],['upper','broadcast-work-right',11]
+])M[m].objects.find(o=>o.id===id).regional=index;
+const warehouse=[7,4,7,5,7,6,7];
+M.basement.objects.filter(o=>o.module?.group==='storage-north').forEach((o,i)=>{o.regional=warehouse[i]});
+M.basement.objects.filter(o=>o.module?.group==='storage-work').forEach((o,i)=>{o.regional=[4,5,6][i]});
+M.basement.objects.find(o=>o.id==='box').name='이동식 공구대의 공구함';
+M.apartment.objects.find(o=>o.id==='living-bench').y=16.5*32;
+M.apartment.objects.push(prop('living-tv','monitor',25,14,'거실의 브라운관 텔레비전',{regional:1,w:25,back:36,front:12,description:'전원선을 뽑아도 화면의 잡음이 멈추지 않는다. 유리에 비친 내 뒤에서 누군가 네발로 기어간다.'}),prop('home-plant','cabinet',20.5,22,'현관의 마른 화분',{regional:3,w:12,h:12,description:'잎이 창문 대신 집 안쪽을 향한다. 화분 밑에는 오래된 물자국이 고여 있다.'}));
+M.lobby.objects.push(prop('lobby-plant','cabinet',16.5,22,'접수대 옆 관엽 화분',{regional:3,w:12,h:12,description:'먼지에 덮인 잎 사이에 경비실 영수증이 끼어 있다. 손전등은 이 집의 밤마다 충전되었다.'}));
 // Room entrances are actual openings, rather than painted doors through solid walls.
 for (const id of ["basement", "upper"]) {
   const m = M[id];

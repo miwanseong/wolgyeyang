@@ -1,8 +1,8 @@
-import { MAPS, canMove } from "./world.js?v=e60559d105cc";
+import { MAPS, canMove } from "./world.js?v=adb1e9307bad";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 3,
+  layout: 4,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -69,7 +69,7 @@ export function restore(raw) {
   )
     throw Error("유효하지 않은 저장 데이터");
   if(!canMove(MAPS[s.map],s.x,s.y)) {
-    if(s.layout===3)throw Error("가구 내부의 저장 위치");
+    if(s.layout===4)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=MAPS[s.map];
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -79,7 +79,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:3, hidden: false, running: false };
+  return { ...s, layout:4, hidden: false, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
