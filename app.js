@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=adb1e9307bad";
-import { MAPS, sight, canMove } from "./world.js?v=adb1e9307bad";
-import { locomotion, Pursuer } from "./mechanics.js?v=adb1e9307bad";
-import { AudioDirector, TRACKS } from "./audio.js?v=adb1e9307bad";
+import { Scene, facingDirection } from "./scene.js?v=b6f6d3de2e33";
+import { MAPS, sight, canMove, worldFor } from "./world.js?v=b6f6d3de2e33";
+import { locomotion, Pursuer } from "./mechanics.js?v=b6f6d3de2e33";
+import { AudioDirector, TRACKS } from "./audio.js?v=b6f6d3de2e33";
 import {
   initial,
   ITEMS,
@@ -11,7 +11,7 @@ import {
   unlock,
   repair,
   finish,
-} from "./state.js?v=adb1e9307bad";
+} from "./state.js?v=b6f6d3de2e33";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -19,6 +19,8 @@ let state = initial(),
   dialog = false,
   eventActive = false,
   phone = false,
+  phoneApp = null,
+  pursuerTrail = null,
   keys = new Set(),
   last = 0,
   nearest = null,
@@ -43,7 +45,7 @@ function toast(text) {
 function cue() {
   return enemy.active
     ? enemy.mode === "chase" ? "chase" : "hunt"
-    : state.ending
+    : pursuerTrail ? "hunt" : state.ending
       ? state.ending === "witness"
         ? "aftermath"
         : "reliefAlt"
@@ -145,6 +147,8 @@ function objective() {
     return enemy.mode === "chase"
       ? "그가 들었다. Shift로 달리고, 청소함에 숨어라."
       : "손전등을 끄고 발소리가 멀어지기를 기다려라.";
+  if (!state.bag.includes("flashlight")) return "현관 접수대 · 손전등을 먼저 챙긴다";
+  if (pursuerTrail) return "층을 넘어 발소리가 따라온다. 움직여서 거리를 벌리거나 몸을 숨겨라.";
   if (!state.bag.includes("key"))
     return "1층 101호 · 신발장 서랍의 열쇠로 관리실 서랍을 연다";
   if (!state.flags.desk)
@@ -155,12 +159,16 @@ function objective() {
   if (!state.flags.locker) return "1층 관리실 · 날짜와 월 단서로 보관함을 연다";
   if (!state.flags.listened)
     return "동쪽 계단 ↑ 2층 방송실 · 테이프를 재생한다";
+  if(!state.flags.shutterOpen)return "2층 방송 조정실 · 오른쪽 비상 제어반으로 현관 셔터를 연다";
   return "1층 현관으로 돌아가 기록의 운명을 결정한다";
 }
-function transition(to, spawn) {
+function transition(to, spawn, portal = null) {
   if (traveling) return;
   traveling = true;
   keys.clear();
+  const from=state.map,following=enemy.active||!!pursuerTrail;
+  const arrival=MAPS[to].objects.find(o=>o.to===from);
+  pursuerTrail=following?{map:to,remaining:2.4,entry:{x:arrival?.x??spawn[0]*32,y:arrival?.y??spawn[1]*32,targetX:spawn[0]*32,targetY:spawn[1]*32}}:null;
   enemy.reset();
   huntDelay = 0;
   state.hidden = false;
@@ -170,11 +178,12 @@ function transition(to, spawn) {
   setTimeout(() => {
     state.map = to;
     [state.x, state.y] = spawn.map((n) => n * 32);
-    scene.begin(state, MAPS[to]);
-    if (state.flags.power && ["basement", "upper"].includes(to)) {
+    scene.begin(state, worldFor(state));
+    if (!pursuerTrail && state.flags.power && ["basement", "upper"].includes(to)) {
       huntDelay = to === "upper" ? 12 : 7;
       toast("계단 아래에서 발소리가 따라온다. 숨을 곳을 먼저 확인하자.");
     }
+    if(pursuerTrail)toast("문 너머에서도 긁는 소리가 이어진다. 계단만으로는 따돌릴 수 없다.");
     updateSound();
   }, 250);
   setTimeout(() => {
@@ -204,9 +213,14 @@ function interact() {
   if (!nearest) return;
   const o = nearest,
     id = o.id;
+  if(o.internalDoor){
+    const open=!!state.flags['open_'+id];
+    if(open&&Math.abs(state.x-o.x)<o.w+7&&Math.abs(state.y-o.y)<o.h+5){toast('문에서 한 걸음 비킨 뒤 닫아야 한다.');return;}
+    state.flags['open_'+id]=!open;sound.effect('door');toast(o.name+(open?'을 닫았다.':'을 열었다.'));return;
+  }
   if (o.to) {
     state.flags["seen_"+id]=true;
-    transition(o.to, o.spawn);
+    transition(o.to, o.spawn, o);
     return;
   }
   if (o.hide) {
@@ -237,10 +251,11 @@ function interact() {
   }
   switch (id) {
     case "flashlight":
-      say(
-        "경비실의 손전등",
-        "손전등은 이미 챙겼다. F로 빛을 끌 수 있다.\n빛과 달리는 소리는 정우의 그림자에게 위치를 알린다.\n숨을 때는 청소함에 들어가 불을 끄자.",
-      );
+      if(!state.bag.includes('flashlight')){
+        pickup('flashlight');state.flashlight=true;
+        addNote('flashlight','미정의 인수표: 손전등은 충전대에 두었습니다. 서윤의 메모와 유품 통지서는 바로 옆 접수대에 있습니다.');
+        say('접수대의 손전등','충전대에서 손전등을 꺼냈다. 스위치를 누르자 좁은 빛이 켜진다.\nF로 켜고 끌 수 있다. 빛은 그에게 내 위치를 알린다.\n옆의 통지서와 101호 신발장부터 확인하자.');
+      }else say('빈 충전대','손전등은 이미 챙겼다. F로 켜고 끌 수 있다.');
       break;
     case "notice":
       addNote(
@@ -264,7 +279,7 @@ function interact() {
       pickup("key");
       say(
         "서하",
-        "신발장 서랍 안쪽에 작은 열쇠가 들어 있다.\n서윤은 늘 이곳에 열쇠를 숨겼다.\n…나는 그걸 어떻게 기억하고 있지?",
+        "신발장 서랍 안쪽에 작은 열쇠가 들어 있다.\n야간 관리실을 맡았던 내 서랍 열쇠다.\n서윤은 「언니가 또 잊으면 여기」라고 써 두었다.",
       );
       break;
     case "desk":
@@ -302,7 +317,7 @@ function interact() {
       );
       say(
         "입주 기록철",
-        "2023년 11월 4일, 23시 41분.\n서윤의 방화문 개방 요청. 정우의 잠금 유지. 해린의 접수 삭제.\n도현의 소음 신고. 미정의 예비 열쇠 인계.\n마지막 줄: 「취소 확인 — 서하」.\n서윤은 퇴거한 것이 아니었다. 우리는 문 뒤에 남겨 두었다.",
+        "2023년 11월 4일, 23시 41분.\n서윤은 주민 안전 증언을 녹음하다 지하에 갇혔다.\n정우는 무단 출입 방지를 이유로 방화문 사슬을 풀지 않았다.\n해린은 구조 요청을 방송 시험으로 처리해 접수 기록을 지웠다.\n도현은 지하 문을 두드리는 소리를 신고했다.\n미정이 예비 열쇠를 가져왔을 때는 이미 늦었다.\n마지막 줄: 「취소 확인 — 서하」.\n서윤은 퇴거한 것이 아니었다. 우리는 문 뒤에 남겨 두었다.",
       );
       break;
     case "box":
@@ -401,6 +416,14 @@ function interact() {
         input.focus();
       }
       break;
+    case "shutter-control":
+      if(!state.flags.power){say("셔터 비상 제어반","비상 회로가 죽어 있다. 지하 분전반을 먼저 복구해야 한다.");break;}
+      if(state.flags.shutterOpen){say("셔터 비상 제어반","복귀 표시등이 켜져 있다. 1층 현관 셔터는 올라가 있다.");break;}
+      state.flags.shutterOpen=true;
+      sound.effect("door");
+      addNote("shutter","방송 조정실 비상 제어반으로 현관 셔터를 수동 복귀했다. 출구는 1층. 기록을 남길지는 내가 결정한다.");
+      say("수동 복귀","복귀 스위치를 끝까지 누른다. 아래층에서 모터와 쇠사슬이 울린다.\n현관 셔터가 올라갔다. 녹음과 기록을 확인하지 않고도 떠날 수 있다. 하지만 그날의 일은 다시 묻힌다.");
+      break;
     case "player":
       if (!state.flags.power) {
         say("카세트 플레이어", "전원이 들어오지 않는다.");
@@ -427,7 +450,7 @@ function interact() {
       scene.impact();
       say(
         "녹음 속 서윤",
-        "「언니. 지하 방화문이 밖에서 잠겼어.\n전화 받았잖아. 그런데 왜 신고를 취소했어?\n정우가 문을 잠갔다는 것도, 언니가 들었다는 것도… 지우지 마.\n이번에는 접수증하고 이 녹음을 밖으로 가져가 줘.」\n\n나는 기억을 잃은 게 아니었다. 기억하지 않기로 했었다.\n테이프가 멈추자 현관 잠금장치가 풀린다.",
+        "「언니. 지하 방화문이 밖에서 잠겼어.\n전화 받았잖아. 관리실에서 내 목소리 들었잖아.\n정우 아저씨 말만 믿고 왜 신고를 취소했어?\n정우가 문을 잠갔다는 것도, 언니가 들었다는 것도… 지우지 마.\n이번에는 접수증하고 이 녹음을 밖으로 가져가 줘.」\n\n나는 기억을 잃은 게 아니었다. 기억하지 않기로 했었다.\n녹음 끝에 미정의 목소리가 이어졌다.\n「유품은 내가 보관했어. 현관 셔터는 정전 때 내려와. 전기를 살리고 조정실 오른쪽 비상 제어반에서 복귀시켜. 이번에는 가지고 나가 줘.」",
       );
       break;
     case "mirror":
@@ -457,10 +480,10 @@ function interact() {
       );
       break;
     case "exit":
-      if (!state.flags.listened) {
+      if (!state.flags.shutterOpen) {
         say(
-          "현관",
-          "밖에서 누군가 문을 두드린다.\n「네가 남긴 것부터 찾아.」\n2층 방송실의 플레이어가 떠오른다.",
+          "내려온 방화 셔터",
+          "철제 슬랫이 출구를 가리고 있다.\n비상 복귀 안내: 지하 전력 복구 → 2층 방송 조정실 수동 제어반.\n셔터 아래에는 안쪽에서 긁힌 손자국이 남아 있다.",
         );
         break;
       }
@@ -468,7 +491,7 @@ function interact() {
         "서하",
         "문은 열렸다. 기록을 가져가면, 누구도 이 밤을 지울 수 없다.\n두고 가면… 나는 다시 아무것도 모르는 사람이 된다.",
         [
-          ["기록을 가지고 나간다", () => ending("witness")],
+          ...(state.flags.listened&&state.bag.includes("evidence")?[["기록을 가지고 나간다", () => ending("witness")]]:[]),
           ["기록을 두고 떠난다", () => ending("return")],
           ["아직 돌아본다", closeDialog],
         ],
@@ -491,6 +514,7 @@ function interact() {
 function ending(choice) {
   if (!finish(state, choice)) return;
   enemy.reset();
+  pursuerTrail=null;huntDelay=0;
   forcedCue = choice === "witness" ? "aftermath" : "reliefAlt";
   say(
     choice === "witness" ? "결말 01 — 증언" : "결말 02 — 귀환",
@@ -524,7 +548,7 @@ function slot(i) {
 }
 function openPhone() {
   if (eventActive || dialog || !started || traveling) return;
-  if (enemy.active) {
+  if (enemy.active || pursuerTrail) {
     toast("발소리가 너무 가깝다. 지금은 휴대폰을 꺼낼 수 없다.");
     return;
   }
@@ -533,20 +557,28 @@ function openPhone() {
   $("phone-hint").hidden = true;
   keys.clear();
   $("phone-modal").hidden = false;
-  $("phone-content").textContent = MAPS[state.map].name + "\n" + objective();
-  $("phone-modal").querySelector("[data-app]")?.focus();
+  phoneHome();
 }
 function closePhone() {
   phone = false;
+  phoneApp=null;
   forcedCue=null;
   updateSound();
   $("phone-modal").hidden = true;
   keys.clear();
   canvas.focus();
 }
+function phoneHome(){
+  phoneApp=null;document.querySelector('.phone').classList.remove('in-app');
+  $('phone-app-header').hidden=true;$('phone-content').textContent=worldFor(state).name+'\n\n지금 할 일: '+objective();
+  document.querySelector('[data-app]')?.focus();
+}
 function app(name) {
+  phoneApp=name;document.querySelector('.phone').classList.add('in-app');
+  $('phone-app-header').hidden=false;$('phone-app-back').focus();$('phone-app-title').textContent={save:'기억 저장',load:'기억 불러오기',bag:'소지품',notes:'사건 기록',map:'층별 안내',settings:'설정'}[name]||name;
   const content = $("phone-content");
   content.replaceChildren();
+  content.scrollTop=0;
   if (name === "save" || name === "load") {
     for (let i = 1; i <= 3; i++) {
       const b = document.createElement("button");
@@ -577,12 +609,13 @@ function app(name) {
             } else write();
           } else {
             state = restore(slot(i));
+            pursuerTrail=null;
             enemy.reset();
             huntDelay =
               state.flags.power && ["basement", "upper"].includes(state.map)
                 ? 8
                 : 0;
-            scene.begin(state, MAPS[state.map]);
+            scene.begin(state, worldFor(state));
             closePhone();
             updateSound();
             toast("기억을 복원했다.");
@@ -606,7 +639,7 @@ function app(name) {
   if (name === "map")
     content.textContent =
       "월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: " +
-      MAPS[state.map].name +
+      worldFor(state).name +
       "\n\n" +
       objective() +
       "\n\n위험 시 청소함에 숨는다. 달리기는 소음을 만든다.";
@@ -645,7 +678,7 @@ function app(name) {
     const test = document.createElement("button");
     test.textContent = "발소리·효과음 확인";
     test.onclick = () => {
-      sound.step(MAPS[state.map].floor, false);
+      sound.step(worldFor(state).floor, false);
       sound.effect("door");
     };
     content.append(test);
@@ -690,11 +723,12 @@ function begin(load = false) {
   );
   forcedCue = load ? null : "main";
   started = true;
+  pursuerTrail=null;
   enemy.reset();
   huntCooldown = 0;
   huntDelay =
     state.flags.power && ["basement", "upper"].includes(state.map) ? 8 : 0;
-  scene.begin(state, MAPS[state.map]);
+  scene.begin(state, worldFor(state));
   $("phone-hint").hidden = !!state.flags.phoneLearned;
   $("title-screen").hidden = true;
   $("play-screen").hidden = false;
@@ -704,7 +738,7 @@ function begin(load = false) {
   if (!load)
     say(
       "서하",
-      "2026년 11월 3일, 23시 41분. 철거까지 여섯 시간.\n3년 전 이 집에서 동생 서윤이 사라졌다. 오늘은 내 이름으로 유품 보관 통지서가 왔다.\n관리실 보관함에 있다는 마지막 녹음과 접수증. 철거 전에 찾아서 밖으로 가져가야 한다.\n서윤의 메모에는 「열쇠는 101호 신발장에」라고 적혀 있다.\n\nWASD 이동 · Shift 달리기 · F 손전등 · E 조사\nTab 휴대폰: 저장·소지품·목표와 단서. 위험할 때는 불을 끄고 숨자.",
+      "2026년 11월 3일, 23시 41분. 철거까지 여섯 시간.\n3년 전 이 집에서 동생 서윤이 사라졌다. 오늘은 내 이름으로 유품 보관 통지서가 왔다.\n그때 나는 야간 관리실에서 서윤의 구조 신고를 취소했다. 사고라는 말을 믿고, 동생의 전화를 외면했다.\n유품 통지서를 들고 들어오자 정전과 함께 현관 셔터가 떨어졌다. 마지막 녹음과 접수 기록을 찾아 밖으로 나가야 한다.\n서윤의 메모에는 「열쇠는 101호 신발장에」라고 적혀 있다.\n\n접수대 충전 거치대에서 손전등부터 챙기자.\nWASD 이동 · Shift 달리기 · F 손전등(획득 후) · E 조사\nTab 휴대폰: 저장·소지품·목표와 단서. 위험할 때는 불을 끄고 숨자.",
     );
   if (state.flags.relocated) toast("새 가구 배치 옆의 안전한 위치로 옮겼다. 소지품과 기록은 그대로다.");
   if (state.flags.migrated)
@@ -715,7 +749,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=adb1e9307bad", memory: "assets/event-memory.png?v=adb1e9307bad"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=b6f6d3de2e33", memory: "assets/event-memory.png?v=b6f6d3de2e33"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -728,6 +762,7 @@ function caught() {
   showEvent("capture", "다시, 현관", "복도 끝의 발소리가 내 뒤에서 멎었다.", recoverAfterCapture);
 }
 function recoverAfterCapture() {
+  pursuerTrail=null;
   enemy.reset();
   huntDelay = 0;
   huntCooldown = 18;
@@ -737,8 +772,8 @@ function recoverAfterCapture() {
   state.map = "lobby";
   state.x = 11 * 32;
   state.y = 20 * 32;
-  state.flashlight = true;
-  scene.begin(state, MAPS.lobby);
+  state.flashlight = state.bag.includes("flashlight");
+  scene.begin(state, worldFor(state));
   forcedCue = "missing";
   say(
     "서하",
@@ -768,8 +803,14 @@ function render(t) {
         (keys.has("w") || keys.has("arrowup") ? 1 : 0),
       keys.has("shift"),
       dt,
-      MAPS[state.map],
+      worldFor(state),
     );
+    if(pursuerTrail){
+      pursuerTrail.remaining-=dt;
+      if(pursuerTrail.remaining<=0){const trail=pursuerTrail;pursuerTrail=null;
+        if(enemy.follow(worldFor(state),trail.entry,state)){sound.effect('apparition');scene.apparition();toast('그가 방금 지나온 문을 밀고 들어왔다.');}
+      }
+    }
     huntCooldown = Math.max(0, huntCooldown - dt);
     if (huntDelay > 0) {
       huntDelay -= dt;
@@ -778,7 +819,7 @@ function render(t) {
         !enemy.active &&
         ["basement", "upper"].includes(state.map)
       ) {
-        if (enemy.spawn(MAPS[state.map], state)) {
+        if (enemy.spawn(worldFor(state), state)) {
           sound.effect("apparition");
           scene.apparition();
           lastGhostMotion=null;
@@ -786,7 +827,7 @@ function render(t) {
         }
       }
     }
-    const result = enemy.update(MAPS[state.map], state, dt);
+    const result = enemy.update(worldFor(state), state, dt);
     if (result === "caught") caught();
     if (result === "escaped") {
       huntCooldown = 28;
@@ -798,6 +839,7 @@ function render(t) {
     }
     if (
       !enemy.active &&
+      !pursuerTrail &&
       !huntDelay &&
       !huntCooldown &&
       state.flags.power &&
@@ -805,13 +847,13 @@ function render(t) {
     )
       huntDelay = 14;
   }
-  if((dialog||phone)&&!traveling)locomotion(state,0,0,false,dt,MAPS[state.map]);
+  if((dialog||phone)&&!traveling)locomotion(state,0,0,false,dt,worldFor(state));
   scene.moved(dx, dy, dt, state.running);
   if (scene.moving) {
     stepClock += dt;
     if (stepClock > (state.running ? 0.25 : 0.43)) {
       stepClock = 0;
-      sound.step(MAPS[state.map].floor, state.running);
+      sound.step(worldFor(state).floor, state.running);
     }
   } else stepClock = 0.2;
   if (enemy.active) {
@@ -830,7 +872,8 @@ function render(t) {
     }
     lastGhostMotion=enemy.motion;
   }else{ghostStepClock=0;lastGhostMotion=null;}
-  const map = MAPS[state.map];
+  const map = worldFor(state);
+  scene.map=map;
   nearest = state.hidden
     ? null
     : map.objects
@@ -866,15 +909,15 @@ function render(t) {
   $("stamina-value").textContent = state.exhausted
     ? "숨 고르기"
     : Math.ceil(state.stamina) + "%";
-  $("flash-state").textContent = state.flashlight
+  $("flash-state").textContent = !state.bag.includes("flashlight") ? "LIGHT / 미소지" : state.flashlight
     ? "LIGHT / ON"
     : "LIGHT / OFF";
-  $("threat").textContent = enemy.active
+  $("threat").textContent = pursuerTrail ? "층간 추적 중 — 문 너머에서 따라온다" : enemy.active
     ? enemy.mode === "chase"
       ? "발각됨 — 달리거나 숨으세요"
       : "수색 중 — 불을 끄고 숨으세요"
     : "";
-  $("threat").hidden = !enemy.active;
+  $("threat").hidden = !enemy.active&&!pursuerTrail;
   updateSound();
   scene.draw(state, t, dt, nearest, dialog, enemy);
 }
@@ -891,6 +934,8 @@ $("continue").onclick = () => begin(true);
 $("phone-open").onclick = () =>
   started ? openPhone() : toast("새 게임을 시작하면 휴대폰을 사용할 수 있다.");
 $("phone-close").onclick = closePhone;
+$("phone-app-back").onclick = phoneHome;
+$("phone-home-button").onclick = phoneHome;
 $("phone-hint-dismiss").onclick = () => { state.flags.phoneLearned = true; $("phone-hint").hidden = true; };
 $("sound").onclick = toggleAudio;
 $("touch-interact").onclick = interact;
@@ -900,6 +945,7 @@ document
 for (let i = 0; i < 24; i++) $("windows").append(document.createElement("div"));
 function flashlight() {
   if (!started || eventActive || dialog || phone || state.hidden) return;
+  if(!state.bag.includes("flashlight")){toast("접수대에서 손전등을 먼저 챙겨야 한다.");return;}
   state.flashlight = !state.flashlight;
   sound.effect(state.flashlight ? "flashlightOn" : "flashlightOff");
   toast(
@@ -912,7 +958,7 @@ window.addEventListener("keydown", (e) => {
   if (e.target.matches("input,select") && k !== "escape") return;
   if (k === "escape") {
     if (dialog) closeDialog();
-    else if (phone) closePhone();
+    else if (phone) {if(phoneApp)phoneHome();else closePhone();}
     return;
   }
   if (k === "tab" && !dialog) {

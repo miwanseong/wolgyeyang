@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=adb1e9307bad";
+import { canMove, sight, findPath } from "./world.js?v=b6f6d3de2e33";
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),
@@ -60,6 +60,16 @@ export class Pursuer {
     possible.sort((a,b)=>a.score-b.score);
     const p=possible[0];
     Object.assign(this,{x:p.x,y:p.y,active:true,mode:'search',target:{x:s.x,y:s.y}});
+    return true;
+  }
+  follow(map,entry,s) {
+    this.reset();let point=canMove(map,entry.x,entry.y)?entry:null;
+    if(!point){let distance=Infinity;for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
+      const p={x:x*32+16,y:y*32+16},d=Math.hypot(p.x-entry.x,p.y-entry.y);
+      if(d<distance&&d<96&&canMove(map,p.x,p.y)){point=p;distance=d;}
+    }}
+    if(!point)return false;
+    Object.assign(this,{active:true,x:point.x,y:point.y,age:1.2,grace:1.2,mode:'search',target:{x:entry.targetX??entry.x,y:entry.targetY??entry.y}});
     return true;
   }
   update(map, s, dt) {

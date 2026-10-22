@@ -1,17 +1,17 @@
-import { MAPS, canMove } from "./world.js?v=adb1e9307bad";
+import { MAPS, canMove, worldFor } from "./world.js?v=b6f6d3de2e33";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 4,
+  layout: 5,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
   stamina: 100,
   exhausted: false,
-  flashlight: true,
+  flashlight: false,
   facing: -Math.PI / 2,
   hidden: false,
-  bag: ["flashlight"],
+  bag: [],
   notes: [],
   flags: {},
   ending: null,
@@ -20,7 +20,7 @@ export const ITEMS = {
   notice: "서윤의 유품 보관 통지서",
   receipt: "방화문 개방 요청 접수증",
   flashlight: "손전등 · F로 켜기/끄기",
-  key: "관리실 열쇠",
+  key: "관리실 서랍 열쇠",
   fuse: "예비 퓨즈",
   tape: "녹음테이프",
   evidence: "철거 전 입주 기록",
@@ -35,6 +35,7 @@ export function restore(raw) {
   let s = JSON.parse(raw);
   if (!s || ![1, VERSION].includes(s.version))
     throw Error("지원하지 않는 기억");
+  const oldLayout=s.layout;
   if (s.version === 1) {
     s = {
       ...initial(),
@@ -68,10 +69,11 @@ export function restore(raw) {
     typeof s.flashlight !== "boolean"
   )
     throw Error("유효하지 않은 저장 데이터");
-  if(!canMove(MAPS[s.map],s.x,s.y)) {
-    if(s.layout===4)throw Error("가구 내부의 저장 위치");
+  if(oldLayout!==5 && s.flags.listened)s.flags.shutterOpen=true;
+  if(!canMove(worldFor(s),s.x,s.y)) {
+    if(s.layout===5)throw Error("가구 내부의 저장 위치");
     let best=null;
-    const map=MAPS[s.map];
+    const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
       const px=x*32+16,py=y*32+16,d=Math.hypot(px-s.x,py-s.y);
       if(d<=160&&canMove(map,px,py)&&(!best||d<best.d))best={x:px,y:py,d};
@@ -79,7 +81,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:4, hidden: false, running: false };
+  return { ...s, layout:5, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
@@ -96,7 +98,8 @@ export function repair(s) {
   return true;
 }
 export function finish(s, choice) {
-  if (!s.flags.listened || !s.bag.includes("evidence")) return false;
+  if (!s.flags.shutterOpen) return false;
+  if(choice==="witness" && (!s.flags.listened || !s.bag.includes("evidence")))return false;
   if (!["witness", "return"].includes(choice)) return false;
   s.ending = choice;
   return true;

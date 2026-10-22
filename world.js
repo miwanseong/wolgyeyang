@@ -41,9 +41,9 @@ const M = {
   ]),
   apartment: map("apartment", "1F · 101호", 34, 28, "wood", [
     [12, 18, 10, 7],
-    [4, 5, 14, 13],
+    [4, 5, 13, 13],
     [18, 5, 11, 7],
-    [18, 13, 11, 5],
+    [18, 13, 11, 6],
   ]),
   basement: map("basement", "B1 · 지하 설비층", 46, 32, "concrete", [
     [3, 17, 38, 5],
@@ -100,11 +100,11 @@ M.management.objects = [
   }),
   prop("manager-chair", "chair", 10, 11, "밀려난 의자", {
     description:
-      "의자를 밀자 영수증이 나온다. 「계단 방화문은 소음 때문에 자동 폐쇄됩니다.」",
+      "의자를 돌리자 설비 점검표가 보인다. 「정전 시 현관 방화 셔터 하강. 전원 복구 후 방송 조정실에서 수동 복귀.」",
   }),
   prop("manager-files", "shelf", 5, 6, "민원 서류철", {
     description:
-      "「발소리가 들려도 돌아보지 말 것. 정우의 근무는 이미 끝났다.」",
+      "정우의 사고 보고서: 2024년, 방화문 사슬을 풀러 지하에 내려간 뒤 문 뒤에서 숨진 채 발견. 점검표 아래에는 「근무는 끝났는데 왜 아직 순찰하는가」라고 적혔다.",
   }),
   prop("safe-closet", "cabinet", 5, 14, "몸을 숨길 청소함", {
     hide: true,
@@ -279,7 +279,7 @@ M.basement.objects=M.basement.objects.filter(o=>o.id!=='pipes');
 for (const [i,x] of [13,19,31].entries()) {
   M.lobby.objects.push(prop('hall-window-'+i,'window',x,11.5,'복도 창문',{mount:true,solid:false,description:'유리 너머의 철거 가림막이 흔들린다. 바깥에서는 이 건물 안을 볼 수 없다.'}));
 }
-for(const x of [23,24])M.apartment.grid[12][x]=1;
+
 M.apartment.objects.push(prop('living-bench','bench',25,15.5,'거실의 긴 의자',{description:'두 사람이 나란히 앉던 자리. 방석 밑에는 서윤의 이름표가 눌려 있다.'}),prop('living-photo','photo',29.5,15,'거실 벽의 사진',{mount:true,solid:false,description:'세 해 전의 우리. 사진을 돌리면 날짜 대신 「전화는 받았다」라는 글씨가 보인다.'}));
 for(const [i,x] of [16,22,34].entries())M.lobby.objects.push(prop('sealed-unit-'+i,'door',x,11,'봉인된 '+(102+i)+'호 문',{solid:false,sealed:true,description:'철거 봉인이 붙어 있다. 안쪽에서 손잡이가 한 번 내려갔다가 멈춘다. 문은 열리지 않는다.'}));
 for(const [i,x] of [22,28].entries())M.lobby.objects.push(prop('sealed-store-'+i,'door',x,17,'폐쇄된 공용실 문',{solid:false,sealed:true,description:'사건 뒤 폐쇄한 공용실. 문틈을 막은 종이에는 2023년 11월 4일의 접수 번호가 적혀 있다.'}));
@@ -299,6 +299,40 @@ M.basement.objects.find(o=>o.id==='box').name='이동식 공구대의 공구함'
 M.apartment.objects.find(o=>o.id==='living-bench').y=16.5*32;
 M.apartment.objects.push(prop('living-tv','monitor',25,14,'거실의 브라운관 텔레비전',{regional:1,w:25,back:36,front:12,description:'전원선을 뽑아도 화면의 잡음이 멈추지 않는다. 유리에 비친 내 뒤에서 누군가 네발로 기어간다.'}),prop('home-plant','cabinet',20.5,22,'현관의 마른 화분',{regional:3,w:12,h:12,description:'잎이 창문 대신 집 안쪽을 향한다. 화분 밑에는 오래된 물자국이 고여 있다.'}));
 M.lobby.objects.push(prop('lobby-plant','cabinet',16.5,22,'접수대 옆 관엽 화분',{regional:3,w:12,h:12,description:'먼지에 덮인 잎 사이에 경비실 영수증이 끼어 있다. 손전등은 이 집의 밤마다 충전되었다.'}));
+// A flat is entered through a foyer; living, bedroom and kitchen have physical walls/hinged doors.
+for(let x=4;x<=17;x++)M.apartment.grid[18][x]=2;
+for(const [x,y] of [[17,15],[17,16],[23,12],[24,12]])M.apartment.grid[y][x]=1;
+M.apartment.objects.push(
+ prop('bedroom-door','door',17.5,16,'침실 문',{internalDoor:true,facing:'east',w:13,h:36,solid:true,cells:[[17,15],[17,16]],description:'현관에서 거실로 이어진 복도 옆 침실. 손잡이를 돌려 열 수 있다.'}),
+ prop('kitchen-door','door',24,12.5,'주방 문',{internalDoor:true,facing:'north',w:36,h:13,solid:true,cells:[[23,12],[24,12]],description:'거실과 분리된 주방의 문. 안쪽 식탁이 희미하게 보인다.'})
+);
+M.apartment.rooms=[{x:12,y:19,w:10,h:6,name:'101호 · 현관'},{x:18,y:13,w:11,h:6,name:'101호 · 거실'},{x:4,y:5,w:13,h:13,name:'101호 · 침실'},{x:18,y:5,w:11,h:7,name:'101호 · 주방'}];
+Object.assign(M.apartment.objects.find(o=>o.id==='shoe'),{x:13*32,facing:'east',w:18,h:20});
+Object.assign(M.apartment.objects.find(o=>o.id==='home-closet'),{x:5*32,facing:'east',w:18,h:23});
+Object.assign(M.management.objects.find(o=>o.id==='safe-closet'),{x:4*32,facing:'east',w:18,h:23});
+// Bedrooms are furnished with a bed, study, wardrobe and one compact bookshelf, not an archive wall.
+M.apartment.objects=M.apartment.objects.filter(o=>o.id!=='home-books-b');
+const homeShelf=M.apartment.objects.find(o=>o.id==='home-books-a');delete homeShelf.module;homeShelf.kind='shelf';homeShelf.x=8*32;homeShelf.name='서윤의 작은 책장';homeShelf.description='방송 원고와 생활 수첩이 섞여 있다. 마지막 원고 제목은 「철거 전에 남길 목소리」.';
+M.management.objects=M.management.objects.filter(o=>!['files-north-c','files-north-d','files-north-e'].includes(o.id));
+M.management.objects.find(o=>o.id==='files-north-b').module.col=2;
+// The broadcast room has a glazed recording booth, a control desk and acoustic treatment.
+M.upper.objects=M.upper.objects.filter(o=>!['broadcast-rack-d','broadcast-rack-f','broadcast-rack-g'].includes(o.id));
+const gear=['speaker-rack','broadcast-rack-b','broadcast-rack-c','mirror'];
+gear.forEach((id,i)=>{const o=M.upper.objects.find(o=>o.id===id);o.x=(27+i*2)*32;o.y=10*32;o.module.col=i===0?0:i===3?2:1});
+['broadcast-work-left','player','broadcast-work-right'].forEach((id,i)=>{const o=M.upper.objects.find(o=>o.id===id);o.x=(28+i*2)*32;o.y=13.5*32});
+Object.assign(M.upper.objects.find(o=>o.id==='broadcast-chair'),{x:30*32,y:15.5*32});
+Object.assign(M.upper.objects.find(o=>o.id==='broadcast-hide'),{x:39*32,y:14*32});
+M.upper.glassCells=new Set();
+for(let x=26;x<=40;x++)M.upper.grid[9][x]=2;
+for(let x=26;x<=37;x++)M.upper.glassCells.add(x+',9');
+for(const x of [38,39])M.upper.grid[9][x]=1;
+for(let i=0;i<4;i++)M.upper.objects.push(prop('studio-glass-'+i,'studio-glass',27.5+i*3,9,'녹음 부스의 방음 유리',{mount:true,solid:false,architecture:7,description:'믹싱 데스크와 마이크 부스를 분리하는 두꺼운 방음 유리. 두드리는 소리는 건너편으로 전달되지 않는다.'}));
+M.upper.objects.push(prop('studio-door','door',39,9.5,'녹음 부스 방음문',{internalDoor:true,facing:'north',w:36,h:13,solid:true,cells:[[38,9],[39,9]],description:'문을 닫으면 부스 안의 소리가 유리 너머로 새지 않는다.'}),prop('studio-mic','microphone',31,7,'서윤이 사용한 녹음 마이크',{architecture:4,w:12,h:12,description:'팝 필터 뒤에 서윤의 이름표가 걸려 있다. 그녀는 주민들의 증언을 이 부스에서 녹음했다.'}),prop('studio-onair','onair',35,9,'녹음 표시등',{architecture:5,mount:true,solid:false,description:'복구한 방송 회로에 연결된 녹음 표시등.'}));
+for(const x of [28,32,36,39])M.upper.objects.push(prop('acoustic-'+x,'acoustic',x,4.5,'녹음 부스의 흡음 패널',{architecture:6,mount:true,solid:false,description:'목소리의 울림을 줄이는 흡음재. 벽 뒤의 긁는 소리까지 막지는 못한다.'}));
+M.upper.rooms=[{x:4,y:5,w:17,h:11,name:'기록 보관실'},{x:26,y:10,w:15,h:6,name:'방송 조정실'},{x:26,y:5,w:15,h:4,name:'방음 녹음 부스'}];
+M.upper.objects.push(prop('shutter-control','panel',35,14,'현관 셔터 비상 제어반',{w:15,h:15,description:'방송 비상 회로와 연결된 현관 방화 셔터의 수동 복귀 스위치.'}));
+const exit=M.lobby.objects.find(o=>o.id==='exit');exit.kind='shutter';exit.name='내려온 현관 방화 셔터';exit.architecture=0;
+M.lobby.objects.filter(o=>o.sealed).forEach(o=>o.architecture=2);
 // Room entrances are actual openings, rather than painted doors through solid walls.
 for (const id of ["basement", "upper"]) {
   const m = M[id];
@@ -317,6 +351,12 @@ for (const m of Object.values(M)) {
   }
 }
 export const MAPS = M;
+export function worldFor(s){
+ const m=MAPS[s.map];return {...m,openDoors:new Set(m.objects.filter(o=>o.internalDoor&&s.flags?.['open_'+o.id]).map(o=>o.id))};
+}
+export function opaque(map,x,y){return map.grid[y]?.[x]!==1&&!map.glassCells?.has(x+','+y)}
+export function closedDoorAt(map,x,y){return map.objects.some(o=>o.internalDoor&&!map.openDoors?.has(o.id)&&Math.abs(x-o.x)<o.w&&Math.abs(y-o.y)<o.h)}
+
 export function canMove(map, x, y, ignoreProps = false) {
   for (const dx of [-7, 7])
     for (const dy of [-5, 5])
@@ -328,17 +368,19 @@ export function canMove(map, x, y, ignoreProps = false) {
     ignoreProps ||
     !map.objects.some(
       (o) =>
-        o.solid && Math.abs(x - o.x) < o.w + 6 && y > o.y - (o.back ?? o.h) - 4 && y < o.y + (o.front ?? o.h) + 4,
+        o.solid && !(o.internalDoor&&map.openDoors?.has(o.id)) && Math.abs(x - o.x) < o.w + 6 && y > o.y - (o.back ?? o.h) - 4 && y < o.y + (o.front ?? o.h) + 4,
     )
   );
 }
 export function sight(map, a, b) {
   const d = Math.hypot(b.x - a.x, b.y - a.y),
     steps = Math.ceil(d / 12);
+  const targetDoor=map.objects.find(o=>o.internalDoor&&o.id===b.id);
   for (let i = 1; i < steps; i++) {
     const x = a.x + ((b.x - a.x) * i) / steps,
       y = a.y + ((b.y - a.y) * i) / steps;
-    if (map.grid[Math.floor(y / 32)]?.[Math.floor(x / 32)] !== 1) {
+    if(closedDoorAt(map,x,y)&&Math.hypot(x-b.x,y-b.y)>Math.max(targetDoor?.w||0,targetDoor?.h||0)+1)return false;
+    if (opaque(map,Math.floor(x/32),Math.floor(y/32))) {
       const mounted =
         map.grid[Math.floor(b.y / 32)]?.[Math.floor(b.x / 32)] === 2;
       if (!mounted || Math.hypot(x - b.x, y - b.y) > 32) return false;

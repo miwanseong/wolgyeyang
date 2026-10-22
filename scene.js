@@ -1,4 +1,4 @@
-import { sight } from "./world.js?v=adb1e9307bad";
+import { sight, opaque, closedDoorAt } from "./world.js?v=b6f6d3de2e33";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -37,7 +37,7 @@ export function propState(o, s) {
   if (o.id === "locker") return +!!s.flags.locker;
   if (o.id === "power") return +!!s.flags.power;
   if (o.id === "desk") return +!!s.flags.desk;
-  if (o.id === "flashlight") return 1;
+  if (o.id === "flashlight") return +s.bag.includes("flashlight");
   if (o.id === "player") return +!!s.flags.listened;
   return +!!s.flags["seen_" + o.id];
 }
@@ -55,7 +55,7 @@ export function ghostFrame(enemy,t){
  return {row:motion==='crawl'?0:3,col:Math.floor(t/(motion==='crawl'?115:270))%4};
 }
 export function portalAnchor(map,o) {
-  if(o.kind==='stairs'||o.barrier)return {x:o.x,y:o.y};
+  if(o.kind==='stairs'||o.barrier||o.internalDoor)return {x:o.x,y:o.y};
   let best=null;
   const ox=Math.floor(o.x/32),oy=Math.floor(o.y/32);
   for(let y=oy-3;y<=oy+3;y++)for(let x=ox-3;x<=ox+3;x++){
@@ -64,6 +64,15 @@ export function portalAnchor(map,o) {
     if(!best||d<best.d)best={x,y,d};
   }
   return best?{x:Math.abs(best.x+.5-o.x/32)<1?o.x:best.x*32+16,y:best.y*32}:{x:o.x,y:o.y};
+}
+export function wallFacing(map,o){
+ if(o.facing)return o.facing;
+ if(!o.mount&&!['door','shutter','exit'].includes(o.kind))return 'north';
+ const a=['door','shutter','exit'].includes(o.kind)?portalAnchor(map,o):o,x=Math.floor(a.x/32),y=Math.floor(a.y/32);
+ if(map.grid[y+1]?.[x]===1||map.grid[y-1]?.[x]===1)return 'north';
+ if(map.grid[y]?.[x+1]===1)return 'east';
+ if(map.grid[y]?.[x-1]===1)return 'west';
+ return 'north';
 }
 export class Camera {
   constructor() {
@@ -120,19 +129,21 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=adb1e9307bad",
-        "assets/seoha-walk.png?v=adb1e9307bad",
-        "assets/props-painted.png?v=adb1e9307bad",
-        "assets/floors-painted.png?v=adb1e9307bad",
-        "assets/jeongwoo-motions.png?v=adb1e9307bad",
-        "assets/seoha-diagonal.png?v=adb1e9307bad",
-        "assets/shoe-cabinet.png?v=adb1e9307bad",
-        "assets/chair-turn.png?v=adb1e9307bad",
-        "assets/room-modules.png?v=adb1e9307bad",
-        "assets/dining-table.png?v=adb1e9307bad",
-        "assets/regional-props.png?v=adb1e9307bad",
+        "assets/props-support.png?v=b6f6d3de2e33",
+        "assets/seoha-walk.png?v=b6f6d3de2e33",
+        "assets/props-painted.png?v=b6f6d3de2e33",
+        "assets/floors-painted.png?v=b6f6d3de2e33",
+        "assets/jeongwoo-motions.png?v=b6f6d3de2e33",
+        "assets/seoha-diagonal.png?v=b6f6d3de2e33",
+        "assets/shoe-cabinet.png?v=b6f6d3de2e33",
+        "assets/chair-turn.png?v=b6f6d3de2e33",
+        "assets/room-modules.png?v=b6f6d3de2e33",
+        "assets/dining-table.png?v=b6f6d3de2e33",
+        "assets/regional-props.png?v=b6f6d3de2e33",
+        "assets/wall-side.png?v=b6f6d3de2e33",
+        "assets/architecture.png?v=b6f6d3de2e33",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture]) => {
       Object.assign(this, {
         props,
         actor,
@@ -149,6 +160,9 @@ export class Scene {
         const tile=document.createElement('canvas');tile.dataset.asset='regional-'+index;tile.width=128;tile.height=Math.ceil(128*h/w);
         const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(regionalProps,x,y,w,h,0,0,tile.width,tile.height);return tile;
       });
+      const cacheFrames=(im,rects)=>rects.map(([x,y,w,h])=>{const tile=document.createElement('canvas');tile.width=128;tile.height=Math.ceil(128*h/w);const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x,y,w,h,0,0,tile.width,tile.height);return tile});
+      this.wallTiles=cacheFrames(wallSide,[[100,38,190,390],[545,38,225,390],[982,10,180,425],[1425,8,250,430],[105,465,215,405],[558,530,195,275],[995,460,180,414],[1416,458,205,420]]);
+      this.architectureTiles=cacheFrames(architecture,[[45,30,380,392],[493,30,390,392],[970,42,280,390],[1405,16,235,438],[25,450,335,410],[455,550,420,192],[925,505,300,302],[1270,510,490,290]]);
       // Cache static tile sampling at its actual game resolution once, rather than
       // scaling large illustrations for every floor cell on every animation frame.
       const floorTiles=document.createElement('canvas');floorTiles.width=256;floorTiles.height=256;
@@ -194,6 +208,26 @@ export class Scene {
   prop(o, s, t, dt) {
     const c = this.ctx,
       changed = propState(o, s);
+    const facing=wallFacing(this.map,o);
+    if(o.kind==='shutter'){
+      const anchor=portalAnchor(this.map,o),target=s.flags.shutterOpen?1:0;
+      let amount=this.objectStates.get(o.id)??target;amount+=(target-amount)*(this.reduced?1:1-Math.exp(-dt*2.5));this.objectStates.set(o.id,amount);
+      const tile=this.architectureTiles[amount>.1&&amount<.85?1:0];
+      c.save();c.translate(anchor.x,anchor.y);c.fillStyle='#060606';c.fillRect(-39,-27,78,70);
+      c.save();c.beginPath();c.rect(-48,-32,96,Math.max(11,80*(1-amount)));c.clip();c.drawImage(tile,-48,-32,96,80);c.restore();
+      c.strokeStyle='#666';c.lineWidth=3;c.beginPath();c.moveTo(-43,-28);c.lineTo(-43,43);c.moveTo(43,-28);c.lineTo(43,43);c.stroke();c.restore();return;
+    }
+    if(o.architecture!==undefined&&!o.sealed){
+      const tile=this.architectureTiles[o.architecture],size={4:[60,74],5:[48,22],6:[48,48],7:[96,48]}[o.architecture]||[64,64];
+      const y=o.kind==='studio-glass'?o.y-18:o.mount?o.y-size[1]-8:o.y+12-size[1];
+      c.save();if(o.kind==='studio-glass')c.globalAlpha=.45;c.drawImage(tile,o.x-size[0]/2,y,...size);c.restore();
+      if(o.kind==='studio-glass'){c.strokeStyle='#777';c.lineWidth=1;c.strokeRect(o.x-47,y+1,94,46)}
+      if(o.kind==='onair'){c.fillStyle=s.flags.power?'#eee':'#555';c.fillRect(o.x-17,y+6,34,10);c.fillStyle='#222';c.font='6px monospace';c.textAlign='center';c.fillText('ON AIR',o.x,y+13)}return;
+    }
+    if((facing==='east'||facing==='west')&&!['door','shutter','exit'].includes(o.kind)&&['shoe','cabinet','window','photo','notice','calendar'].includes(o.kind)){
+      const index=o.kind==='shoe'?changed?1:0:o.kind==='cabinet'?2:o.kind==='window'?4:5,tile=this.wallTiles[index],height=o.kind==='shoe'?72:o.kind==='cabinet'?88:o.kind==='window'?64:38,width=height*tile.width/tile.height;
+      c.save();c.translate(o.x,o.y);if(facing==='west')c.scale(-1,1);c.drawImage(tile,o.mount?8:-32,12-height,width,height);c.restore();return;
+    }
     if(o.regional!==undefined){
       const tile=this.regionalTiles[o.regional],width=o.regionalWidth||(o.module?64:[96,60,40,40,56,64,56,64,96,54,60,56][o.regional]),height=width*tile.height/tile.width;
       c.drawImage(tile,o.x-width/2,o.y+12-height,width,height);
@@ -207,6 +241,7 @@ export class Scene {
     }
     if (o.module) {
       c.drawImage(this.moduleTiles,o.module.col*128,o.module.row*144,128,144,o.x-32,o.y-56,64,72);
+      if(o.id==='flashlight'&&!s.bag.includes('flashlight')){c.save();c.translate(o.x,o.y-25);c.rotate(-.2);c.fillStyle='#333';c.fillRect(-10,-3,18,6);c.fillStyle='#999';c.beginPath();c.ellipse(8,0,2,4,0,0,Math.PI*2);c.fill();c.restore();}
       // Contents lie on a worktop and disappear only when physically collected.
       const content=o.contents==='letter'&&!s.bag.includes('notice')?'letter':o.contents==='fuse'&&!s.bag.includes('fuse')&&!s.flags.power?'fuse':null;
       if(content){
@@ -259,11 +294,19 @@ export class Scene {
         c.textAlign = "center";
         c.fillText(o.label || "STAIRS", 0, -73);
       } else {
-        const frame=o.sealed?0:o.kind==='exit'&&s.flags.listened||s.flags['seen_'+o.id]?1:0;
-        const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;
-        c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,-28,-18,56,50);
+        const frame=o.internalDoor?+!!s.flags['open_'+o.id]:o.sealed?0:+!!s.flags['seen_'+o.id];
+        if(o.sealed){
+          const side=facing==='east'||facing==='west',tile=this.architectureTiles[side?3:2];
+          if(facing==='west')c.scale(-1,1);c.drawImage(tile,side?-14:-28,-24,side?30:56,64);
+        }else if(facing==='east'||facing==='west'){
+          if(facing==='west')c.scale(-1,1);const tile=this.wallTiles[6+frame];c.drawImage(tile,-14,o.internalDoor?-32:-20,30,64);
+        }else{
+          const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;
+          c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,-28,-18,56,50);
+        }
         c.fillStyle='#aaa';c.font='6px monospace';c.textAlign='center';
-        c.fillText(o.kind==='exit'?'EXIT':o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,-21);
+        c.fillText(o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,-25);
+
       }
       c.restore();
       return;
@@ -365,7 +408,7 @@ export class Scene {
     ambient.addColorStop(1, "#fff0");
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
-    if (s.flashlight && !s.hidden) {
+    if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
       m.filter = "blur(7px)";
       const range = 170,
         pts = [];
@@ -374,7 +417,7 @@ export class Scene {
         for (; d < range; d += 5) {
           const x = s.x + Math.cos(a) * d,
             y = s.y + Math.sin(a) * d;
-          if (this.map.grid[Math.floor(y / 32)]?.[Math.floor(x / 32)] !== 1) {
+          if (opaque(this.map,Math.floor(x/32),Math.floor(y/32))||closedDoorAt(this.map,x,y)) {
             d += 18;
             break;
           }
@@ -475,6 +518,8 @@ export class Scene {
             32,
             32,
           );
+        } else if (v === 2 && map.glassCells?.has(x+","+y)) {
+          c.fillStyle="#121212";c.fillRect(x*32,y*32,32,32);
         } else if (v === 2) {
           const floorBelow=map.grid[y+1]?.[x]===1,floorAbove=map.grid[y-1]?.[x]===1;
           if(floorBelow){
@@ -553,7 +598,7 @@ export class Scene {
             70,
             70,
           );
-          if (s.flashlight) {
+          if (s.flashlight && s.bag.includes("flashlight")) {
             // A small shaded cylindrical torch attached to the hand, not a white marker.
             c.save();c.translate(s.x+(Math.cos(s.facing)<-.2?-11:11),s.y-22);c.rotate(s.facing);
             c.fillStyle='#303030';c.beginPath();c.roundRect(-4,-1.5,10,3,1.5);c.fill();
@@ -582,7 +627,7 @@ export class Scene {
       c.strokeStyle = "#ddd";
       c.lineWidth = 0.7;
       const marker=nearest.kind==="door"||nearest.kind==="exit"?portalAnchor(map,nearest):nearest;
-      const y = marker.y - (["door","exit"].includes(nearest.kind)?24:nearest.mount ? 45 : 66) - Math.sin(t / 400) * 2;
+      const y = marker.y - (["door","exit","shutter"].includes(nearest.kind)?24:nearest.mount ? 45 : 66) - Math.sin(t / 400) * 2;
       c.beginPath();
       c.moveTo(marker.x - 4, y);
       c.lineTo(marker.x, y + 3);

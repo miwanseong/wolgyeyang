@@ -1333,3 +1333,8 @@ button:active:not(:disabled) {
 
 .phone{height:min(620px,calc(100dvh - 96px));}
 @media(max-height:600px){.phone{height:calc(100dvh - 40px);padding:10px 16px 12px;border-radius:28px}.phone-date{display:none}.phone h2{font-size:17px;margin:10px 0 8px}.phone .apps{grid-template-columns:repeat(6,1fr);gap:4px}.phone .apps button{font-size:8px}.phone .apps b{width:30px;height:30px;border-radius:8px;margin-bottom:4px}.phone .apps svg{width:16px;height:16px}.phone-content{margin-top:8px;padding-top:8px}.phone .island{display:none}.phone .phone-status{margin:0;font-size:10px}.hand{margin:20px 0}.phone .home-bar{margin-top:8px}.phone-dismiss{top:5px;right:10px}}
+
+.phone.in-app>.phone-date,.phone.in-app>h2,.phone.in-app>.apps{display:none;}
+.phone-app-header{display:flex;align-items:center;gap:16px;padding-top:24px;padding-bottom:12px;flex-shrink:0;border-bottom:1px solid #aaa;}
+.phone-app-header[hidden]{display:none}.phone-app-header button{border:0;background:transparent;color:#333;font:inherit;padding:8px 0;min-height:36px;cursor:pointer}.phone-app-header strong{font-size:14px;font-weight:500}.phone.in-app .phone-content{margin-top:0;border-top:0;padding-top:16px}.phone button.home-bar{display:block;border:0;padding:0;min-height:4px;cursor:pointer;flex-shrink:0;}
+@media(max-height:600px){.phone-app-header{padding-top:2px;padding-bottom:2px}.phone.in-app .phone-content{padding-top:8px}}
