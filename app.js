@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=e33230e235db";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=e33230e235db";
-import { locomotion, Pursuer } from "./mechanics.js?v=e33230e235db";
-import { AudioDirector, TRACKS } from "./audio.js?v=e33230e235db";
+import { Scene, facingDirection } from "./scene.js?v=3bb99a30ec8b";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=3bb99a30ec8b";
+import { locomotion, Pursuer } from "./mechanics.js?v=3bb99a30ec8b";
+import { AudioDirector, TRACKS } from "./audio.js?v=3bb99a30ec8b";
 import {
   initial,
   ITEMS,
@@ -13,7 +13,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=e33230e235db";
+} from "./state.js?v=3bb99a30ec8b";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -767,7 +767,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=e33230e235db", memory: "assets/event-memory.png?v=e33230e235db"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=3bb99a30ec8b", memory: "assets/event-memory.png?v=3bb99a30ec8b"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;

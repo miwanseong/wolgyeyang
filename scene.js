@@ -1,4 +1,4 @@
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=e33230e235db";
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=3bb99a30ec8b";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -55,12 +55,23 @@ export function ghostFrame(enemy,t){
  return {row:motion==='crawl'?0:3,col:Math.floor(t/(motion==='crawl'?115:270))%4};
 }
 export const portalAnchor = wallAnchor;
+// Wall artwork occupies opaque cells only; floor tiles never become a canvas for a door.
+export function wallFace(map,x,y,facing){
+ const south=facing==='south',edge=(y+(south?0:1))*32;
+ let height=0;
+ for(let d=0;d<72;d++){
+  const yy=Math.floor((edge+(south?d:-d-1))/32);
+  if(map.grid[yy]?.[x]===1)break;
+  height++;
+ }
+ return {y:south?edge:edge-height,h:height};
+}
 export function mountedGeometry(map,o,width,height){
  const facing=wallFacing(map,o),side=facing==='east'||facing==='west';
- if(facing==='south'){const k=Math.min(1,22/height);return {x:o.x-width*k/2,y:Math.floor(o.y/32)*32+5,w:width*k,h:height*k};}
- const scale=Math.min(1,56/height),w=width*scale,h=height*scale,row=Math.floor(o.y/32),col=Math.floor(o.x/32);
+ const row=Math.floor(o.y/32),col=Math.floor(o.x/32),face=wallFace(map,col,row,facing);
+ const scale=Math.min(1,Math.max(8,face.h-12)/height),w=width*scale,h=height*scale;
  if(side){const sw=Math.min(18,w),edge=(facing==='east'?col+1:col)*32;return {x:edge-(facing==='east'?12:6),y:o.y-Math.min(h,30)/2,w:sw,h:Math.min(h,30)};}
- return {x:o.x-w/2,y:row*32-40+(72-h)/2,w,h};
+ return {x:o.x-w/2,y:face.y+(face.h-h)/2,w,h};
 }
 export function fuseInsertionFrame(p){const t=Math.max(0,Math.min(1,(p-.15)/.65)),e=t*t*(3-2*t);return {x:e===1?0:-130*(1-e),y:65*(1-e),seated:t>=1};}
 export function torchHitsSurface(map,s,o){
@@ -70,7 +81,8 @@ export function torchHitsSurface(map,s,o){
 }
 export function doorGeometry(map,o){
  const facing=wallFacing(map,o),side=facing==='east'||facing==='west',span=o.aperture||32;
- if(facing==='south')return {side:false,cutaway:true,facing,span,width:span+8,height:24,dx:-(span+8)/2,dy:-12};
+ const a=portalAnchor(map,o),face=wallFace(map,Math.floor(a.x/32),Math.floor(a.y/32),facing);
+ if(!side&&!o.internalDoor)return {side:false,facing,span,width:span+8,height:face.h,dx:-(span+8)/2,dy:face.y-a.y};
  return {side,facing,span,width:side?30:span+8,height:side?span+40:72,dx:side?-15:-(span+8)/2,dy:side?-span-8:-56};
 }
 export function wallFacing(map,o){
@@ -139,26 +151,26 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=e33230e235db",
-        "assets/seoha-walk.png?v=e33230e235db",
-        "assets/props-painted.png?v=e33230e235db",
-        "assets/floors-painted.png?v=e33230e235db",
-        "assets/jeongwoo-motions.png?v=e33230e235db",
-        "assets/seoha-diagonal.png?v=e33230e235db",
-        "assets/shoe-cabinet.png?v=e33230e235db",
-        "assets/chair-turn.png?v=e33230e235db",
-        "assets/room-modules.png?v=e33230e235db",
-        "assets/dining-table.png?v=e33230e235db",
-        "assets/regional-props.png?v=e33230e235db",
-        "assets/wall-side.png?v=e33230e235db",
-        "assets/architecture.png?v=e33230e235db",
-        "assets/technical-kit.png?v=e33230e235db",
-        "assets/technical-doors.png?v=e33230e235db",
-        "assets/kitchen-kit.png?v=e33230e235db",
-        "assets/decor-kit.png?v=e33230e235db",
-        "assets/supply-kit.png?v=e33230e235db",
-        "assets/room-details.png?v=e33230e235db",
-        "assets/seoyun-echo.png?v=e33230e235db",
+        "assets/props-support.png?v=3bb99a30ec8b",
+        "assets/seoha-walk.png?v=3bb99a30ec8b",
+        "assets/props-painted.png?v=3bb99a30ec8b",
+        "assets/floors-painted.png?v=3bb99a30ec8b",
+        "assets/jeongwoo-motions.png?v=3bb99a30ec8b",
+        "assets/seoha-diagonal.png?v=3bb99a30ec8b",
+        "assets/shoe-cabinet.png?v=3bb99a30ec8b",
+        "assets/chair-turn.png?v=3bb99a30ec8b",
+        "assets/room-modules.png?v=3bb99a30ec8b",
+        "assets/dining-table.png?v=3bb99a30ec8b",
+        "assets/regional-props.png?v=3bb99a30ec8b",
+        "assets/wall-side.png?v=3bb99a30ec8b",
+        "assets/architecture.png?v=3bb99a30ec8b",
+        "assets/technical-kit.png?v=3bb99a30ec8b",
+        "assets/technical-doors.png?v=3bb99a30ec8b",
+        "assets/kitchen-kit.png?v=3bb99a30ec8b",
+        "assets/decor-kit.png?v=3bb99a30ec8b",
+        "assets/supply-kit.png?v=3bb99a30ec8b",
+        "assets/room-details.png?v=3bb99a30ec8b",
+        "assets/seoyun-echo.png?v=3bb99a30ec8b",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho]) => {
       Object.assign(this, {
@@ -292,15 +304,13 @@ export class Scene {
     if(o.kind==='shutter'){
       const anchor=portalAnchor(this.map,o),target=s.flags.shutterOpen?1:0;
       let amount=this.objectStates.get(o.id)??target;amount+=(target-amount)*(this.reduced?1:1-Math.exp(-dt*2.5));this.objectStates.set(o.id,amount);
-      if(wallFacing(this.map,o)==='south'){
-        c.save();c.translate(anchor.x,anchor.y);c.fillStyle='#0d0d0d';c.fillRect(-42,-12,84,24);c.strokeStyle='#777';c.lineWidth=3;c.strokeRect(-43,-12,86,24);
-        c.save();c.beginPath();c.rect(-40,-10,80,22*(1-amount));c.clip();for(let yy=-10;yy<12;yy+=4){c.fillStyle=yy%8?'#646464':'#494949';c.fillRect(-40,yy,80,3);}c.restore();c.restore();return;
-      }
+      const facing=wallFacing(this.map,o),face=wallFace(this.map,Math.floor(anchor.x/32),Math.floor(anchor.y/32),facing),dy=face.y-anchor.y,height=face.h;
       const tile=this.architectureTiles[amount>.1&&amount<.85?1:0];
-      c.save();c.translate(anchor.x,anchor.y);c.fillStyle='#060606';c.fillRect(-40,-56,80,72);
-      c.save();c.beginPath();c.rect(-44,-56,88,Math.max(9,72*(1-amount)));c.clip();c.drawImage(tile,-44,-56,88,72);c.restore();
-      c.strokeStyle='#666';c.lineWidth=3;c.beginPath();c.moveTo(-40,-56);c.lineTo(-40,16);c.moveTo(40,-56);c.lineTo(40,16);c.stroke();c.restore();return;
+      c.save();c.translate(anchor.x,anchor.y);c.fillStyle='#060606';c.fillRect(-40,dy,80,height);
+      c.save();c.beginPath();c.rect(-44,dy,88,Math.max(0,height*(1-amount)));c.clip();c.drawImage(tile,-44,dy,88,height);c.restore();
+      c.strokeStyle='#666';c.lineWidth=3;c.beginPath();c.moveTo(-40,dy);c.lineTo(-40,dy+height);c.moveTo(40,dy);c.lineTo(40,dy+height);c.stroke();c.restore();return;
     }
+
     if(o.architecture!==undefined&&!o.sealed){
       const tile=this.architectureTiles[o.architecture],size={4:[60,74],5:[48,22],6:[48,48],7:[96,48]}[o.architecture]||[64,64];
       const g=o.mount?mountedGeometry(this.map,o,...size):{x:o.x-size[0]/2,y:o.y+12-size[1],w:size[0],h:size[1]},y=g.y;
@@ -397,9 +407,9 @@ export class Scene {
           }
         }else if(g.side){const tile=this.wallTiles[6+frame];c.drawImage(tile,g.dx,g.dy,g.width,g.height);}
         else{const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,g.dx,g.dy,g.width,g.height);}
-        c.strokeStyle='#777';c.lineWidth=2;if(!g.side){c.beginPath();c.moveTo(-g.span/2,16);c.lineTo(g.span/2,16);c.stroke();}
+        c.strokeStyle='#777';c.lineWidth=2;if(!g.side){c.beginPath();c.moveTo(-g.span/2,g.facing==='south'?g.dy:g.dy+g.height);c.lineTo(g.span/2,g.facing==='south'?g.dy:g.dy+g.height);c.stroke();}
         c.fillStyle='#aaa';c.font='6px monospace';c.textAlign='center';
-        c.fillText(o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,-25);
+        c.fillText(o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,g.dy+20);
 
       }
       c.restore();
@@ -534,8 +544,7 @@ export class Scene {
       m.fill();
     }
     m.filter = "none";
-    // A wall face projects above its collision tile. Illuminate that face when the
-    // torch hits it, while keeping the ray blocked from rooms behind the wall.
+    // Illuminate the visible wall face without letting light pass through it.
     for(const o of this.map.objects){
       if(!torchHitsSurface(this.map,s,o))continue;
       let rw=46,rh=52,top=o.y-45;
@@ -632,26 +641,23 @@ export class Scene {
           c.fillStyle="#121212";c.fillRect(x*32,y*32,32,32);
         } else if (v === 2) {
           const floorBelow=map.grid[y+1]?.[x]===1,floorAbove=map.grid[y-1]?.[x]===1;
-          if(floorBelow){
-            c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,y*32-40,32,72);
-            c.fillStyle='#0006';c.fillRect(x*32,y*32-40,32,72);
+          const face=wallFace(map,x,y,floorBelow?'north':'south');
+          const top=(floorBelow||floorAbove)?face.y:y*32,height=(floorBelow||floorAbove)?face.h:32;
+          c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,top,32,height);
+          c.fillStyle='#0009';c.fillRect(x*32,top,32,height);
+          if(floorBelow||floorAbove){
             const home=map.id==='apartment',studio=map.id==='upper'&&x>=26;
-            c.fillStyle=home?'#77777738':map.id==='management'?'#62626238':studio?'#20202055':'#35353525';c.fillRect(x*32,y*32-36,32,60);
-            if(home&&x>=18&&y<13){c.strokeStyle='#aaaaaa28';c.lineWidth=1;for(let yy=-24;yy<24;yy+=16){c.strokeRect(x*32,y*32+yy,16,16);c.strokeRect(x*32+16,y*32+yy,16,16)}}
-            else if(studio){c.fillStyle='#88888822';for(let xx=4;xx<32;xx+=8)c.fillRect(x*32+xx,y*32-32,1,55)}
-            else if(home){c.strokeStyle='#aaaaaa20';c.lineWidth=1;c.beginPath();c.moveTo(x*32+8,y*32-32);c.lineTo(x*32+8,y*32+18);c.moveTo(x*32+24,y*32-32);c.lineTo(x*32+24,y*32+18);c.stroke()}
-            c.fillStyle='#777';c.fillRect(x*32,y*32-40,32,4);
-            c.fillStyle='#999';c.fillRect(x*32,y*32-40,32,1);
-            c.fillStyle='#252525';c.fillRect(x*32,y*32+24,32,8);
-            c.fillStyle='#0007';c.fillRect(x*32,y*32+30,32,11);
-          }else{
-            c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,y*32,32,32);
-            c.fillStyle='#0009';c.fillRect(x*32,y*32,32,32);
-            // Side walls have continuous vertical edges, not a stair-like cap per tile.
-            if(map.grid[y]?.[x+1]===1){c.fillStyle='#4c4c4c';c.fillRect(x*32+25,y*32,7,32);c.fillStyle='#747474';c.fillRect(x*32+30,y*32,2,32)}
-            if(map.grid[y]?.[x-1]===1){c.fillStyle='#4c4c4c';c.fillRect(x*32,y*32,7,32);c.fillStyle='#747474';c.fillRect(x*32,y*32,2,32)}
-            if(floorAbove){c.fillStyle='#626262';c.fillRect(x*32,y*32,32,5);c.fillStyle='#888';c.fillRect(x*32,y*32,32,1)}
+            c.save();c.beginPath();c.rect(x*32,top,32,height);c.clip();
+            if(home&&x>=18&&y<13){c.strokeStyle='#aaaaaa28';c.lineWidth=1;for(let yy=8;yy<height;yy+=16){c.strokeRect(x*32,top+yy,16,16);c.strokeRect(x*32+16,top+yy,16,16)}}
+            else if(studio){c.fillStyle='#88888822';for(let xx=4;xx<32;xx+=8)c.fillRect(x*32+xx,top+8,1,height-16)}
+            else if(home){c.strokeStyle='#aaaaaa20';c.lineWidth=1;c.beginPath();c.moveTo(x*32+8,top+8);c.lineTo(x*32+8,top+height-8);c.moveTo(x*32+24,top+8);c.lineTo(x*32+24,top+height-8);c.stroke()}
+            c.restore();
+            c.fillStyle='#626262';c.fillRect(x*32,top,32,3);
+            c.fillStyle='#888';c.fillRect(x*32,top,32,1);
+            c.fillStyle='#252525';c.fillRect(x*32,top+height-5,32,5);
           }
+          if(map.grid[y]?.[x+1]===1){c.fillStyle='#4c4c4c';c.fillRect(x*32+25,y*32,7,32);c.fillStyle='#747474';c.fillRect(x*32+30,y*32,2,32)}
+          if(map.grid[y]?.[x-1]===1){c.fillStyle='#4c4c4c';c.fillRect(x*32,y*32,7,32);c.fillStyle='#747474';c.fillRect(x*32,y*32,2,32)}
         }
       }
     const wear={apartment:[[12,4]],management:[[7,3],[25,3]],lobby:[[21,11]],basement:[[9,4],[30,4]],upper:[[17,4]]}[map.id]||[];
