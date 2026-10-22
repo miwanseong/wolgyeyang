@@ -1,3 +1,4 @@
+import { addRelayChapter } from "./chapter-world.js?v=006f099ffcd5";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -455,6 +456,7 @@ for(const [m,id,index,x,y,name,description,mount]of [
 ])M[m].objects.push(prop(id,'detail',x,y,name,{details:index,w:16,back:22,front:12,mount,solid:!mount,description}));
 Object.assign(M.upper.objects.find(o=>o.id==='broadcast-chair'),{x:31.5*32,y:14.4*32});
 M.upper.objects.push(prop('archive-reading-table','side-table',12.5,12.5,'독서 자리의 작은 탁자',{decor:5,w:15,h:14,description:'기록을 펼쳐 보던 독서 자리. 수첩에는 23시 41분의 녹음 번호가 여러 번 적혔다.'}),prop('archive-reading-chair','armchair',14.5,12.5,'기록실 독서 의자',{decor:6,w:18,back:22,front:12,description:'작은 탁자와 스탠드 사이에 놓인 의자. 방석에 누군가 앉았던 자국이 서서히 돌아온다.'}),prop('archive-reading-lamp','detail',16,12.5,'독서 자리의 스탠드',{details:8,w:12,back:16,front:10,description:'전원선을 빼도 갓 안쪽의 작은 그림자가 움직인다.'}));
+addRelayChapter(M,map,prop,door);
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.
@@ -492,7 +494,8 @@ export const ECHO_ZONES={
 };
 export const MAPS = M;
 export function nearestObject(map,s){
- return map.objects.filter(o=>!o.partOf&&Math.hypot(o.x-s.x,o.y-s.y)<(o.reach||(o.kind==='stairs'?76:70))&&sight(map,s,o)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;
+ const score=o=>Math.hypot(o.x-s.x,o.y-s.y)-(o.chapterAction?10:0);
+ return map.objects.filter(o=>!o.partOf&&Math.hypot(o.x-s.x,o.y-s.y)<(o.reach||(o.kind==='stairs'?76:70))&&sight(map,s,o)).sort((a,b)=>score(a)-score(b))[0]||null;
 }
 export function fixtureVisual(o,s){
  if(o.fixture==='fuse-source')return {sheet:'supply',index:s.flags.fuseTaken||s.flags.power||s.bag.includes('fuse')?2:1};

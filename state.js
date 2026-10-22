@@ -1,4 +1,4 @@
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=3bb99a30ec8b";
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=006f099ffcd5";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -24,6 +24,9 @@ export const ITEMS = {
   fuse: "예비 퓨즈",
   tape: "녹음테이프",
   evidence: "철거 전 입주 기록",
+  relayBadge: "산북중계소 기록동 출입증",
+  relayCopy: "시각과 삭제 이력을 대조한 회신 사본",
+  relayWheel: "냉각 밸브의 수동 핸들",
 };
 export function take(s, key) {
   if (!s.bag.includes(key)) s.bag.push(key);
@@ -61,7 +64,7 @@ export function restore(raw) {
     typeof s.flags !== "object" ||
     Array.isArray(s.flags) ||
     !Object.values(s.flags).every((v) => typeof v === "boolean") ||
-    ![null, "witness", "return"].includes(s.ending) ||
+    ![null, "witness", "return", "signal", "fragment", "silence"].includes(s.ending) ||
     !Number.isFinite(s.stamina) ||
     s.stamina < 0 ||
     s.stamina > 100 ||

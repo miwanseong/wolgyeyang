@@ -1,4 +1,33 @@
-import { canMove, sight, findPath } from "./world.js?v=3bb99a30ec8b";
+import { canMove, sight, findPath } from "./world.js?v=006f099ffcd5";
+export class StillnessHaunt {
+  constructor(){this.reset();}
+  reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
+  update(map,s,dt,moved,allowed=true){
+    if(this.map!==map.id){this.reset();this.map=map.id;}
+    if(!allowed||s.hidden||s.ending){this.still=0;this.warned=false;this.active=0;return null;}
+    this.cooldown=Math.max(0,this.cooldown-dt);
+    if(this.active){
+      this.active=Math.max(0,this.active-dt);
+      if(Math.hypot(s.x-this.origin.x,s.y-this.origin.y)>40){this.active=0;return {kind:'disperse'};}
+    }
+    if(moved>.1){this.still=0;this.warned=false;return null;}
+    if(this.cooldown)return null;
+    this.still+=dt;
+    if(this.still>=42){
+      const candidates=[];
+      for(let i=0;i<16;i++){
+        const angle=s.facing+Math.PI+(i%2?-1:1)*Math.ceil(i/2)*Math.PI/8;
+        const p={x:s.x+Math.cos(angle)*96,y:s.y+Math.sin(angle)*96};
+        if(canMove(map,p.x,p.y)&&sight(map,s,p))candidates.push(p);
+      }
+      if(!candidates.length)return null;
+      this.still=0;this.warned=false;this.cooldown=100;this.active=6.4;this.origin={x:s.x,y:s.y};
+      return {kind:'appear',...candidates[0]};
+    }
+    if(this.still>=30&&!this.warned){this.warned=true;return {kind:'warning'};}
+    return null;
+  }
+}
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),

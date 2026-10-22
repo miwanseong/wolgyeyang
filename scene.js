@@ -1,4 +1,4 @@
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=3bb99a30ec8b";
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=006f099ffcd5";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -45,6 +45,21 @@ export function propState(o, s) {
 export function facingDirection(dx, dy) {
   if (Math.abs(dx) > .35 && Math.abs(dy) > .35) return dy > 0 ? (dx > 0 ? 4 : 5) : (dx < 0 ? 6 : 7);
   return Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 2) : dy < 0 ? 3 : 0;
+}
+// Grip centers measured in the transparent 4x4 source atlases (cell coordinates).
+// The diagonal sheet shifts the whole pose between cells, so a fixed offset cannot work.
+export const HAND_GRIPS = [
+ [[.404,.589],[.357,.628],[.347,.593],[.355,.628]],
+ [[.431,.574],[.396,.584],[.365,.568],[.358,.590]],
+ [[.714,.565],[.658,.575],[.595,.543],[.627,.577]],
+ [[.400,.549],[.352,.562],[.352,.558],[.352,.563]],
+ [[.513,.639],[.412,.651],[.359,.641],[.246,.652]],
+ [[.786,.609],[.710,.604],[.631,.603],[.553,.611]],
+ [[.420,.581],[.422,.589],[.278,.581],[.223,.583]],
+ [[.797,.559],[.742,.550],[.635,.550],[.584,.541]],
+];
+export function handGrip(direction,frame){
+ const [x,y]=HAND_GRIPS[direction][frame];return {x:-35+x*70,y:-62+y*70};
 }
 export const PROP_SIZES = {shoe:66, chair:45, player:38, box:48, panel:63, desk:96, locker:76, bed:112, shelf:100, bench:94, cabinet:82, crates:66, rack:88, radiator:66};
 export function ghostFrame(enemy,t){
@@ -151,26 +166,26 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=3bb99a30ec8b",
-        "assets/seoha-walk.png?v=3bb99a30ec8b",
-        "assets/props-painted.png?v=3bb99a30ec8b",
-        "assets/floors-painted.png?v=3bb99a30ec8b",
-        "assets/jeongwoo-motions.png?v=3bb99a30ec8b",
-        "assets/seoha-diagonal.png?v=3bb99a30ec8b",
-        "assets/shoe-cabinet.png?v=3bb99a30ec8b",
-        "assets/chair-turn.png?v=3bb99a30ec8b",
-        "assets/room-modules.png?v=3bb99a30ec8b",
-        "assets/dining-table.png?v=3bb99a30ec8b",
-        "assets/regional-props.png?v=3bb99a30ec8b",
-        "assets/wall-side.png?v=3bb99a30ec8b",
-        "assets/architecture.png?v=3bb99a30ec8b",
-        "assets/technical-kit.png?v=3bb99a30ec8b",
-        "assets/technical-doors.png?v=3bb99a30ec8b",
-        "assets/kitchen-kit.png?v=3bb99a30ec8b",
-        "assets/decor-kit.png?v=3bb99a30ec8b",
-        "assets/supply-kit.png?v=3bb99a30ec8b",
-        "assets/room-details.png?v=3bb99a30ec8b",
-        "assets/seoyun-echo.png?v=3bb99a30ec8b",
+        "assets/props-support.png?v=006f099ffcd5",
+        "assets/seoha-walk.png?v=006f099ffcd5",
+        "assets/props-painted.png?v=006f099ffcd5",
+        "assets/floors-painted.png?v=006f099ffcd5",
+        "assets/jeongwoo-motions.png?v=006f099ffcd5",
+        "assets/seoha-diagonal.png?v=006f099ffcd5",
+        "assets/shoe-cabinet.png?v=006f099ffcd5",
+        "assets/chair-turn.png?v=006f099ffcd5",
+        "assets/room-modules.png?v=006f099ffcd5",
+        "assets/dining-table.png?v=006f099ffcd5",
+        "assets/regional-props.png?v=006f099ffcd5",
+        "assets/wall-side.png?v=006f099ffcd5",
+        "assets/architecture.png?v=006f099ffcd5",
+        "assets/technical-kit.png?v=006f099ffcd5",
+        "assets/technical-doors.png?v=006f099ffcd5",
+        "assets/kitchen-kit.png?v=006f099ffcd5",
+        "assets/decor-kit.png?v=006f099ffcd5",
+        "assets/supply-kit.png?v=006f099ffcd5",
+        "assets/room-details.png?v=006f099ffcd5",
+        "assets/seoyun-echo.png?v=006f099ffcd5",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho]) => {
       Object.assign(this, {
@@ -258,6 +273,22 @@ export class Scene {
     const c = this.ctx,
       changed = propState(o, s);
     const facing=wallFacing(this.map,o);
+    if(o.chapterVisual){
+      this.prop({...o,chapterVisual:null},s,t,dt);
+      const type=o.chapterVisual;
+      if(type==='wheel-source'||type==='valve'){
+        const present=type==='valve'?s.flags.relayCooling:!s.bag.includes('relayWheel')&&!s.flags.relayCooling;
+        const target=s.flags.relayCooling?1:0,old=this.objectStates.get(o.id)??0;
+        const amount=this.reduced?target:old+(target-old)*(1-Math.exp(-dt*3));this.objectStates.set(o.id,amount);
+        c.save();c.translate(o.x+5,o.y-22);c.fillStyle='#888';c.fillRect(-2,-2,4,4);
+        if(present){c.rotate(amount*Math.PI*2);c.strokeStyle='#b5b5b5';c.lineWidth=2;c.beginPath();c.arc(0,0,8,0,Math.PI*2);c.moveTo(-8,0);c.lineTo(8,0);c.moveTo(0,-8);c.lineTo(0,8);c.stroke();}
+        c.restore();
+      }else{
+        const enabled=type==='isolator'?s.flags.relayIsolated:s.flags.relayPower;
+        c.fillStyle='#1b1b1b';c.fillRect(o.x-8,o.y-29,16,18);c.fillStyle=enabled?'#bbb':'#555';c.fillRect(o.x-4,o.y-(enabled?17:25),8,5);
+      }
+      return;
+    }
     if(o.kind==='radiator'){
       const i=EXTRAS.indexOf('radiator')*2,sw=this.props.width/6,sh=this.props.height/4;c.fillStyle='#0005';c.fillRect(o.x-30,o.y+9,60,4);c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,o.x-36,o.y-20,72,32);return;
     }
@@ -513,6 +544,7 @@ export class Scene {
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
+      const grip=handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1),beamX=px+grip.x*z,beamY=py+grip.y*z;
       m.filter = "blur(7px)";
       const range = 170,
         pts = [];
@@ -527,15 +559,15 @@ export class Scene {
           }
         }
         pts.push([
-          (s.x + Math.cos(a) * d - camX) * z,
-          (s.y + Math.sin(a) * d - camY) * z,
+          (s.x + grip.x + Math.cos(a) * d - camX) * z,
+          (s.y + grip.y + Math.sin(a) * d - camY) * z,
         ]);
       }
       m.beginPath();
-      m.moveTo(px, py);
+      m.moveTo(beamX, beamY);
       pts.forEach((p) => m.lineTo(...p));
       m.closePath();
-      const g = m.createRadialGradient(px, py, 8, px, py, range * z);
+      const g = m.createRadialGradient(beamX, beamY, 8, beamX, beamY, range * z);
       g.addColorStop(0, "#fff");
       g.addColorStop(0.55, "#fffffff0");
       g.addColorStop(0.9, "#ffffff77");
@@ -723,11 +755,13 @@ export class Scene {
             70,
             70,
           );
-          if (s.flashlight && s.bag.includes("flashlight")) {
-            // A small shaded cylindrical torch attached to the hand, not a white marker.
-            c.save();c.translate(s.x+(Math.cos(s.facing)<-.2?-11:11),s.y-22);c.rotate(s.facing);
-            c.fillStyle='#303030';c.beginPath();c.roundRect(-4,-1.5,10,3,1.5);c.fill();
-            c.fillStyle='#777';c.beginPath();c.ellipse(6,0,1,2,0,0,Math.PI*2);c.fill();c.restore();
+          if (s.bag.includes("flashlight")) {
+            const grip=handGrip(this.direction,f);
+            c.save();c.translate(s.x+grip.x,s.y+grip.y);c.rotate(s.facing);
+            c.fillStyle='#303030';c.beginPath();c.roundRect(0,-1.5,9,3,1.5);c.fill();
+            c.fillStyle=s.flashlight?'#999':'#454545';c.beginPath();c.ellipse(9,0,1,2,0,0,Math.PI*2);c.fill();
+            // Fingers overlap the rear of the handle at the measured grip point.
+            c.fillStyle='#b7b3b0';c.fillRect(-1,-1.3,2.4,2.6);c.restore();
           }
         },
       });
@@ -781,6 +815,7 @@ export class Scene {
     }
     if(this.echo){
       const e=this.echo;e.elapsed+=dt;const p=e.elapsed/e.duration;
+      if(e.idle&&!this.reduced){const d=Math.hypot(s.x-e.x,s.y-e.y);if(d>38){e.x+=(s.x-e.x)/d*dt*12;e.y+=(s.y-e.y)/d*dt*12;}}
       if(p>=1)this.echo=null;else{const index=this.reduced?2:p<.22?0:p<.42?1:p<.76?2:3,tile=this.echoTiles[index],hh=78*z,ww=hh*tile.width/tile.height,xx=(e.x-cx)*z,yy=(e.y-cy)*z;
       c.save();c.globalAlpha=Math.min(.75,p*5,(1-p)*4);c.drawImage(tile,xx-ww/2+(this.reduced?0:Math.sin(t*.04)*1.5),yy-hh,ww,hh);c.restore();}
     }
