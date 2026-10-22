@@ -117,7 +117,7 @@ M.management.objects = [
 ];
 M.apartment.objects = [
   door("home-back", 16, 24, "101호를 나간다", "lobby", [26, 11]),
-  prop("shoe", "shoe", 14, 21, "현관에 놓인 신발"),
+  prop("shoe", "shoe", 13.25, 21, "현관 신발장 서랍"),
   prop("bed-home", "bed", 8, 9, "서윤의 침대", {
     w: 45,
     h: 27,
@@ -227,8 +227,40 @@ M.upper.objects = [
     description: "잠깐 추격을 늦출 수 있다. 문을 닫아도 오래 버티지는 못한다.",
   }),
 ];
-M.basement.objects.push(prop('utility-hide','cabinet',39,15,'수변전실 청소함',{hide:true,description:'분전반 옆 피난용 청소함. 불을 끄고 몸을 숨길 수 있다.'}));
-M.upper.objects.push(prop('broadcast-hide','cabinet',38,14,'방송실 장비 보관장',{hide:true,description:'케이블이 빠진 보관장. 안에서 문을 닫을 수 있다.'}));
+M.basement.objects.push(prop('utility-hide','cabinet',39,9.5,'수변전실 청소함',{hide:true,description:'분전반 옆 피난용 청소함. 불을 끄고 몸을 숨길 수 있다.'}));
+M.upper.objects.push(prop('broadcast-hide','cabinet',39,10,'방송실 장비 보관장',{hide:true,description:'케이블이 빠진 보관장. 안에서 문을 닫을 수 있다.'}));
+// Reused cabinet/shelf modules form purposeful furniture groups along room boundaries.
+const furnish = (map, entries) => {
+  for (const [id,kind,x,y,name,description] of entries) M[map].objects.push(prop(id,kind,x,y,name,{description}));
+};
+furnish('management',[
+ ['files-north-a','shelf',8,5.6,'퇴거 접수 서류','마지막 퇴거자는 서윤. 날짜 칸만 흰 수정액으로 덮여 있다.'],
+ ['files-north-b','shelf',11,5.6,'열쇠 인수 장부','101호 예비 열쇠는 입주자가 보관. 서랍의 긁힌 자국이 떠오른다.'],
+ ['manager-cabinet','cabinet',25,16.5,'봉인된 회계장','철거 보상금 지급 명단. 여섯 사람의 이름 중 하나가 두 번 적혔다.'],
+]);
+furnish('apartment',[
+ ['home-chair','chair',14,8,'책상 앞 의자','의자 다리에 줄을 감은 흔적. 책상 위 공책은 그대로 펼쳐져 있다.'],
+ ['bedside','cabinet',11,7.5,'침대 옆 협탁','작은 서랍에는 마른 꽃잎만 남았다. 그 아래 먼지에는 두 사람의 손자국.'],
+ ['kitchen-seat-a','chair',22.4,10,'식탁 왼쪽 의자','두 사람 몫의 식사. 서윤의 자리는 창문을 등지고 있다.'],
+ ['kitchen-seat-b','chair',25.6,11.5,'식탁 오른쪽 의자','의자 밑에서 밟힌 영수증이 나온다. 구입한 건 식사가 아니라 건전지 여섯 개.'],
+ ['kitchen-cabinet','cabinet',20,6.4,'싱크대 옆 찬장','빈 접시 사이에 손전등 건전지 포장이 끼어 있다. 누군가 밤을 준비했다.'],
+]);
+M.apartment.objects.find(o=>o.id==='kitchen').y=10*32;
+M.apartment.objects.find(o=>o.id==='kitchen-rack').y=6.5*32;
+furnish('basement',[
+ ['storage-row-a','crates',9,5.8,'회수된 우편 상자','수취인 불명. 모두 이 건물 주소인데 한 통도 배달되지 않았다.'],
+ ['storage-row-b','crates',12,5.8,'폐기 예정 증거물','분류 번호 0411. 관리실 달력의 날짜와 같다.'],
+ ['storage-row-c','shelf',19,10,'안전 장구 선반','귀마개만 전부 사라졌다. 경비 일지에는 발소리를 듣지 말라고 적혀 있다.'],
+ ['utility-row-a','rack',28.5,11,'오래된 변압기','전원은 끊겼는데 안쪽의 철심은 아직 떨린다.'],
+ ['utility-row-b','rack',28.5,14,'방송실 연결 장치','윗층 방송실과 이어진 회로. 퓨즈를 넣으면 그곳도 깨어난다.'],
+]);
+furnish('upper',[
+ ['archive-row-a','shelf',11,5.8,'철거 전 촬영 기록','사진 속 복도에는 매번 같은 그림자가 찍혀 있다.'],
+ ['archive-row-b','shelf',14,5.8,'야간 경비 일지','23시 41분 이후의 문장은 모두 같은 글씨다. 문을 열지 마시오.'],
+ ['archive-row-c','shelf',5.5,13.5,'미접수 신고함','서윤은 신고를 여섯 번 했다. 접수 확인은 한 번도 없다.'],
+ ['broadcast-rack-b','rack',28,9,'끊어진 통신 장비','바깥으로 나가는 회선만 잘려 있다. 방송은 건물 안에서만 들린다.'],
+ ['broadcast-rack-c','rack',28,12,'예비 녹음 장치','빈 카세트 껍질. 남은 테이프는 관리실 보관함에 있다는 스티커.'],
+]);
 // Room entrances are actual openings, rather than painted doors through solid walls.
 for (const id of ["basement", "upper"]) {
   const m = M[id];
@@ -242,8 +274,8 @@ for (const id of ["basement", "upper"]) {
 for (const m of Object.values(M)) {
   for (const o of m.objects) {
     o.solid ??= !o.mount && !["door", "stairs", "exit"].includes(o.kind);
-    o.w ??= o.kind === "bed" ? 43 : o.kind === "bench" ? 31 : 23;
-    o.h ??= 17;
+    o.w ??= o.kind === "bed" ? 43 : o.kind === "chair" ? 13 : ["bench","desk","shelf","player"].includes(o.kind) ? 31 : 23;
+    o.h ??= o.kind === "chair" ? 10 : 17;
   }
 }
 export const MAPS = M;

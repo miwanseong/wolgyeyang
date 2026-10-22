@@ -1,4 +1,4 @@
-import { sight } from "./world.js?v=fc53a15ca23c";
+import { sight } from "./world.js?v=13554faf5db8";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -41,6 +41,12 @@ export function propState(o, s) {
   if (o.id === "player") return +!!s.flags.listened;
   return +!!s.flags["seen_" + o.id];
 }
+// Cardinal atlas rows: south, west, east, north. Diagonal atlas rows: SE, SW, NW, NE.
+export function facingDirection(dx, dy) {
+  if (Math.abs(dx) > .35 && Math.abs(dy) > .35) return dy > 0 ? (dx > 0 ? 4 : 5) : (dx < 0 ? 6 : 7);
+  return Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 2) : dy < 0 ? 3 : 0;
+}
+export const PROP_SIZES = {shoe:66, chair:45, player:38, box:48, panel:63, desk:96, locker:76, bed:112, shelf:100, bench:94, cabinet:82, crates:66, rack:88, radiator:66};
 export class Camera {
   constructor() {
     this.x = 352;
@@ -94,19 +100,23 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=fc53a15ca23c",
-        "assets/seoha-walk.png?v=fc53a15ca23c",
-        "assets/props-painted.png?v=fc53a15ca23c",
-        "assets/floors-painted.png?v=fc53a15ca23c",
-        "assets/jeongwoo.png?v=fc53a15ca23c",
+        "assets/props-support.png?v=13554faf5db8",
+        "assets/seoha-walk.png?v=13554faf5db8",
+        "assets/props-painted.png?v=13554faf5db8",
+        "assets/floors-painted.png?v=13554faf5db8",
+        "assets/jeongwoo.png?v=13554faf5db8",
+        "assets/seoha-diagonal.png?v=13554faf5db8",
+        "assets/shoe-cabinet.png?v=13554faf5db8",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet]) => {
       Object.assign(this, {
         props,
         actor,
         painted,
         floors,
         monster,
+        diagonal,
+        shoeCabinet,
         ready: true,
       });
     });
@@ -116,14 +126,7 @@ export class Scene {
     this.camera.reset(s);
     this.fade = this.reduced ? 0 : 1;
     this.focus = null;
-    this.direction =
-      Math.abs(Math.cos(s.facing)) > Math.abs(Math.sin(s.facing))
-        ? Math.cos(s.facing) < 0
-          ? 1
-          : 2
-        : Math.sin(s.facing) < 0
-          ? 3
-          : 0;
+    this.direction = facingDirection(Math.cos(s.facing), Math.sin(s.facing));
     this.objectStates.clear();
     this.particles=[];
   }
@@ -132,7 +135,7 @@ export class Scene {
     this.running = running;
     if (this.moving) {
       this.direction =
-        Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 2) : dy < 0 ? 3 : 0;
+        facingDirection(dx / Math.hypot(dx,dy), dy / Math.hypot(dx,dy));
       this.walk += dt * (running ? 11 : 6.7);
     } else this.walk = 1;
   }
@@ -182,20 +185,28 @@ export class Scene {
       c.restore();
       return;
     }
+    if (["player", "monitor"].includes(o.kind)) {
+      // Small electronics sit on a desk instead of floating at floor level.
+      const sw=this.painted.width/4,sh=this.painted.height/4;
+      c.drawImage(this.painted,0,0,sw,sh,o.x-48,o.y-73,96,96);
+    }
     const p = PAINTED.indexOf(o.kind);
     let blend = this.objectStates.get(o.id) ?? changed;
     blend += (changed - blend) * (this.reduced ? 1 : 1 - Math.exp(-dt * 12));
     this.objectStates.set(o.id, blend);
     const size =
-        o.kind === "bed" ? 114 : o.kind === "bench" ? 93 : o.mount ? 54 : 88,
-      dy = o.mount ? o.y - 37 : o.y - size * 0.76;
+        o.mount ? 46 : PROP_SIZES[o.kind] || 72,
+      dy = o.mount ? o.y - 37 : ["player","monitor"].includes(o.kind) ? o.y-68 : o.y - size * 0.76;
     for (const [frame, alpha] of [
       [0, 1 - blend],
       [1, blend],
     ]) {
       if (alpha < 0.001) continue;
       c.globalAlpha = alpha;
-      if (p >= 0) {
+      if (o.kind === "shoe") {
+        const sw=this.shoeCabinet.width/2;
+        c.drawImage(this.shoeCabinet,frame*sw,0,sw,this.shoeCabinet.height,o.x-size/2,dy,size,size);
+      } else if (p >= 0) {
         const i = p * 2 + frame,
           sw = this.painted.width / 4,
           sh = this.painted.height / 4;
@@ -255,7 +266,7 @@ export class Scene {
       py = (s.y - camY) * z;
     m.clearRect(0, 0, w, h);
     m.globalCompositeOperation = "source-over";
-    m.fillStyle = "#000";
+    m.fillStyle = "rgba(0,0,0,.88)";
     m.fillRect(0, 0, w, h);
     m.globalCompositeOperation = "destination-out";
     const ambient = m.createRadialGradient(
@@ -401,6 +412,23 @@ export class Scene {
         c.fill();
       }
     }
+    // Low-contrast floor treatments tie furniture groups to the architecture.
+    for (const o of map.objects) {
+      if (!["bed","desk","bench","shelf","rack","locker"].includes(o.kind)) continue;
+      const width=(PROP_SIZES[o.kind] || 72)*.9;
+      if (["management","apartment"].includes(map.id) && ["desk","bed","bench"].includes(o.kind)) {
+        const rw=o.kind==="bed"?112:128,rh=o.kind==="bed"?144:104;
+        c.save();c.globalAlpha=.62;
+        c.drawImage(this.floors,sw,3*sh,sw,sh,o.x-rw/2,o.y-42,rw,rh);
+        c.strokeStyle="#a0a0a055";c.lineWidth=2;c.strokeRect(o.x-rw/2+4,o.y-38,rw-8,rh-8);c.restore();
+      }
+      c.fillStyle=map.id==="basement"?"#00000025":"#10101055";
+      c.fillRect(Math.round(o.x-width/2),Math.round(o.y-10),width,22);
+      if (["bed","desk"].includes(o.kind)) {
+        c.fillStyle="#88888822";c.fillRect(o.x-width/2+3,o.y+13,width-6,2);
+        c.fillStyle="#09090955";c.fillRect(o.x-width/2,o.y+18,width,2);
+      }
+    }
     const drawables = map.objects.map((o) => ({
       y: o.y,
       draw: () => this.prop(o, s, t, dt),
@@ -414,12 +442,13 @@ export class Scene {
           c.ellipse(s.x, s.y + 5, 11, 4, 0, 0, 7);
           c.fill();
           const f = this.moving ? Math.floor(this.walk) % 4 : 1,
-            sw = this.actor.width / 4,
-            sh = this.actor.height / 4;
+            atlas = this.direction >= 4 ? this.diagonal : this.actor,
+            sw = atlas.width / 4,
+            sh = atlas.height / 4;
           c.drawImage(
-            this.actor,
+            atlas,
             f * sw,
-            this.direction * sh,
+            (this.direction % 4) * sh,
             sw,
             sh,
             s.x - 35,

@@ -1,4 +1,4 @@
-import { MAPS, canMove } from "./world.js?v=fc53a15ca23c";
+import { MAPS, canMove } from "./world.js?v=13554faf5db8";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,

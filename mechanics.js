@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=fc53a15ca23c";
+import { canMove, sight, findPath } from "./world.js?v=13554faf5db8";
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),
@@ -85,7 +85,8 @@ export class Pursuer {
       this.path = findPath(map, this, this.target);
       this.repath = 0.45;
     }
-    const next = this.path[0];
+    // BFS ends when the target tile is reached; finish the last few pixels too.
+    const next = this.path[0] || (this.target && sight(map, this, this.target) ? this.target : null);
     if (next) {
       const dx = next.x - this.x,
         dy = next.y - this.y,

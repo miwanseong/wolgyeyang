@@ -1,7 +1,7 @@
-import { Scene } from "./scene.js?v=fc53a15ca23c";
-import { MAPS, sight, canMove } from "./world.js?v=fc53a15ca23c";
-import { locomotion, Pursuer } from "./mechanics.js?v=fc53a15ca23c";
-import { AudioDirector, TRACKS } from "./audio.js?v=fc53a15ca23c";
+import { Scene, facingDirection } from "./scene.js?v=13554faf5db8";
+import { MAPS, sight, canMove } from "./world.js?v=13554faf5db8";
+import { locomotion, Pursuer } from "./mechanics.js?v=13554faf5db8";
+import { AudioDirector, TRACKS } from "./audio.js?v=13554faf5db8";
 import {
   initial,
   ITEMS,
@@ -11,12 +11,13 @@ import {
   unlock,
   repair,
   finish,
-} from "./state.js?v=fc53a15ca23c";
+} from "./state.js?v=13554faf5db8";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
   started = false,
   dialog = false,
+  eventActive = false,
   phone = false,
   keys = new Set(),
   last = 0,
@@ -104,6 +105,7 @@ function closeDialog() {
   (dialogReturn || canvas).focus?.();
   dialogReturn = null;
   updateSound();
+  if (pendingEvent) { const next = pendingEvent; pendingEvent = null; next(); }
 }
 function say(speaker, text, actions = [["계속", closeDialog]]) {
   dialogReturn = document.activeElement;
@@ -129,7 +131,7 @@ function addNote(id, text) {
 function pickup(key) {
   if (!state.bag.includes(key)) {
     take(state, key);
-    sound.effect("shutter");
+    sound.effect("item");
     scene.burst(nearest?.x||state.x,nearest?.y||state.y,"spark");
     toast(`${ITEMS[key]} 획득 · 기록 앱에서 단서 확인`);
   }
@@ -192,7 +194,7 @@ function hide() {
   updateSound();
 }
 function interact() {
-  if (dialog || phone || !started || traveling) return;
+  if (eventActive || dialog || phone || !started || traveling) return;
   if (state.hidden) {
     hide();
     return;
@@ -244,15 +246,16 @@ function interact() {
     case "shoe":
       if (state.bag.includes("key")) {
         say(
-          "가지런한 신발",
+          "열린 신발장",
           "열쇠를 꺼낸 자리만 밝게 남아 있다.\n신발 한 짝이 조금 돌아가 있다. 방금 내가 건드렸던가.",
         );
         break;
       }
+      sound.effect("drawer");
       pickup("key");
       say(
         "서하",
-        "신발 안쪽에 작은 열쇠가 들어 있다.\n서윤은 늘 이곳에 열쇠를 숨겼다.\n…나는 그걸 어떻게 기억하고 있지?",
+        "신발장 서랍 안쪽에 작은 열쇠가 들어 있다.\n서윤은 늘 이곳에 열쇠를 숨겼다.\n…나는 그걸 어떻게 기억하고 있지?",
       );
       break;
     case "desk":
@@ -407,6 +410,7 @@ function interact() {
         "tape",
         "서윤의 녹음: 문을 연 사람보다, 문이 있었다는 사실을 지우는 사람이 무서워. 이번에는 기록을 남겨 줘.",
       );
+      pendingEvent = () => showEvent("memory", "녹음에 남은 밤", "불이 꺼진 복도. 그날의 나는, 돌아보지 말았어야 했다.");
       forcedCue = "memory";
       sound.effect("glass");
       scene.burst(30*32,4.5*32,"glass");
@@ -510,7 +514,7 @@ function slot(i) {
   }
 }
 function openPhone() {
-  if (dialog || !started || traveling) return;
+  if (eventActive || dialog || !started || traveling) return;
   if (enemy.active) {
     toast("발소리가 너무 가깝다. 지금은 휴대폰을 꺼낼 수 없다.");
     return;
@@ -546,7 +550,7 @@ function app(name) {
           if (name === "save") {
             const write = () => {
               localStorage.setItem(`janryu-save-${i}`, JSON.stringify(state));
-              sound.effect("shutter");
+              sound.effect("save");
               toast("기억을 저장했다.");
               app(name);
             };
@@ -688,12 +692,29 @@ function begin(load = false) {
   if (!load)
     say(
       "서하",
-      "23시 41분. 철거 전날, 내 이름으로 된 유품 보관 통지서가 도착했다.\n경비실에서 챙긴 손전등을 켰다. 동생 서윤이 사라진 집.\n101호 현관 신발 안에 관리실 열쇠를 숨기곤 했다.\n\nWASD로 이동 · Shift로 달리기 · F 손전등 · E 조사\n위험하면 청소함에 숨고 불을 끄자.",
+      "23시 41분. 철거 전날, 내 이름으로 된 유품 보관 통지서가 도착했다.\n경비실에서 챙긴 손전등을 켰다. 동생 서윤이 사라진 집.\n101호 현관 신발장에 관리실 열쇠를 숨기곤 했다.\n\nWASD로 이동 · Shift로 달리기 · F 손전등 · E 조사\n위험하면 청소함에 숨고 불을 끄자.",
     );
   if (state.flags.migrated)
     toast("옛 기억의 위치를 새 현관으로 옮겼다. 소지품과 단서는 보존했다.");
 }
+let pendingEvent = null;
+function showEvent(kind, title, caption, after = () => {}) {
+  if (eventActive) return;
+  eventActive = true; keys.clear(); state.running = false;
+  const screen = $("event-cg");
+  $("event-image").src = {capture: "assets/event-capture.png?v=13554faf5db8", memory: "assets/event-memory.png?v=13554faf5db8"}[kind];
+  $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
+  $("event-title").textContent = title; $("event-caption").textContent = caption;
+  screen.hidden = false;
+  if (kind === "capture") sound.effect("capture");
+  const button = $("event-continue"); button.disabled = true; button.focus();
+  setTimeout(() => { button.disabled = false; button.focus(); }, 900);
+  button.onclick = () => { screen.hidden = true; eventActive = false; keys.clear(); after(); if (!dialog) canvas.focus(); };
+}
 function caught() {
+  showEvent("capture", "다시, 현관", "복도 끝의 발소리가 내 뒤에서 멎었다.", recoverAfterCapture);
+}
+function recoverAfterCapture() {
   enemy.reset();
   huntDelay = 0;
   huntCooldown = 18;
@@ -705,7 +726,6 @@ function caught() {
   state.y = 20 * 32;
   state.flashlight = true;
   scene.begin(state, MAPS.lobby);
-  sound.effect("thud");
   forcedCue = "missing";
   say(
     "서하",
@@ -726,7 +746,7 @@ function render(t) {
   if (!started) return;
   let dx = 0,
     dy = 0;
-  if (!dialog && !phone && !traveling) {
+  if (!eventActive && !dialog && !phone && !traveling) {
     [dx, dy] = locomotion(
       state,
       (keys.has("d") || keys.has("arrowright") ? 1 : 0) -
@@ -855,15 +875,16 @@ document
   .forEach((b) => (b.onclick = () => app(b.dataset.app)));
 for (let i = 0; i < 24; i++) $("windows").append(document.createElement("div"));
 function flashlight() {
-  if (!started || dialog || phone || state.hidden) return;
+  if (!started || eventActive || dialog || phone || state.hidden) return;
   state.flashlight = !state.flashlight;
-  sound.effect("shutter");
+  sound.effect(state.flashlight ? "flashlightOn" : "flashlightOff");
   toast(
     state.flashlight ? "손전등을 켰다." : "손전등을 껐다. 발각 거리가 줄었다.",
   );
 }
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
+  if (eventActive) { if (!["tab","enter"," "].includes(k)) e.preventDefault(); return; }
   if (e.target.matches("input,select") && k !== "escape") return;
   if (k === "escape") {
     if (dialog) closeDialog();
@@ -930,6 +951,7 @@ $("touch-light").onclick = flashlight;
 canvas.addEventListener("pointermove", (e) => {
   if (
     !started ||
+    eventActive ||
     dialog ||
     phone ||
     traveling ||
@@ -943,13 +965,6 @@ canvas.addEventListener("pointermove", (e) => {
     y = ((e.clientY - r.top) * canvas.height) / r.height / v.z + v.cy;
   state.facing = Math.atan2(y - state.y, x - state.x);
   if (!scene.moving)
-    scene.direction =
-      Math.abs(Math.cos(state.facing)) > Math.abs(Math.sin(state.facing))
-        ? Math.cos(state.facing) < 0
-          ? 1
-          : 2
-        : Math.sin(state.facing) < 0
-          ? 3
-          : 0;
+    scene.direction = facingDirection(Math.cos(state.facing), Math.sin(state.facing));
 });
 requestAnimationFrame(render);

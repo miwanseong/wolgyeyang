@@ -1,26 +1,31 @@
 export const TRACKS = {
-  main: "bgm_main.mp3",
-  lobby: "bgm_unease.mp3",
-  home: "bgm_cabin.mp3",
-  memory: "bgm_memory.mp3",
-  warm: "bgm_warm_memory.mp3",
-  basement: "bgm_uncanny.mp3",
-  upper: "audiobgm_urban_pulse.mp3",
-  deduction: "bgm_deduction.mp3",
-  evidence: "bgm_evidence.mp3",
-  missing: "audiobgm_missing_key.mp3",
-  motif: "audiobgm_uncanny_motif.mp3",
+  main: "dread_hall.wav",
+  lobby: "dread_hall.wav",
+  home: "dread_rooms.wav",
+  memory: "dread_rooms.wav",
+  warm: "dread_rooms.wav",
+  basement: "dread_depths.wav",
+  upper: "dread_depths.wav",
+  deduction: "dread_rooms.wav",
+  evidence: "dread_rooms.wav",
+  missing: "dread_depths.wav",
+  motif: "dread_depths.wav",
   chase: "bgm_violin_dread.mp3",
-  panic: "bgm_flustered.mp3",
+  panic: "dread_depths.wav",
   aftermath: "bgm_atfermath.mp3",
-  relief: "bgm_relief.mp3",
+  relief: "dread_hall.wav",
   reliefAlt: "bgm_relief_alt.mp3",
 };
-const EFFECTS = {
+export const EFFECTS = {
+  flashlightOn: "fx_flashlight_on.wav",
+  flashlightOff: "fx_flashlight_off.wav",
+  item: "fx_item.wav",
+  drawer: "fx_drawer.wav",
+  save: "fx_save.wav",
+  capture: "fx_capture.wav",
   door: "audiosfx_door_open.mp3",
   thud: "audiosfx_thud.mp3",
   glass: "sfx_glass_breaking.mp3",
-  shutter: "sfx_camera_shutter.mp3",
 };
 export class AudioDirector {
   constructor(onError = () => {}) {
@@ -87,7 +92,7 @@ export class AudioDirector {
     const old = this.element,
       oldGain = this.currentGain,
       now = this.ctx.currentTime;
-    const el = new Audio("assets/audio/" + TRACKS[cue]);
+    const el = new Audio("assets/audio/" + TRACKS[cue] + new URL(import.meta.url).search);
     el.loop = true;
     el.preload = "auto";
     const source = this.ctx.createMediaElementSource(el),
@@ -114,7 +119,6 @@ export class AudioDirector {
         old.pause();
         old.removeAttribute("src");
         old.load();
-        source;
         oldGain.disconnect();
       }, 1300);
     }
@@ -124,7 +128,7 @@ export class AudioDirector {
     try {
       let buffer = this.buffers.get(name);
       if (!buffer) {
-        const r = await fetch("assets/audio/" + EFFECTS[name]);
+        const r = await fetch("assets/audio/" + EFFECTS[name] + new URL(import.meta.url).search);
         if (!r.ok) throw Error(r.status);
         buffer = await this.ctx.decodeAudioData(await r.arrayBuffer());
         this.buffers.set(name, buffer);
