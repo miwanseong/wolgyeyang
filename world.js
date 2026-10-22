@@ -229,38 +229,62 @@ M.upper.objects = [
 ];
 M.basement.objects.push(prop('utility-hide','cabinet',39,9.5,'수변전실 청소함',{hide:true,description:'분전반 옆 피난용 청소함. 불을 끄고 몸을 숨길 수 있다.'}));
 M.upper.objects.push(prop('broadcast-hide','cabinet',39,10,'방송실 장비 보관장',{hide:true,description:'케이블이 빠진 보관장. 안에서 문을 닫을 수 있다.'}));
-// Reused cabinet/shelf modules form purposeful furniture groups along room boundaries.
-const furnish = (map, entries) => {
-  for (const [id,kind,x,y,name,description] of entries) M[map].objects.push(prop(id,kind,x,y,name,{description}));
-};
-furnish('management',[
- ['files-north-a','shelf',8,5.6,'퇴거 접수 서류','마지막 퇴거자는 서윤. 날짜 칸만 흰 수정액으로 덮여 있다.'],
- ['files-north-b','shelf',11,5.6,'열쇠 인수 장부','101호 예비 열쇠는 입주자가 보관. 서랍의 긁힌 자국이 떠오른다.'],
- ['manager-cabinet','cabinet',25,16.5,'봉인된 회계장','철거 보상금 지급 명단. 여섯 사람의 이름 중 하나가 두 번 적혔다.'],
-]);
-furnish('apartment',[
- ['home-chair','chair',14,8,'책상 앞 의자','의자 다리에 줄을 감은 흔적. 책상 위 공책은 그대로 펼쳐져 있다.'],
- ['bedside','cabinet',11,7.5,'침대 옆 협탁','작은 서랍에는 마른 꽃잎만 남았다. 그 아래 먼지에는 두 사람의 손자국.'],
- ['kitchen-seat-a','chair',22.4,10,'식탁 왼쪽 의자','두 사람 몫의 식사. 서윤의 자리는 창문을 등지고 있다.'],
- ['kitchen-seat-b','chair',25.6,11.5,'식탁 오른쪽 의자','의자 밑에서 밟힌 영수증이 나온다. 구입한 건 식사가 아니라 건전지 여섯 개.'],
- ['kitchen-cabinet','cabinet',20,6.4,'싱크대 옆 찬장','빈 접시 사이에 손전등 건전지 포장이 끼어 있다. 누군가 밤을 준비했다.'],
-]);
-M.apartment.objects.find(o=>o.id==='kitchen').y=10*32;
-M.apartment.objects.find(o=>o.id==='kitchen-rack').y=6.5*32;
-furnish('basement',[
- ['storage-row-a','crates',9,5.8,'회수된 우편 상자','수취인 불명. 모두 이 건물 주소인데 한 통도 배달되지 않았다.'],
- ['storage-row-b','crates',12,5.8,'폐기 예정 증거물','분류 번호 0411. 관리실 달력의 날짜와 같다.'],
- ['storage-row-c','shelf',19,10,'안전 장구 선반','귀마개만 전부 사라졌다. 경비 일지에는 발소리를 듣지 말라고 적혀 있다.'],
- ['utility-row-a','rack',28.5,11,'오래된 변압기','전원은 끊겼는데 안쪽의 철심은 아직 떨린다.'],
- ['utility-row-b','rack',28.5,14,'방송실 연결 장치','윗층 방송실과 이어진 회로. 퓨즈를 넣으면 그곳도 깨어난다.'],
-]);
-furnish('upper',[
- ['archive-row-a','shelf',11,5.8,'철거 전 촬영 기록','사진 속 복도에는 매번 같은 그림자가 찍혀 있다.'],
- ['archive-row-b','shelf',14,5.8,'야간 경비 일지','23시 41분 이후의 문장은 모두 같은 글씨다. 문을 열지 마시오.'],
- ['archive-row-c','shelf',5.5,13.5,'미접수 신고함','서윤은 신고를 여섯 번 했다. 접수 확인은 한 번도 없다.'],
- ['broadcast-rack-b','rack',28,9,'끊어진 통신 장비','바깥으로 나가는 회선만 잘려 있다. 방송은 건물 안에서만 들린다.'],
- ['broadcast-rack-c','rack',28,12,'예비 녹음 장치','빈 카세트 껍질. 남은 테이프는 관리실 보관함에 있다는 스티커.'],
-]);
+// Furniture is assembled as continuous 64px modules, sharing back edges and floor baselines.
+// Each module occupies exactly two 32px tiles; no per-image floating margins.
+function run(m, key, row, startX, y, ids, names) {
+  ids.forEach((id,i)=>{
+    let o=M[m].objects.find(o=>o.id===id);
+    if(!o){
+      const labels=[['민원 기록철','퇴거 서류','봉인된 장부'],['주방 서랍','조리대','식기 보관장'],['작업대 서류','전화기와 메모','사무용 서랍'],['전력계 장비반','차단기 패널','통신 회로반']][row];
+      const texts={management:'같은 날 접수된 신고들이 묶여 있다. 접수 번호는 서로 다른데 취소 확인자의 서명은 모두 내 글씨다.',apartment:row===1?'식기는 두 사람 몫이다. 사용한 컵 아래에서 접수증이 비친다. 누군가 버리려다 다시 숨겨 둔 종이다.':'서윤의 작업 기록. 지하 방화문을 열어 달라는 메모가 마지막 페이지마다 반복된다.',basement:row===3?'관리실 보관함과 2층 방송실의 공용 회로. 퓨즈를 넣으면 두 장치에 전원이 돌아간다.':'창고의 물품이 용도별로 나뉘어 있다. 예비 퓨즈는 가운데 작업대의 작은 공구함에 보관한다.',upper:row===0?'취소된 신고의 사본. 정우는 잠금을 풀지 않았고, 해린은 접수를 지웠다. 원본과 마지막 녹음만 밖으로 가져가면 이 밤을 증언할 수 있다.':'같은 회로로 이어진 방송 장비. 카세트 데크는 방 가운데 연결된 책상 위에 있다.',lobby:'철거 접수대. 유품 통지서 옆에 101호 열쇠 보관 위치가 적혀 있다.'};
+      o=prop(id,row===0?'shelf':row===1?'cabinet':row===2?'desk':'rack',0,0,names?.[i]||labels[i%3],{description:texts[m]});M[m].objects.push(o)
+    }
+    Object.assign(o,{x:(startX+1+i*2)*32,y:y*32,module:{row,group:key,col:i===0?0:i===ids.length-1?2:1},w:31,back:row===0||row===3?52:40,front:16});
+  });
+}
+// Management: a wall-to-wall archive, central connected workbench, lower record cabinets.
+run('management','north',0,4,5.5,['manager-files','files-north-a','files-north-b','files-north-c','files-north-d','files-north-e']);
+run('management','work',2,7,9,['manager-work-left','desk','manager-work-right']);
+run('management','south',0,20,17,['manager-cabinet-a','manager-rack','manager-cabinet-b']);
+// Apartment: bedroom shelving and study line share the north wall; the kitchen is a full counter run.
+run('apartment','bedroom-books',0,5,6.5,['home-books-a','home-books-b']);
+run('apartment','study',2,11,6.5,['home-study-left','home-desk','home-study-right']);
+run('apartment','counter',1,18,6.5,['kitchen-cabinet','kitchen-counter-a','kitchen-sink','kitchen-counter-b','kitchen-rack']);
+// Basement: two real storage aisles and an equipment wall; toolbox sits on a workbench.
+run('basement','storage-north',0,5,6.5,['basement-shelves','storage-row-a','storage-row-b','storage-row-c','storage-row-d','storage-row-e','storage-row-f']);
+run('basement','storage-work',2,8,11,['storage-work-left','box','storage-work-right']);
+run('basement','electrical-north',3,27,6.5,['utility-north-a','utility-north-b','utility-north-c','power','utility-north-e','utility-north-f']);
+// Records and broadcast equipment use the same physical grid and aligned front edges.
+run('upper','archive-north',0,4,6.5,['records','archive-north-b','archive-north-c','archive-north-d','archive-b','archive-north-f','archive-north-g']);
+run('upper','archive-aisle',0,5,11.5,['archive-a','archive-middle-b','archive-middle-c','archive-middle-d']);
+run('upper','broadcast-north',3,26,6.5,['speaker-rack','broadcast-rack-b','broadcast-rack-c','broadcast-rack-d','mirror','broadcast-rack-f','broadcast-rack-g']);
+run('upper','broadcast-desk',2,30,10,['broadcast-work-left','player','broadcast-work-right']);
+// Reception is visible from the entrance, so the player arrives inside a furnished vestibule.
+run('lobby','reception',2,5,18,['reception-ledger','arrival-letter','flashlight']);
+const move=(m,id,x,y,extra={})=>Object.assign(M[m].objects.find(o=>o.id===id),{x:x*32,y:y*32,...extra});
+move('management','calendar',22,3.5);
+move('apartment','bed-home',6.5,11.5);move('apartment','home-closet',5.5,16);
+move('apartment','kitchen',24,10,{kind:'table',collectible:'receipt',description:'컵을 들어 올리자 접힌 접수증이 나온다. 2023년 11월 4일 23:41, 지하 방화문 개방 요청. 요청자는 서윤. 취소 확인 서명은 나, 서하다.'});
+M.apartment.objects.push(prop('home-chair','chair',14,9,'책상 앞 의자',{description:'공책을 보던 자리에 앉아 본다. 페이지에는 지하 방화문 그림이 여러 번 반복된다.'}),prop('bedside','cabinet',9.5,11.5,'침대 옆 협탁',{description:'서윤의 야간 작업 기록. 마지막 페이지는 지하 방화문 앞에서 끝난다.'}),prop('kitchen-seat-a','chair',22,11.5,'식탁 왼쪽 의자',{description:'서윤의 자리. 식사는 손대지 않은 채 굳어 있다.'}),prop('kitchen-seat-b','chair',26,11.5,'식탁 오른쪽 의자',{description:'내 자리. 컵 밑으로 접수증의 모서리가 보인다.'}));
+move('upper','broadcast-chair',33,13,{swivel:true});move('management','manager-chair',10,12,{swivel:true});
+move('upper','broadcast-hide',39,10);move('basement','utility-hide',39,10.5);
+// Props on worktops are part of the furniture, with collectible contents drawn in place.
+move('basement','box',11,11,{module:{row:2,col:1,group:'storage-work'},contents:'fuse'});
+move('lobby','arrival-letter',8,18,{collectible:'notice',contents:'letter',name:'접수대에 놓인 유품 보관 통지서',description:'서윤의 유품은 관리실 전자 보관함에 있다. 06:00 철거와 함께 폐기. 동봉된 서윤의 메모: 「예비 열쇠는 101호 현관 신발장에. 이번에는 신고를 취소하지 마.」'});
+move('apartment','home-photo',3.5,9);
+move('upper','window',25.5,13);
+move('basement','basement-crates-a',7,14);move('basement','basement-crates-b',19,11);
+M.basement.objects=M.basement.objects.filter(o=>o.id!=='pipes');
+// Window and radiator bays define corridor rhythm without blocking the walking lane.
+for (const [i,x] of [13,19,31].entries()) {
+  M.lobby.objects.push(prop('hall-window-'+i,'window',x,11.5,'복도 창문',{mount:true,solid:false,description:'유리 너머의 철거 가림막이 흔들린다. 바깥에서는 이 건물 안을 볼 수 없다.'}));
+}
+for(const x of [23,24])M.apartment.grid[12][x]=1;
+M.apartment.objects.push(prop('living-bench','bench',25,15.5,'거실의 긴 의자',{description:'두 사람이 나란히 앉던 자리. 방석 밑에는 서윤의 이름표가 눌려 있다.'}),prop('living-photo','photo',29.5,15,'거실 벽의 사진',{mount:true,solid:false,description:'세 해 전의 우리. 사진을 돌리면 날짜 대신 「전화는 받았다」라는 글씨가 보인다.'}));
+for(const [i,x] of [16,22,34].entries())M.lobby.objects.push(prop('sealed-unit-'+i,'door',x,11,'봉인된 '+(102+i)+'호 문',{solid:false,sealed:true,description:'철거 봉인이 붙어 있다. 안쪽에서 손잡이가 한 번 내려갔다가 멈춘다. 문은 열리지 않는다.'}));
+for(const [i,x] of [22,28].entries())M.lobby.objects.push(prop('sealed-store-'+i,'door',x,17,'폐쇄된 공용실 문',{solid:false,sealed:true,description:'사건 뒤 폐쇄한 공용실. 문틈을 막은 종이에는 2023년 11월 4일의 접수 번호가 적혀 있다.'}));
+M.management.rooms=[{x:3,y:4,w:24,h:15,name:'관리실 · 접수와 문서 보관'}];
+M.apartment.rooms=[{x:4,y:5,w:14,h:13,name:'101호 · 침실과 공부방'},{x:18,y:5,w:11,h:7,name:'101호 · 부엌'}];
 // Room entrances are actual openings, rather than painted doors through solid walls.
 for (const id of ["basement", "upper"]) {
   const m = M[id];
@@ -290,7 +314,7 @@ export function canMove(map, x, y, ignoreProps = false) {
     ignoreProps ||
     !map.objects.some(
       (o) =>
-        o.solid && Math.abs(x - o.x) < o.w + 6 && Math.abs(y - o.y) < o.h + 4,
+        o.solid && Math.abs(x - o.x) < o.w + 6 && y > o.y - (o.back ?? o.h) - 4 && y < o.y + (o.front ?? o.h) + 4,
     )
   );
 }
@@ -306,6 +330,11 @@ export function sight(map, a, b) {
       if (!mounted || Math.hypot(x - b.x, y - b.y) > 32) return false;
     }
   }
+  return true;
+}
+export function clearSegment(map,a,b){
+  const steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/8));
+  for(let i=1;i<=steps;i++)if(!canMove(map,a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;
   return true;
 }
 export function findPath(map, from, to) {
@@ -334,7 +363,7 @@ export function findPath(map, from, to) {
     ]) {
       const n = [v[0] + dx, v[1] + dy],
         key = n.join(",");
-      if (seen.has(key) || !canMove(map, n[0] * 32 + 16, n[1] * 32 + 16))
+      if (seen.has(key) || !clearSegment(map, v===start?from:{x:v[0]*32+16,y:v[1]*32+16}, {x:n[0]*32+16,y:n[1]*32+16}))
         continue;
       seen.add(key);
       parent.set(key, v);

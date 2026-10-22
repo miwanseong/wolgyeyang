@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=13554faf5db8";
+import { canMove, sight, findPath } from "./world.js?v=e60559d105cc";
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),

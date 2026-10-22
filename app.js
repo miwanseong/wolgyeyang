@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=13554faf5db8";
-import { MAPS, sight, canMove } from "./world.js?v=13554faf5db8";
-import { locomotion, Pursuer } from "./mechanics.js?v=13554faf5db8";
-import { AudioDirector, TRACKS } from "./audio.js?v=13554faf5db8";
+import { Scene, facingDirection } from "./scene.js?v=e60559d105cc";
+import { MAPS, sight, canMove } from "./world.js?v=e60559d105cc";
+import { locomotion, Pursuer } from "./mechanics.js?v=e60559d105cc";
+import { AudioDirector, TRACKS } from "./audio.js?v=e60559d105cc";
 import {
   initial,
   ITEMS,
@@ -11,7 +11,7 @@ import {
   unlock,
   repair,
   finish,
-} from "./state.js?v=13554faf5db8";
+} from "./state.js?v=e60559d105cc";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -144,7 +144,7 @@ function objective() {
       ? "그가 들었다. Shift로 달리고, 청소함에 숨어라."
       : "손전등을 끄고 발소리가 멀어지기를 기다려라.";
   if (!state.bag.includes("key"))
-    return "1층 101호 · 현관 신발에서 관리실 열쇠를 찾는다";
+    return "1층 101호 · 신발장 서랍의 열쇠로 관리실 서랍을 연다";
   if (!state.flags.desk)
     return "1층 관리실 · 잠긴 서랍에서 보관함 단서를 찾는다";
   if (!state.flags.power && !state.bag.includes("fuse"))
@@ -226,6 +226,13 @@ function interact() {
   }
   scene.inspect(o);
   state.flags["seen_" + id] = true;
+  if(o.collectible){
+    if(!state.bag.includes(o.collectible)){
+      pickup(o.collectible);addNote(o.collectible,o.description);
+      say(o.name,o.description+'\n\nTab → 소지품·기록에서 다시 확인할 수 있다.');
+    }else say(o.name,'챙긴 문서는 휴대폰의 기록 앱에 남아 있다.\n'+o.description);
+    return;
+  }
   switch (id) {
     case "flashlight":
       say(
@@ -269,11 +276,11 @@ function interact() {
       state.flags.desk = true;
       addNote(
         "desk",
-        "관리인 메모: 보관함 비밀번호는 철거일. 날짜를 먼저, 월을 나중에. 네 자리.",
+        "관리인 메모: 서윤 사건의 원본 접수증과 녹음은 전자 보관함에 봉인. 비밀번호는 철거일, 날짜 먼저 월 나중. 예비 퓨즈는 지하 창고 작업대에 있다.",
       );
       say(
         "관리인의 메모",
-        "「보관함 번호는 철거일.\n날짜를 먼저, 월을 나중에. 잊지 말 것.」\n뒷면에는 여섯 사람의 서명 자국이 남아 있다.",
+        "「보관함 번호는 철거일.\n날짜를 먼저, 월을 나중에. 잊지 말 것.」\n뒷면에는 「서윤 사건 원본 접수증·녹음 봉인」.\n보관함이 열리지 않으면 지하 창고 작업대의 퓨즈로 전력을 복구하라고 적혀 있다.",
       );
       break;
     case "calendar":
@@ -289,11 +296,11 @@ function interact() {
     case "records":
       addNote(
         "records",
-        "기록실: 서하 · 서윤 · 정우 · 해린 · 도현 · 미정. 여섯 명 모두 같은 날 퇴거했다.",
+        "2023년 11월 4일: 서윤은 지하 방화문 개방을 요청했다. 정우는 잠금을 유지했고, 해린은 접수 기록을 지웠다. 도현은 문 뒤의 소리를 들었다. 미정은 예비 열쇠를 넘겼다. 신고를 취소한 확인자는 서하. 2026년 철거 통지에서 여섯 이름을 다시 발견했다.",
       );
       say(
         "입주 기록철",
-        "서하. 서윤. 정우. 해린. 도현. 미정.\n여섯 명 모두 같은 날 퇴거했다.\n내 이름 옆에만 서명이 없다.",
+        "2023년 11월 4일, 23시 41분.\n서윤의 방화문 개방 요청. 정우의 잠금 유지. 해린의 접수 삭제.\n도현의 소음 신고. 미정의 예비 열쇠 인계.\n마지막 줄: 「취소 확인 — 서하」.\n서윤은 퇴거한 것이 아니었다. 우리는 문 뒤에 남겨 두었다.",
       );
       break;
     case "box":
@@ -307,7 +314,7 @@ function interact() {
       pickup("fuse");
       say(
         "공구 상자",
-        "사용하지 않은 예비 퓨즈가 있다.\n포장 안에는 「방송실 회로」라고 적힌 쪽지가 끼워져 있다.",
+        "작업대 공구함의 포장을 뜯어 예비 퓨즈를 꺼냈다.\n「관리실 보관함·방송실 공용 회로」.\n전기를 되살리면 유품과 마지막 녹음을 확인할 수 있다.",
       );
       break;
     case "power":
@@ -408,7 +415,7 @@ function interact() {
       state.stamina=100;
       addNote(
         "tape",
-        "서윤의 녹음: 문을 연 사람보다, 문이 있었다는 사실을 지우는 사람이 무서워. 이번에는 기록을 남겨 줘.",
+        "서윤의 마지막 녹음: 지하 방화문이 밖에서 잠겨 있다. 서하는 전화를 받았지만 신고를 취소했다. 서윤이 남긴 부탁은 접수증과 녹음을 건물 밖으로 가져가 달라는 것.",
       );
       pendingEvent = () => showEvent("memory", "녹음에 남은 밤", "불이 꺼진 복도. 그날의 나는, 돌아보지 말았어야 했다.");
       forcedCue = "memory";
@@ -418,7 +425,7 @@ function interact() {
       scene.impact();
       say(
         "녹음 속 서윤",
-        "「언니. 문을 연 사람이 무서운 게 아니야.\n문이 있었다는 사실을 지우는 사람이 무서워.\n이번에는… 기록을 남겨 줘.」\n\n테이프가 멈춘다. 현관 잠금장치가 풀리는 소리가 난다.",
+        "「언니. 지하 방화문이 밖에서 잠겼어.\n전화 받았잖아. 그런데 왜 신고를 취소했어?\n정우가 문을 잠갔다는 것도, 언니가 들었다는 것도… 지우지 마.\n이번에는 접수증하고 이 녹음을 밖으로 가져가 줘.」\n\n나는 기억을 잃은 게 아니었다. 기억하지 않기로 했었다.\n테이프가 멈추자 현관 잠금장치가 풀린다.",
       );
       break;
     case "mirror":
@@ -520,6 +527,8 @@ function openPhone() {
     return;
   }
   phone = true;
+  state.flags.phoneLearned = true;
+  $("phone-hint").hidden = true;
   keys.clear();
   $("phone-modal").hidden = false;
   $("phone-content").textContent = MAPS[state.map].name + "\n" + objective();
@@ -588,7 +597,7 @@ function app(name) {
     content.textContent = state.bag.map((k) => "— " + ITEMS[k]).join("\n");
   if (name === "notes")
     content.textContent = state.notes.length
-      ? state.notes.map((n) => n.text).join("\n\n")
+      ? "지금 할 일: " + objective() + "\n\n" + state.notes.map((n) => n.text).join("\n\n")
       : "목표: " +
         objective() +
         "\n\n기록과 물건을 조사하면 단서가 이곳에 남는다.";
@@ -601,7 +610,7 @@ function app(name) {
       "\n\n위험 시 청소함에 숨는다. 달리기는 소음을 만든다.";
   if (name === "settings") {
     content.textContent =
-      "음향 · 제공해 주신 MP3 20개\n현재 BGM: " +
+      "음향 · 공포 BGM / 용도별 효과음\n현재 BGM: " +
       (sound.cue || "시작 대기") +
       "\n";
     const toggle = document.createElement("button");
@@ -684,6 +693,7 @@ function begin(load = false) {
   huntDelay =
     state.flags.power && ["basement", "upper"].includes(state.map) ? 8 : 0;
   scene.begin(state, MAPS[state.map]);
+  $("phone-hint").hidden = !!state.flags.phoneLearned;
   $("title-screen").hidden = true;
   $("play-screen").hidden = false;
   canvas.tabIndex = 0;
@@ -692,8 +702,9 @@ function begin(load = false) {
   if (!load)
     say(
       "서하",
-      "23시 41분. 철거 전날, 내 이름으로 된 유품 보관 통지서가 도착했다.\n경비실에서 챙긴 손전등을 켰다. 동생 서윤이 사라진 집.\n101호 현관 신발장에 관리실 열쇠를 숨기곤 했다.\n\nWASD로 이동 · Shift로 달리기 · F 손전등 · E 조사\n위험하면 청소함에 숨고 불을 끄자.",
+      "2026년 11월 3일, 23시 41분. 철거까지 여섯 시간.\n3년 전 이 집에서 동생 서윤이 사라졌다. 오늘은 내 이름으로 유품 보관 통지서가 왔다.\n관리실 보관함에 있다는 마지막 녹음과 접수증. 철거 전에 찾아서 밖으로 가져가야 한다.\n서윤의 메모에는 「열쇠는 101호 신발장에」라고 적혀 있다.\n\nWASD 이동 · Shift 달리기 · F 손전등 · E 조사\nTab 휴대폰: 저장·소지품·목표와 단서. 위험할 때는 불을 끄고 숨자.",
     );
+  if (state.flags.relocated) toast("새 가구 배치 옆의 안전한 위치로 옮겼다. 소지품과 기록은 그대로다.");
   if (state.flags.migrated)
     toast("옛 기억의 위치를 새 현관으로 옮겼다. 소지품과 단서는 보존했다.");
 }
@@ -702,7 +713,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=13554faf5db8", memory: "assets/event-memory.png?v=13554faf5db8"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=e60559d105cc", memory: "assets/event-memory.png?v=e60559d105cc"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -741,7 +752,7 @@ function revealRoom(name) {
 }
 function render(t) {
   requestAnimationFrame(render);
-  const dt = Math.min((t - last) / 1000, 0.035);
+  const dt = Math.min((t - last) / 1000, 0.05);
   last = t;
   if (!started) return;
   let dx = 0,
@@ -868,6 +879,7 @@ $("continue").onclick = () => begin(true);
 $("phone-open").onclick = () =>
   started ? openPhone() : toast("새 게임을 시작하면 휴대폰을 사용할 수 있다.");
 $("phone-close").onclick = closePhone;
+$("phone-hint-dismiss").onclick = () => { state.flags.phoneLearned = true; $("phone-hint").hidden = true; };
 $("sound").onclick = toggleAudio;
 $("touch-interact").onclick = interact;
 document
