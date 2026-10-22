@@ -1,6 +1,6 @@
-import {canMove,findPath,sight} from './world.js?v=abbeb66692c5';
+import {canMove,findPath,sight} from './world.js?v=b4a96b0d9035';
 export const RESIDENTS=[
- {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[16,14],[16,16]],outside:[[18,22],[19,22]]},
+ {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
  {id:'dohyun',name:'도현',column:2,map:'relayPlant',route:[[35,17],[40,17]],outside:[[26,21],[28,21]]},
 ];
@@ -27,7 +27,7 @@ export class Residents{
   }
   return this.actors;
  }
- nearest(map,s){return this.actors.filter(n=>Math.hypot(n.x-s.x,n.y-s.y)<64&&sight(map,s,n)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;}
+ nearest(map,s){return this.actors.filter(n=>Math.hypot(n.x-s.x,n.y-s.y)<(n.id==='haerin'&&map.id==='relayEntry'?110:64)&&sight(map,s,n)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;}
 }
 export function residentDialogue(s,n){
  const phase=residentPhase(s),lines={
@@ -51,3 +51,5 @@ export function residentDialogue(s,n){
   ]};
  return lines[n.id][phase];
 }
+
+export function residentExpression(s,n){if(residentPhase(s)===2)return 2;const r=s.investigation?.rolls[n.id];if(r)return r.success?3:1;return [0,1,2,3][residentPhase(s)];}

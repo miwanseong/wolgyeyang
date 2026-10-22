@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#111110" />
     <title>잔류 — 마지막 입주자</title>
-    <link rel="stylesheet" href="style.css?v=abbeb66692c5" />
+    <link rel="stylesheet" href="style.css?v=b4a96b0d9035" />
   </head>
   <body>
     <div class="grain"></div>
@@ -120,12 +120,14 @@
         <div class="dialog-content">
           <img
             id="portrait"
-            src="assets/seoha.png?v=abbeb66692c5"
+            src="assets/seoha.png?v=b4a96b0d9035"
             alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상"
             hidden
           />
+          <div id="npc-portrait" role="img" hidden></div>
           <p id="dialog-text"></p>
         </div>
+        <div id="check-die" role="status" aria-label="조사 판정 주사위" hidden></div>
         <div class="dialog-bottom">
           <span class="dialog-hint">E · 문장 넘기기</span>
           <div id="dialog-actions"></div>
@@ -137,7 +139,7 @@
         휴대폰 내려놓기 <kbd>Esc</kbd>
       </button>
       <div class="hand">
-        <img class="hand-back" src="assets/hand.png?v=abbeb66692c5" alt="" />
+        <img class="hand-back" src="assets/hand.png?v=b4a96b0d9035" alt="" />
         <div class="phone">
           <div class="island"></div>
           <div class="phone-status"><span>23:41</span><span>••• ▰</span></div>
@@ -257,6 +259,6 @@
     </section>
     <section id="puzzle-modal" role="dialog" aria-modal="true" aria-labelledby="puzzle-title" hidden></section>
     <div id="toast" role="status" hidden></div>
-    <script type="module" src="app.js?v=abbeb66692c5"></script>
+    <script type="module" src="app.js?v=b4a96b0d9035"></script>
   </body>
 </html>

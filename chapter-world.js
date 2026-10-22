@@ -95,7 +95,7 @@ export function addRelayChapter(M,map,prop,door){
  link('relayEntry','relay-entry-yard',4,25,'서쪽 출입구 · 외부 마당','relayYard',[33,15],{doorType:'service'});
  link('relayYard','relay-yard-entry',35,15,'안내·접수동 출입문','relayEntry',[6,25],{doorType:'service'});
  M.relayYard.outdoor=true;
- for(const [i,x]of [9,14,19].entries())furniture('relayYard','relay-yard-car-'+i,'car',x,10,'동행자의 주차 차량','해린·미정·도현이 타고 온 차량. 보행 진입로 밖의 주차 구획에 세워져 있다.',{yardVisual:'car',variant:i,w:23,back:64,front:17});
+ for(const [i,x]of [9,14,19].entries())furniture('relayYard','relay-yard-car-'+i,'car',x,10,'동행자의 주차 차량','해린·미정·도현이 타고 온 차량. 보행 진입로 밖의 주차 구획에 세워져 있다.',{yardVisual:'car',variant:i,w:46,back:90,front:12});
  furniture('relayYard','relay-yard-map','sign',30,13,'야간 원본 대조 안내','해린·미정·도현의 동행 서명이 남았다.\n동쪽 문: 안내·접수동 → 북쪽 연결문: 기록동 / 접수동 당직실 계단: 지하 설비 → 송출층.',{w:18,back:14,front:10,yardVisual:'sign'});
  furniture('relayYard','relay-yard-bus','sign',8,24,'진입 도로 · 버스 정류장 방향','서쪽 산길에서 왔다. 지금은 원본 대조를 마쳐야 한다. 돌아가는 길은 여기 남아 있다.',{w:16,back:12,front:10,yardVisual:'sign',chapterAction:'leaveRelay'});
  furniture('relayYard','relay-yard-bench','bench',12,20,'외부 휴게 의자','세 사람이 잠시 놓아 둔 장갑과 물병이 있다. 시설은 폐허가 아니라 야간 제한 운영 중이다.',{w:38,back:22,front:10});
@@ -139,13 +139,18 @@ export function addRelayChapter(M,map,prop,door){
  wall('relayPlant','relay-sump-guide',5,12,35.5,'배관 점검도','점검판 좌상단 왼쪽으로 유입 → 아홉 관 순환 → 좌하단 아래로 배출. 열린 관 끝은 누수다.',{facing:'south'});
  detail('relayPlant','relay-sump-tools',2,9,33,'집수정 청소 도구','배수 트렌치 주변에만 바퀴 자국이 남아 있다.');
  wall('relayPlant','relay-locker-guide',5,17,5.5,'정비대 검증 표지','잠금함 A·B·C의 문장 중 정확히 하나만 참이다. 핸들 위치 하나를 가정하고 참인 문장을 세어 볼 것.');
- for(const [m,id,x,y]of [['relayEntry','relay-entry-clock',30,6.5],['relayArchive','relay-archive-clock',20,5.5],['relaySignal','relay-signal-clock',43,6.5]])wall(m,id,5,x,y,'멈춘 점검 시계','초침이 한 칸 되돌아간다. 원본 기록의 시각은 이 시계가 아니라 접수지에 남아 있다.');
+ for(const [m,id,x,y]of [['relayEntry','relay-entry-clock',30,6.5],['relayArchive','relay-archive-clock',20,5.5],['relaySignal','relay-signal-clock',43,6.5]])wall(m,id,5,x,y,'멈춘 점검 시계','시계는02:13에 멎고 초침만 한 칸 되돌아간다. 원본 기록의 시각은 이 시계가 아니라 접수지에 남아 있다.',{wallClock:true,details:undefined});
  M.relayEntry.rooms.push({x:4,y:17,w:4,h:7,name:'꺾인 인계 사진 통로'});
  M.relayArchive.rooms.push({x:51,y:18,w:5,h:10,name:'동쪽 복원 사진 보관 통로'});
  M.relayPlant.rooms.push({x:7,y:30,w:14,h:5,name:'집수정 점검 구역'});
  M.relaySignal.rooms.push({x:7,y:31,w:13,h:6,name:'초상이 걸린 귀환 통로'});
+ // Reception has one joined counter, not three disconnected office desks.
+ for(const [x,index]of [[12,0],[16,2]])furniture('relayEntry','relay-counter-'+index,'counter',x,12,'안내 카운터 연결 구간','한 줄로 이어진 방문객 응대 면. 인계 서랍은 중앙에 있다.',{counter:index,partOf:'relay-register',w:31,back:31,front:14});
+ const receptionChair=M.relayEntry.objects.find(o=>o.id==='relay-entry-chair');Object.assign(receptionChair,{x:14*32,y:9*32,description:'카운터 뒤 직원 작업석의 회전 의자.'});
+ Object.assign(M.relayYard.objects.find(o=>o.id==='relay-yard-bench'),{parkingBench:true,description:'야외 금속 슬랫 벤치. 좌석 오른쪽에는 뚜껑을 닫은 물병, 중앙에는 작업 장갑이 놓여 있다. 실제로 온 동행자들의 휴게 흔적이다.'});
+ furniture('relayYard','relay-yard-barrier','barrier',7,17,'차량 진입 차단기와 인터폰','방문 차량의 진입을 관리하는 차단기. 오른쪽 보행 통로는 별도로 열려 있다.',{parkingBarrier:true,w:40,back:28,front:12});
  for(const [m,id,patch]of [
- ['relayEntry','relay-register',{facility:0}],
+ ['relayEntry','relay-register',{facility:undefined,counter:1,x:14*32,y:12*32,w:31,back:31,front:14,name:'연속 안내 카운터 · 인계 서랍'}],
  ['relayEntry','relay-duty-sofa',{kind:'bed',name:'당직자용 단일 침대',description:'접수 당직자가 교대 때 사용하는 좁은 침대. 침구와 머리맡이 벽 쪽에 정돈되어 있다.',facility:1,x:29*32,y:19*32,w:25,back:58,front:14}],
  ['relayEntry','relay-duty-table',{facility:2,x:36*32,y:20*32,w:30,back:26,front:10,name:'당직실 탕비대'}],
  ['relayArchive','relay-shelf-a',{facility:3}],['relayArchive','relay-shelf-c',{facility:3}],

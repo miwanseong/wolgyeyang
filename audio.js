@@ -18,6 +18,7 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  dice: "fx_dice_roll.wav",
   giggle: "fx_female_giggle.wav",
   puzzleSlide: "fx_puzzle_slide.wav",
   puzzleTurn: "fx_puzzle_turn.wav",
@@ -133,6 +134,18 @@ export class AudioDirector {
         oldGain.disconnect();
       }, fade*1000+100);
     }
+  }
+  crowdLevel(level=0,distorted=false){
+    if(!this.ctx)return;
+    const changed=this.crowdTarget!==level||this.crowdDistorted!==distorted;
+    this.crowdTarget=level;this.crowdDistorted=distorted;
+    if(this.crowdGain&&!changed)return;
+    if(this.crowdGain){this.crowdGain.gain.setTargetAtTime(level,this.ctx.currentTime,.5);this.crowdSource.playbackRate.setTargetAtTime(distorted ? .76 : 1,this.ctx.currentTime,1);return;}
+    if(!level||this.crowdLoading)return;
+    this.crowdLoading=true;
+    fetch('assets/audio/crowd_murmur.wav'+new URL(import.meta.url).search).then(r=>{if(!r.ok)throw Error(r.status);return r.arrayBuffer();}).then(b=>this.ctx.decodeAudioData(b)).then(buffer=>{
+      this.crowdGain=this.ctx.createGain();this.crowdGain.gain.value=this.crowdTarget||0;this.crowdSource=this.ctx.createBufferSource();this.crowdSource.buffer=buffer;this.crowdSource.loop=true;this.crowdSource.playbackRate.value=this.crowdDistorted ? .76 : 1;this.crowdSource.connect(this.crowdGain).connect(this.fxBus);this.crowdSource.start();
+    }).catch(()=>{this.error('배경 웅성거림을 불러오지 못했습니다.');}).finally(()=>this.crowdLoading=false);
   }
   async effect(name, level=1) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;

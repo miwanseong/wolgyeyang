@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=abbeb66692c5";
+import { canMove, sight, findPath } from "./world.js?v=b4a96b0d9035";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -170,8 +170,9 @@ export class ProgressHaunt{
   if(!allowed||s.ending)return null;
   this.cooldown=Math.max(0,this.cooldown-dt);if(this.cooldown)return null;
   this.elapsed+=dt;
-  if(this.elapsed>=110){this.elapsed=0;this.warned=false;this.cooldown=150;return {kind:'insist'};}
-  if(this.elapsed>=90&&!this.warned){this.warned=true;return {kind:'warning'};}
+  const pressure=s.flags.chapter2?(s.investigation?.stress||0)*5:0;
+  if(this.elapsed>=110-pressure){this.elapsed=0;this.warned=false;this.cooldown=150;return {kind:'insist'};}
+  if(this.elapsed>=90-pressure&&!this.warned){this.warned=true;return {kind:'warning'};}
   return null;
  }
 }

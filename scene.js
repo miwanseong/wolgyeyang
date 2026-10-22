@@ -1,5 +1,5 @@
-import {facilityArt,residentArt} from './facility-art.js?v=abbeb66692c5';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=abbeb66692c5";
+import {facilityArt} from './facility-art.js?v=b4a96b0d9035';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=b4a96b0d9035";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -165,33 +165,35 @@ export class Scene {
     this.mask = document.createElement("canvas");
     this.mask.width = canvas.width;
     this.mask.height = canvas.height;
-    this.facilityTiles=facilityArt();this.residentTiles=residentArt();this.npcs=[];
+    this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=abbeb66692c5",
-        "assets/seoha-walk.png?v=abbeb66692c5",
-        "assets/props-painted.png?v=abbeb66692c5",
-        "assets/floors-painted.png?v=abbeb66692c5",
-        "assets/jeongwoo-motions.png?v=abbeb66692c5",
-        "assets/seoha-diagonal.png?v=abbeb66692c5",
-        "assets/shoe-cabinet.png?v=abbeb66692c5",
-        "assets/chair-turn.png?v=abbeb66692c5",
-        "assets/room-modules.png?v=abbeb66692c5",
-        "assets/dining-table.png?v=abbeb66692c5",
-        "assets/regional-props.png?v=abbeb66692c5",
-        "assets/wall-side.png?v=abbeb66692c5",
-        "assets/architecture.png?v=abbeb66692c5",
-        "assets/technical-kit.png?v=abbeb66692c5",
-        "assets/technical-doors.png?v=abbeb66692c5",
-        "assets/kitchen-kit.png?v=abbeb66692c5",
-        "assets/decor-kit.png?v=abbeb66692c5",
-        "assets/supply-kit.png?v=abbeb66692c5",
-        "assets/room-details.png?v=abbeb66692c5",
-        "assets/seoyun-echo.png?v=abbeb66692c5",
-        "assets/relay-floors.png?v=abbeb66692c5",
-        "assets/haunted-portraits.png?v=abbeb66692c5",
+        "assets/props-support.png?v=b4a96b0d9035",
+        "assets/seoha-walk.png?v=b4a96b0d9035",
+        "assets/props-painted.png?v=b4a96b0d9035",
+        "assets/floors-painted.png?v=b4a96b0d9035",
+        "assets/jeongwoo-motions.png?v=b4a96b0d9035",
+        "assets/seoha-diagonal.png?v=b4a96b0d9035",
+        "assets/shoe-cabinet.png?v=b4a96b0d9035",
+        "assets/chair-turn.png?v=b4a96b0d9035",
+        "assets/room-modules.png?v=b4a96b0d9035",
+        "assets/dining-table.png?v=b4a96b0d9035",
+        "assets/regional-props.png?v=b4a96b0d9035",
+        "assets/wall-side.png?v=b4a96b0d9035",
+        "assets/architecture.png?v=b4a96b0d9035",
+        "assets/technical-kit.png?v=b4a96b0d9035",
+        "assets/technical-doors.png?v=b4a96b0d9035",
+        "assets/kitchen-kit.png?v=b4a96b0d9035",
+        "assets/decor-kit.png?v=b4a96b0d9035",
+        "assets/supply-kit.png?v=b4a96b0d9035",
+        "assets/room-details.png?v=b4a96b0d9035",
+        "assets/seoyun-echo.png?v=b4a96b0d9035",
+        "assets/relay-floors.png?v=b4a96b0d9035",
+        "assets/haunted-portraits.png?v=b4a96b0d9035",
+        "assets/reception-parking.png?v=b4a96b0d9035",
+        "assets/resident-walk.png?v=b4a96b0d9035",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk]) => {
       Object.assign(this, {
         props,
         actor,
@@ -199,11 +201,13 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
+        residentWalk,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
         ready: true,
       });
+      this.receptionParking=receptionParking;
       const rects=[[14,58,390,270],[442,24,300,306],[825,30,220,300],[1105,10,330,325],[25,390,354,300],[425,378,330,322],[780,350,310,350],[1110,332,330,370],[10,736,430,310],[465,704,265,345],[780,714,310,336],[1123,692,305,360]];
       this.regionalTiles=rects.map(([x,y,w,h],index)=>{
         const tile=document.createElement('canvas');tile.dataset.asset='regional-'+index;tile.width=128;tile.height=Math.ceil(128*h/w);
@@ -279,6 +283,16 @@ export class Scene {
     const c = this.ctx,
       changed = propState(o, s);
     const facing=wallFacing(this.map,o);
+    if(o.wallClock){
+      const g=mountedGeometry(this.map,o,26,26),x=g.x+g.w/2,y=g.y+g.h/2;c.save();c.fillStyle='#181a1a';c.beginPath();c.arc(x,y,13,0,7);c.fill();c.fillStyle='#bbbcb1';c.beginPath();c.arc(x,y,11,0,7);c.fill();c.strokeStyle='#383a36';c.lineWidth=1;
+      for(let k=0;k<12;k++){const a=k*Math.PI/6;c.beginPath();c.moveTo(x+Math.sin(a)*8,y-Math.cos(a)*8);c.lineTo(x+Math.sin(a)*10,y-Math.cos(a)*10);c.stroke();}
+      for(const [a,len]of [[(2+13/60)*Math.PI/6,5],[13*Math.PI/30,8],[this.reduced?0:Math.sin(t*.003)>.2?0:-Math.PI/30,9]]){c.beginPath();c.moveTo(x,y);c.lineTo(x+Math.sin(a)*len,y-Math.cos(a)*len);c.stroke();}c.restore();return;
+    }
+    if(o.counter!==undefined){
+      const xs=[64,535,1016],ws=[464,480,488];c.drawImage(this.receptionParking,xs[o.counter],0,ws[o.counter],480,o.x-32.5,o.y-51,65,64);return;
+    }
+    if(o.parkingBench){c.drawImage(this.receptionParking,30,512,480,450,o.x-48,o.y-77,96,90);return;}
+    if(o.parkingBarrier){c.drawImage(this.receptionParking,1024,512,512,460,o.x-56,o.y-91,112,101);return;}
     if(o.shadowProfile){
       c.save();c.fillStyle='#0008';c.beginPath();c.moveTo(o.x-9,o.y-36);c.lineTo(o.x+38,o.y-13);c.lineTo(o.x+52,o.y+29);c.lineTo(o.x+4,o.y+16);c.closePath();c.fill();
       c.fillStyle='#17191a';c.fillRect(o.x-13,o.y-78,21,88);c.fillStyle='#3b3e3e';c.beginPath();c.moveTo(o.x-13,o.y-78);c.lineTo(o.x-5,o.y-86);c.lineTo(o.x+13,o.y-78);c.lineTo(o.x+8,o.y-72);c.fill();c.fillStyle='#252828';c.fillRect(o.x+7,o.y-72,6,79);c.fillStyle='#85858055';c.fillRect(o.x+7,o.y-72,1,76);c.restore();return;
@@ -291,7 +305,8 @@ export class Scene {
       c.fillStyle='#454948';c.fillRect(o.x-15,o.y-65,3,72);c.fillRect(o.x+12,o.y-65,3,72);c.fillStyle='#242a2a';c.fillRect(o.x-32,o.y-70,64,40);c.strokeStyle='#858e88';c.strokeRect(o.x-32,o.y-70,64,40);c.fillStyle='#bdc4ba';c.font='8px sans-serif';c.textAlign='center';c.fillText(o.id.includes('bus')?'← 산길 · 정류장':'안내·접수동 →',o.x,o.y-51);c.textAlign='start';return;
     }
     if(o.yardVisual==='car'){
-      c.fillStyle='#0008';c.fillRect(o.x-24,o.y-60,52,81);c.fillStyle=o.variant===1?'#6b706d':'#303735';c.fillRect(o.x-22,o.y-66,44,82);c.fillStyle='#111a1b';c.fillRect(o.x-17,o.y-55,34,16);c.fillRect(o.x-17,o.y-9,34,14);c.fillStyle='#555f5c';c.fillRect(o.x-18,o.y-35,36,25);c.fillStyle='#a4aaa1';c.fillRect(o.x-18,o.y-65,9,3);c.fillRect(o.x+10,o.y-65,9,3);c.fillStyle='#090c0c';c.fillRect(o.x-26,o.y-45,5,17);c.fillRect(o.x+21,o.y-45,5,17);return;
+      c.save();if(o.variant===1)c.filter='brightness(.75)';else if(o.variant===2)c.filter='brightness(1.13)';
+      c.drawImage(this.receptionParking,520,512,504,470,o.x-58,o.y-102,116,110);c.restore();return;
     }
     if(o.chapterVisual){
       this.prop({...o,chapterVisual:null},s,t,dt);
@@ -768,6 +783,9 @@ export class Scene {
     }
     if(map.outdoor){
       c.strokeStyle='#a5afa16a';c.lineWidth=2;
+      c.fillStyle='#bcbcb655';for(let x=6;x<33;x+=3)c.fillRect(x*32,13*32,32,3);c.fillRect(23*32,6*32,4,7*32);for(let y=17;y<27;y+=2)c.fillRect(31*32,y*32,2*32,10);
+      c.fillStyle='#d2d2c94a';for(let i=0;i<3;i++){c.fillRect((8+i*5)*32,6.5*32,2*32,6);}
+
       for(let i=0;i<3;i++)c.strokeRect((7+i*5)*32,6*32,4*32,5*32);
       c.fillStyle='#0c161950';for(let i=0;i<6;i++){c.beginPath();c.ellipse((9+i*4)*32,18*32,32+i*3,9,0,0,7);c.fill();}
       c.fillStyle='#79857777';c.font='12px sans-serif';c.fillText('안내 · 접수동 →',26*32,18*32);c.fillText('← 산길 / 정류장',6*32,26*32);
@@ -808,9 +826,12 @@ export class Scene {
     }));
     for(const n of this.npcs){drawables.push({y:n.y,draw:()=>{
       c.save();c.fillStyle='#0007';c.beginPath();c.ellipse(n.x,n.y+3,12,4,0,0,7);c.fill();
-      const frame=n.moving?Math.floor(n.walk)%2:0,tile=this.residentTiles[n.direction*6+n.column*2+frame];
+      const frame=n.moving?Math.floor(n.walk)%2:0;
+      if(n.ambient){const sw=this.residentWalk.width/6,sh=this.residentWalk.height/4;c.globalAlpha=s.flags.relayPower ? .65 : .8;c.filter='brightness(0)';c.drawImage(this.residentWalk,(n.column*2+frame)*sw,n.direction*sh,sw,sh,n.x-35,n.y-62,70,70);c.restore();return;}
+      const sw=this.residentWalk.width/6,sh=this.residentWalk.height/4;
+
       c.translate(n.x,n.y);if(n.phase===2&&!this.reduced)c.transform(1,0,Math.sin(t*.002+n.column)*.07,1,0,0);
-      c.globalAlpha=n.phase===2?.83:1;c.drawImage(tile,-24,-69,48,72);c.restore();
+      c.globalAlpha=n.phase===2 ? .83 : 1;c.filter='grayscale(1)';c.drawImage(this.residentWalk,(n.column*2+frame)*sw,n.direction*sh,sw,sh,-35,-62,70,70);c.restore();
     }});}
     if (!s.hidden)
       drawables.push({
