@@ -1,7 +1,7 @@
-import { Scene, facingDirection } from "./scene.js?v=b6f6d3de2e33";
-import { MAPS, sight, canMove, worldFor } from "./world.js?v=b6f6d3de2e33";
-import { locomotion, Pursuer } from "./mechanics.js?v=b6f6d3de2e33";
-import { AudioDirector, TRACKS } from "./audio.js?v=b6f6d3de2e33";
+import { Scene, facingDirection } from "./scene.js?v=7a11ca623a48";
+import { MAPS, sight, canMove, worldFor, nearestObject } from "./world.js?v=7a11ca623a48";
+import { locomotion, Pursuer } from "./mechanics.js?v=7a11ca623a48";
+import { AudioDirector, TRACKS } from "./audio.js?v=7a11ca623a48";
 import {
   initial,
   ITEMS,
@@ -10,8 +10,9 @@ import {
   restore,
   unlock,
   repair,
+  collectFuse,
   finish,
-} from "./state.js?v=b6f6d3de2e33";
+} from "./state.js?v=7a11ca623a48";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -155,7 +156,7 @@ function objective() {
     return "1층 관리실 · 잠긴 서랍에서 보관함 단서를 찾는다";
   if (!state.flags.power && !state.bag.includes("fuse"))
     return "동쪽 계단 ↓ B1 · 공용 창고에서 예비 퓨즈를 찾는다";
-  if (!state.flags.power) return "B1 수변전실 · 분전반에 퓨즈를 장착한다";
+  if (!state.flags.power) return "B1 전기실 · 열린 회로함의 빈 퓨즈 홀더를 채운다";
   if (!state.flags.locker) return "1층 관리실 · 날짜와 월 단서로 보관함을 연다";
   if (!state.flags.listened)
     return "동쪽 계단 ↑ 2층 방송실 · 테이프를 재생한다";
@@ -214,9 +215,11 @@ function interact() {
   const o = nearest,
     id = o.id;
   if(o.internalDoor){
-    const open=!!state.flags['open_'+id];
+    const open=state.flags['open_'+id]??!!o.defaultOpen;
     if(open&&Math.abs(state.x-o.x)<o.w+7&&Math.abs(state.y-o.y)<o.h+5){toast('문에서 한 걸음 비킨 뒤 닫아야 한다.');return;}
-    state.flags['open_'+id]=!open;sound.effect('door');toast(o.name+(open?'을 닫았다.':'을 열었다.'));return;
+    state.flags['open_'+id]=!open;
+    if(o.barrier&&open){if(enemy.active)enemy.stunned=3.8;const mapId=state.map;setTimeout(()=>{if(state.map===mapId)state.flags['open_'+id]=true;},3800);}
+    sound.effect('door');toast(o.name+(open?'을 닫았다.':'을 열었다.'));return;
   }
   if (o.to) {
     state.flags["seen_"+id]=true;
@@ -247,6 +250,14 @@ function interact() {
       pickup(o.collectible);addNote(o.collectible,o.description);
       say(o.name,o.description+'\n\nTab → 소지품·기록에서 다시 확인할 수 있다.');
     }else say(o.name,'챙긴 문서는 휴대폰의 기록 앱에 남아 있다.\n'+o.description);
+    return;
+  }
+  if(o.fixture==='curtain'){
+    const open=state.flags['curtain_'+id]??o.decor===1;state.flags['curtain_'+id]=!open;
+    say(o.name,(open?'커튼을 천천히 닫았다. 창에 비치던 방 안의 모습이 천 뒤로 사라진다.':'커튼을 조금 걷었다. 바깥은 어둡고, 창에는 내 뒤의 방만 비친다.')+'\n'+o.description);return;
+  }
+  if(o.fixture==='mirror'){
+    say(o.name,'거울이 있다.\n다가선 나의 얼굴이 유리에 비친다.\n고개를 돌렸는데도, 유리 안의 눈은 조금 늦게 따라온다.');
     return;
   }
   switch (id) {
@@ -328,10 +339,11 @@ function interact() {
         );
         break;
       }
-      pickup("fuse");
+      if(!collectFuse(state,o)){say(o.name,'공구함을 살펴보지만 꺼낼 수 있는 퓨즈가 없다.');break;}
+      sound.effect('item');scene.burst(o.x,o.y,'spark');toast('예비 퓨즈 획득 · 공구함의 흰 트레이가 비었다.');
       say(
         "공구 상자",
-        "작업대 공구함의 포장을 뜯어 예비 퓨즈를 꺼냈다.\n「관리실 보관함·방송실 공용 회로」.\n전기를 되살리면 유품과 마지막 녹음을 확인할 수 있다.",
+        "열린 공구함의 흰 트레이에서 유리관 퓨즈 하나를 꺼냈다.\n「24V 비상 제어 회로 — 전기실 벽면 홀더용」.\n전기를 되살리면 유품과 마지막 녹음을 확인할 수 있다.",
       );
       break;
     case "power":
@@ -339,20 +351,20 @@ function interact() {
         say("분전반", "전류가 낮게 울린다. 관리실과 방송실 회로가 살아 있다.");
         break;
       }
-      if (!repair(state)) {
-        say("분전반", "퓨즈 하나가 비어 있다.\n벽의 화살표는 창고를 가리킨다.");
+      if (!repair(state,o)) {
+        say("분전반", "퓨즈 하나가 비어 있다.\n열린 덮개 안의 두 금속 클립 사이가 비어 있다.\n같은 유리관 퓨즈는 서쪽 창고의 열린 공구함에 보관한다.");
         break;
       }
       sound.effect("thud");
       state.stamina=100;
       toast("전력 복구 · 방송 장치가 켜졌다");
-      scene.burst(nearest.x,nearest.y,"spark");
+      scene.burst(o.x,o.y-38,"spark");
       scene.impact();
       huntDelay = 1.5;
       forcedCue = "panic";
       say(
         "서하",
-        "퓨즈가 들어맞았다.\n복도 끝에서 무언가 켜지는 소리가 들린다.",
+        "전기실 벽의 열린 제어 회로함. 비어 있던 홀더의 두 클립 사이에 유리관 퓨즈가 들어맞았다.\n24V 제어 회로 표시등이 켜진다. 복도 끝에서 무언가 움직이는 소리가 들린다.",
       );
       break;
     case "locker":
@@ -749,7 +761,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=b6f6d3de2e33", memory: "assets/event-memory.png?v=b6f6d3de2e33"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=7a11ca623a48", memory: "assets/event-memory.png?v=7a11ca623a48"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -874,24 +886,12 @@ function render(t) {
   }else{ghostStepClock=0;lastGhostMotion=null;}
   const map = worldFor(state);
   scene.map=map;
-  nearest = state.hidden
-    ? null
-    : map.objects
-        .filter(
-          (o) =>
-            Math.hypot(o.x - state.x, o.y - state.y) <
-              (o.kind === "stairs" ? 76 : 70) && sight(map, state, o),
-        )
-        .sort(
-          (a, b) =>
-            Math.hypot(a.x - state.x, a.y - state.y) -
-            Math.hypot(b.x - state.x, b.y - state.y),
-        )[0] || null;
+  nearest = state.hidden ? null : nearestObject(map,state);
   $("interaction").hidden =
     (!nearest && !state.hidden) || dialog || phone || traveling;
   $("interaction").querySelector("span").textContent = state.hidden
     ? "숨은 곳에서 나온다"
-    : (nearest?.id === "exit" && state.flags.listened ? "열린 현관 · 밖으로" : nearest?.name) || "";
+    : (nearest?.id === "exit" && state.flags.shutterOpen ? "열린 현관 · 밖으로" : nearest?.name) || "";
   $("objective").textContent = objective();
   if ($("room-name").textContent !== map.name) {
     $("room-name").textContent = map.name;

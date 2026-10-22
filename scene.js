@@ -1,4 +1,4 @@
-import { sight, opaque, closedDoorAt } from "./world.js?v=b6f6d3de2e33";
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual } from "./world.js?v=7a11ca623a48";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -65,6 +65,15 @@ export function portalAnchor(map,o) {
   }
   return best?{x:Math.abs(best.x+.5-o.x/32)<1?o.x:best.x*32+16,y:best.y*32}:{x:o.x,y:o.y};
 }
+export function torchHitsSurface(map,s,o){
+ if(!s.flashlight||!s.bag.includes('flashlight')||s.hidden||!(o.mount||o.internalDoor))return false;
+ const dx=o.x-s.x,dy=o.y-s.y,d=Math.hypot(dx,dy),angle=Math.atan2(dy,dx)-s.facing;
+ return d<175&&Math.abs(Math.atan2(Math.sin(angle),Math.cos(angle)))<.68&&sight(map,s,o);
+}
+export function doorGeometry(map,o){
+ const facing=wallFacing(map,o),side=facing==='east'||facing==='west',span=o.aperture||32;
+ return {side,facing,span,width:side?30:span+8,height:side?span+40:72,dx:side?-15:-(span+8)/2,dy:side?-span-8:-56};
+}
 export function wallFacing(map,o){
  if(o.facing)return o.facing;
  if(!o.mount&&!['door','shutter','exit'].includes(o.kind))return 'north';
@@ -124,26 +133,32 @@ export class Scene {
     this.reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.ready = false;
     this.particles = [];
+    this.reflections=[];
     this.mask = document.createElement("canvas");
     this.mask.width = canvas.width;
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=b6f6d3de2e33",
-        "assets/seoha-walk.png?v=b6f6d3de2e33",
-        "assets/props-painted.png?v=b6f6d3de2e33",
-        "assets/floors-painted.png?v=b6f6d3de2e33",
-        "assets/jeongwoo-motions.png?v=b6f6d3de2e33",
-        "assets/seoha-diagonal.png?v=b6f6d3de2e33",
-        "assets/shoe-cabinet.png?v=b6f6d3de2e33",
-        "assets/chair-turn.png?v=b6f6d3de2e33",
-        "assets/room-modules.png?v=b6f6d3de2e33",
-        "assets/dining-table.png?v=b6f6d3de2e33",
-        "assets/regional-props.png?v=b6f6d3de2e33",
-        "assets/wall-side.png?v=b6f6d3de2e33",
-        "assets/architecture.png?v=b6f6d3de2e33",
+        "assets/props-support.png?v=7a11ca623a48",
+        "assets/seoha-walk.png?v=7a11ca623a48",
+        "assets/props-painted.png?v=7a11ca623a48",
+        "assets/floors-painted.png?v=7a11ca623a48",
+        "assets/jeongwoo-motions.png?v=7a11ca623a48",
+        "assets/seoha-diagonal.png?v=7a11ca623a48",
+        "assets/shoe-cabinet.png?v=7a11ca623a48",
+        "assets/chair-turn.png?v=7a11ca623a48",
+        "assets/room-modules.png?v=7a11ca623a48",
+        "assets/dining-table.png?v=7a11ca623a48",
+        "assets/regional-props.png?v=7a11ca623a48",
+        "assets/wall-side.png?v=7a11ca623a48",
+        "assets/architecture.png?v=7a11ca623a48",
+        "assets/technical-kit.png?v=7a11ca623a48",
+        "assets/technical-doors.png?v=7a11ca623a48",
+        "assets/kitchen-kit.png?v=7a11ca623a48",
+        "assets/decor-kit.png?v=7a11ca623a48",
+        "assets/supply-kit.png?v=7a11ca623a48",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit]) => {
       Object.assign(this, {
         props,
         actor,
@@ -163,6 +178,11 @@ export class Scene {
       const cacheFrames=(im,rects)=>rects.map(([x,y,w,h])=>{const tile=document.createElement('canvas');tile.width=128;tile.height=Math.ceil(128*h/w);const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x,y,w,h,0,0,tile.width,tile.height);return tile});
       this.wallTiles=cacheFrames(wallSide,[[100,38,190,390],[545,38,225,390],[982,10,180,425],[1425,8,250,430],[105,465,215,405],[558,530,195,275],[995,460,180,414],[1416,458,205,420]]);
       this.architectureTiles=cacheFrames(architecture,[[45,30,380,392],[493,30,390,392],[970,42,280,390],[1405,16,235,438],[25,450,335,410],[455,550,420,192],[925,505,300,302],[1270,510,490,290]]);
+      this.technicalTiles=cacheFrames(technicalKit,[[80,10,250,374],[397,10,250,374],[778,10,258,374],[1123,10,253,374],[45,405,280,307],[367,405,325,310],[710,470,440,220],[1162,398,235,318],[85,710,212,370],[404,732,255,348],[774,710,280,370],[1182,729,200,339]]);
+      this.technicalDoorTiles=cacheFrames(technicalDoors,[[244,0,200,508],[666,0,200,508],[1065,0,270,508],[243,510,200,514],[665,510,200,514],[1065,510,270,514]]);
+      this.kitchenTiles=cacheFrames(kitchenKit,[[92,75,360,389],[590,75,366,389],[1090,35,370,429],[80,540,380,452],[655,520,237,482],[1090,590,380,333]]);
+      this.decorTiles=cacheFrames(decorKit,[[27,25,357,490],[420,25,384,490],[852,80,285,430],[1170,158,340,367],[27,535,403,455],[475,585,310,395],[812,570,347,403],[1215,600,266,290]]);
+      this.supplySheet=supplyKit;
       // Cache static tile sampling at its actual game resolution once, rather than
       // scaling large illustrations for every floor cell on every animation frame.
       const floorTiles=document.createElement('canvas');floorTiles.width=256;floorTiles.height=256;
@@ -205,10 +225,53 @@ export class Scene {
   impact() {
     this.shake = this.reduced ? 0 : 0.4;
   }
+  reflection(o,s,t,pane,opacity=1){
+    const distance=Math.hypot(s.x-o.x,s.y-o.y),inFront=s.y>o.y+10;
+    if(!inFront||distance>175)return;
+    const delayed=this.reflections.find(p=>p.t>=t-260)||s,dx=Math.max(-pane.w*.3,Math.min(pane.w*.3,(o.x-delayed.x)*.22));
+    const c=this.ctx,sw=this.actor.width/4,sh=this.actor.height/4,scale=1-Math.min(.28,(distance-40)/500);
+    c.save();c.beginPath();c.rect(pane.x,pane.y,pane.w,pane.h);c.clip();c.globalAlpha=opacity*Math.max(.15,1-distance/230);
+    const h=Math.min(54,pane.h*1.1)*scale,w=h;c.translate(pane.x+pane.w/2+dx,pane.y+pane.h*.7);c.scale(-1,1);
+    c.drawImage(this.actor,sw,0,sw,sh,-w/2,-h*.72,w,h);c.restore();
+  }
   prop(o, s, t, dt) {
     const c = this.ctx,
       changed = propState(o, s);
     const facing=wallFacing(this.map,o);
+    const fixture=fixtureVisual(o,s);
+    if(fixture){
+      const sw=this.supplySheet.width/3,sh=this.supplySheet.height/2,i=fixture.index;
+      // Crops are shared between paired states so the cabinet/workbench never changes size.
+      const sizes={0:[66,62],1:[88,72],2:[88,72],3:[96,92],4:[96,92],5:[44,40]},[w,h]=sizes[i];
+      c.drawImage(this.supplySheet,i%3*sw,Math.floor(i/3)*sh,sw,sh,o.x-w/2,o.mount?o.y-h+12:o.y-h+14,w,h);
+      if(o.fixture==='fuse-socket'){c.fillStyle=s.flags.power?'#eee':'#333';c.fillRect(o.x-18,o.y-44,3,3);}
+      return;
+    }
+    if(o.kitchenTile!==undefined){
+      const tile=this.kitchenTiles[o.kitchenTile],w=o.kitchenTile===4?40:64,h=o.kitchenTile===4?82:o.kitchenTile===5?52:68;
+      c.drawImage(tile,o.x-w/2,o.y-h+(o.mount?0:14),w,h);return;
+    }
+    if(o.decor!==undefined){
+      const decor=o.fixture==='curtain'?((s.flags['curtain_'+o.id]??o.decor===1)?1:0):o.decor,tile=this.decorTiles[decor],sizes={0:[o.id.startsWith('vanity')?32:64,80],1:[o.id.startsWith('vanity')?32:64,80],2:[48,72],3:[68,60],4:[54,58],5:[36,44],6:[46,54],7:[38,42]},[w,h]=sizes[o.decor],y=o.mount?o.y-h-4:o.y+12-h;
+      c.drawImage(tile,o.x-w/2,y,w,h);
+      if(o.fixture==='mirror')this.reflection(o,s,t,{x:o.x-w*.35,y:y+h*.18,w:w*.7,h:h*.68},.95);
+      if(o.reflective)this.reflection(o,s,t,{x:o.x-w*.32,y:y+h*.2,w:w*.64,h:h*.6},.25);
+      return;
+    }
+    if(o.technical!==undefined){
+      const index=o.technical===4&&s.flags.locker?5:o.technical,tile=this.technicalTiles[index];
+      if(o.technical===6){
+        // A mixing desk has a real worktop, feet and cable route; the cassette is on it.
+        c.fillStyle='#151515';c.fillRect(o.x-54,o.y-23,108,35);c.fillStyle='#555';c.fillRect(o.x-55,o.y-24,110,5);
+        c.fillStyle='#333';c.fillRect(o.x-48,o.y+8,7,12);c.fillRect(o.x+41,o.y+8,7,12);
+        c.drawImage(tile,o.x-54,o.y-60,108,54);c.strokeStyle='#111';c.lineWidth=2;c.beginPath();c.moveTo(o.x+39,o.y+15);c.lineTo(o.x+58,o.y+24);c.lineTo(o.x+58,9*32);c.stroke();
+      }else{
+        const sizes={4:[64,70],5:[76,72],7:[44,60],8:[34,60],9:[40,52],10:[54,68],11:[24,40]},[width,height]=sizes[index]||[48,60];
+        c.drawImage(tile,o.x-(index===5?32:width/2),o.mount?o.y-height-4:o.y+12-height,width,height);
+        if(o.technical===4){c.fillStyle=s.flags.power?'#bdbdbd':'#252525';c.fillRect(o.x+4,o.y-34,8,4);}
+      }
+      return;
+    }
     if(o.kind==='shutter'){
       const anchor=portalAnchor(this.map,o),target=s.flags.shutterOpen?1:0;
       let amount=this.objectStates.get(o.id)??target;amount+=(target-amount)*(this.reduced?1:1-Math.exp(-dt*2.5));this.objectStates.set(o.id,amount);
@@ -294,16 +357,21 @@ export class Scene {
         c.textAlign = "center";
         c.fillText(o.label || "STAIRS", 0, -73);
       } else {
-        const frame=o.internalDoor?+!!s.flags['open_'+o.id]:o.sealed?0:+!!s.flags['seen_'+o.id];
+        const frame=o.internalDoor?+doorOpen(this.map,o):o.sealed?0:+!!s.flags['seen_'+o.id],g=doorGeometry(this.map,o);
+        if(facing==='west')c.scale(-1,1);
         if(o.sealed){
-          const side=facing==='east'||facing==='west',tile=this.architectureTiles[side?3:2];
-          if(facing==='west')c.scale(-1,1);c.drawImage(tile,side?-14:-28,-24,side?30:56,64);
-        }else if(facing==='east'||facing==='west'){
-          if(facing==='west')c.scale(-1,1);const tile=this.wallTiles[6+frame];c.drawImage(tile,-14,o.internalDoor?-32:-20,30,64);
-        }else{
-          const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;
-          c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,-28,-18,56,50);
-        }
+          const tile=this.architectureTiles[g.side?3:2];c.drawImage(tile,g.dx,g.dy,g.width,g.height);
+        }else if(o.doorType==='fire'||o.doorType==='acoustic'||o.doorType==='service'){
+          if(g.side){
+            const tile=this.technicalDoorTiles[(o.doorType==='acoustic'?3:0)+frame];c.drawImage(tile,g.dx,g.dy,g.width,g.height);
+          }else{
+            const tile=o.doorType==='service'?null:this.technicalTiles[(o.doorType==='acoustic'?2:0)+frame];
+            if(tile)c.drawImage(tile,g.dx,g.dy,g.width,g.height);
+            else{const tile=this.technicalDoorTiles[frame?5:2];c.drawImage(tile,g.dx,g.dy,g.width,g.height);}
+          }
+        }else if(g.side){const tile=this.wallTiles[6+frame];c.drawImage(tile,g.dx,g.dy,g.width,g.height);}
+        else{const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,g.dx,g.dy,g.width,g.height);}
+        c.strokeStyle='#777';c.lineWidth=2;if(!g.side){c.beginPath();c.moveTo(-g.span/2,16);c.lineTo(g.span/2,16);c.stroke();}
         c.fillStyle='#aaa';c.font='6px monospace';c.textAlign='center';
         c.fillText(o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,-25);
 
@@ -440,6 +508,20 @@ export class Scene {
       m.fill();
     }
     m.filter = "none";
+    // A wall face projects above its collision tile. Illuminate that face when the
+    // torch hits it, while keeping the ray blocked from rooms behind the wall.
+    for(const o of this.map.objects){
+      if(!torchHitsSurface(this.map,s,o))continue;
+      let rw=46,rh=52,top=o.y-45;
+      if(o.fixture==='mirror'){rw=48;rh=72;top=o.y-rh-4;}
+      else if(o.fixture==='curtain'){rw=o.id.startsWith('vanity')?32:64;rh=80;top=o.y-rh-4;}
+      else if(o.fixture==='fuse-socket'){rw=96;rh=92;top=o.y-rh+12;}
+      else if(o.internalDoor){const g=doorGeometry(this.map,o);rw=g.width;rh=g.height;top=o.y+g.dy;}
+      const x=(o.x-rw/2-camX)*z,y=(top-camY)*z,cx=x+rw*z/2,cy=y+rh*z/2;
+      const wash=m.createRadialGradient(cx,cy,2,cx,cy,Math.max(rw,rh)*z*.8);
+      wash.addColorStop(0,'#fffffff5');wash.addColorStop(.65,'#ffffffc0');wash.addColorStop(1,'#fff0');
+      m.fillStyle=wash;m.fillRect(x,y,rw*z,rh*z);
+    }
     m.globalCompositeOperation = "source-over";
     this.ctx.drawImage(this.mask, 0, 0);
     if (enemy?.active) {
@@ -469,6 +551,7 @@ export class Scene {
       w = this.canvas.width,
       h = this.canvas.height,
       map = this.map;
+    this.reflections.push({x:s.x,y:s.y,t});this.reflections=this.reflections.filter(p=>p.t>t-700);
     this.camera.update(s, dt, dialog ? this.focus : null, this.reduced);
     const z = this.camera.zoom,
       vw = w / z,
@@ -508,7 +591,7 @@ export class Scene {
             i * sw,
             (map.id === "upper" && x >= 26 && y < 17
               ? 3
-              : map.id === "apartment" && x >= 18 && y < 18
+              : map.id === "apartment" && ((x >= 18 && y < 12)||(x>=4&&x<=10&&y>=20))
                 ? 0
                 : row) * sh,
             sw,
@@ -523,10 +606,10 @@ export class Scene {
         } else if (v === 2) {
           const floorBelow=map.grid[y+1]?.[x]===1,floorAbove=map.grid[y-1]?.[x]===1;
           if(floorBelow){
-            c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,y*32-18,32,50);
-            c.fillStyle='#0006';c.fillRect(x*32,y*32-18,32,50);
-            c.fillStyle='#777';c.fillRect(x*32,y*32-18,32,4);
-            c.fillStyle='#999';c.fillRect(x*32,y*32-18,32,1);
+            c.drawImage(this.floors,((x+y)%4)*sw,2*sh,sw,sh,x*32,y*32-40,32,72);
+            c.fillStyle='#0006';c.fillRect(x*32,y*32-40,32,72);
+            c.fillStyle='#777';c.fillRect(x*32,y*32-40,32,4);
+            c.fillStyle='#999';c.fillRect(x*32,y*32-40,32,1);
             c.fillStyle='#252525';c.fillRect(x*32,y*32+24,32,8);
             c.fillStyle='#0007';c.fillRect(x*32,y*32+30,32,11);
           }else{
@@ -547,10 +630,11 @@ export class Scene {
         c.fill();
       }
     }
+    c.save();c.beginPath();for(let yy=0;yy<map.h;yy++)for(let xx=0;xx<map.w;xx++)if(map.grid[yy][xx]===1)c.rect(xx*32,yy*32,32,32);c.clip();
     // Architectural room treatments, each aligned to the same tile grid as the furniture.
-    const rugs={management:[[7,8,6,5]],apartment:[[11,6,6,5],[21,9,6,4]],upper:[[30,9,6,5]]}[map.id]||[];
+    const rugs={management:[[7,8,6,5]],apartment:[[11,6,6,5],[25,21,4,4]],upper:[[29,11,5,4]]}[map.id]||[];
     for(const [rx,ry,rw,rh] of rugs){
-      for(let yy=0;yy<rh;yy++)for(let xx=0;xx<rw;xx++)c.drawImage(this.floors,sw,3*sh,sw,sh,(rx+xx)*32,(ry+yy)*32,32,32);
+      for(let yy=0;yy<rh;yy++)for(let xx=0;xx<rw;xx++)if(map.grid[ry+yy]?.[rx+xx]===1)c.drawImage(this.floors,sw,3*sh,sw,sh,(rx+xx)*32,(ry+yy)*32,32,32);
       c.strokeStyle='#9996';c.lineWidth=1;c.strokeRect(rx*32+4,ry*32+4,rw*32-8,rh*32-8);
     }
     // Low-contrast floor treatments tie furniture groups to the architecture.
@@ -570,6 +654,7 @@ export class Scene {
         c.fillStyle="#09090955";c.fillRect(o.x-width/2,o.y+18,width,2);
       }
     }
+    c.restore();
     for (const o of map.objects.filter(o=>o.kind==="stairs")) this.prop(o,s,t,dt);
     const drawables = map.objects.filter(o=>o.kind!=="stairs").map((o) => ({
       y: o.y,
@@ -626,7 +711,7 @@ export class Scene {
     if (nearest && !dialog) {
       c.strokeStyle = "#ddd";
       c.lineWidth = 0.7;
-      const marker=nearest.kind==="door"||nearest.kind==="exit"?portalAnchor(map,nearest):nearest;
+      const marker=["door","exit","shutter"].includes(nearest.kind)?portalAnchor(map,nearest):nearest;
       const y = marker.y - (["door","exit","shutter"].includes(nearest.kind)?24:nearest.mount ? 45 : 66) - Math.sin(t / 400) * 2;
       c.beginPath();
       c.moveTo(marker.x - 4, y);
