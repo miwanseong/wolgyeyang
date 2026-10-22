@@ -1,9 +1,10 @@
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=55c5ee831762";
-import { Scene, facingDirection } from "./scene.js?v=55c5ee831762";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=55c5ee831762";
-import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=55c5ee831762";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=55c5ee831762";
-import { AudioDirector, TRACKS } from "./audio.js?v=55c5ee831762";
+import { CaptureAnimation, latestCheckpoint } from './capture.js?v=7a030f85f62d';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=7a030f85f62d";
+import { Scene, facingDirection } from "./scene.js?v=7a030f85f62d";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=7a030f85f62d";
+import { locomotion, Pursuer, StillnessHaunt } from "./mechanics.js?v=7a030f85f62d";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=7a030f85f62d";
+import { AudioDirector, TRACKS } from "./audio.js?v=7a030f85f62d";
 import {
   initial,
   ITEMS,
@@ -15,7 +16,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=55c5ee831762";
+} from "./state.js?v=7a030f85f62d";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -37,6 +38,8 @@ let state = initial(),
   huntDelay = 0,
   huntCooldown = 0,
   forcedCue = null;
+const captureAnimation = new CaptureAnimation($("capture-animation"));
+let deathCheckpoint=null, captureFinished=false;
 const scene = new Scene(canvas, MAPS.lobby),
   stillness = new StillnessHaunt(),
   enemy = new Pursuer(),
@@ -48,6 +51,7 @@ function toast(text) {
   toastTimer = setTimeout(() => ($("toast").hidden = true), 3200);
 }
 function cue() {
+  if(!$("death-screen").hidden)return "hunt";
   if(!$('story-sequence').hidden&&forcedCue)return forcedCue;
   return enemy.active
     ? enemy.mode === "chase" ? "chase" : "hunt"
@@ -649,7 +653,7 @@ function app(name) {
         try {
           if (name === "save") {
             const write = () => {
-              localStorage.setItem(`janryu-save-${i}`, JSON.stringify(state));
+              localStorage.setItem(`janryu-save-${i}`, JSON.stringify({...state,savedAt:Date.now()}));
               sound.effect("save");
               toast("기억을 저장했다.");
               app(name);
@@ -810,7 +814,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=55c5ee831762", memory: "assets/event-memory.png?v=55c5ee831762"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=7a030f85f62d", memory: "assets/event-memory.png?v=7a030f85f62d"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -820,28 +824,33 @@ function showEvent(kind, title, caption, after = () => {}) {
   button.onclick = () => { screen.hidden = true; eventActive = false; keys.clear(); after(); if (!dialog) canvas.focus(); };
 }
 function caught() {
-  showEvent("capture", state.flags.chapter2?"다시, 중계소 접수동":"다시, 현관", "복도 끝의 발소리가 내 뒤에서 멎었다.", recoverAfterCapture);
+  if(eventActive)return;
+  eventActive=true;keys.clear();state.running=false;
+  deathCheckpoint=latestCheckpoint(slot);captureFinished=false;
+  captureAnimation.reset();
+  $("death-screen").hidden=false;$("death-screen").tabIndex=-1;$("death-screen").focus();
+  $("death-result").hidden=true;$("death-retry").disabled=true;
+  sound.effect("rush");sound.effect("capture");
+  updateSound();
 }
 function recoverAfterCapture() {
-  pursuerTrail=null;
-  enemy.reset();
-  huntDelay = 0;
-  huntCooldown = 18;
-  state.hidden = false;
-  state.stamina = 100;
-  state.exhausted = false;
-  stillness.reset();
-  state.map = state.flags.chapter2?"relayEntry":"lobby";
-  state.x = (state.flags.chapter2?44:11) * 32;
-  state.y = (state.flags.chapter2?30:20) * 32;
-  state.flashlight = state.bag.includes("flashlight");
-  scene.begin(state, worldFor(state));
-  forcedCue = "missing";
-  say(
-    "서하",
-    (state.flags.chapter2?"눈을 뜨자 중계소 접수동이었다. 대조한 기록과 복구한 설비는 그대로다.":"목덜미에 차가운 손이 닿았다.\n눈을 뜨자 다시 현관이었다. 손에 쥔 물건은 그대로다.")+"\n\n달리기는 거리를 벌리지만 오래 버틸 수 없다.\n손전등을 끄고 보관장에 숨거나, 방화문을 닫아 시간을 벌자.",
-  );
+  if(!captureFinished)return;
+  $("death-screen").hidden=true;eventActive=false;keys.clear();
+  pursuerTrail=null;enemy.reset();stillness.reset();
+  huntDelay=0;huntCooldown=8;stepClock=0;heartClock=0;
+  traveling=false;phone=false;phoneApp=null;dialog=false;pendingEvent=null;
+  $("phone-modal").hidden=true;$("dialog").hidden=true;
+  forcedCue=null;
+  if(!deathCheckpoint){begin(false);return;}
+  state=migrateStorySave(deathCheckpoint.state);
+  scene.begin(state,worldFor(state));
+  huntDelay=canHunt()?8:0;
+  $("phone-hint").hidden=!!state.flags.phoneLearned;
+  canvas.focus();updateSound();
+  if(state.ending)resumeConclusion();
+  toast(`${deathCheckpoint.slot}번 저장 지점으로 돌아왔다. 저장 이후 진행은 사라졌다.`);
 }
+$("death-retry").onclick=recoverAfterCapture;
 let roomTimer;
 function revealRoom(name) {
   clearTimeout(roomTimer);
@@ -855,6 +864,18 @@ function render(t) {
   last = t;
   if (!started) return;
   if(document.hidden){stillness.reset();return;}
+  if(!$("death-screen").hidden){
+    const pose=captureAnimation.draw(dt,scene.reduced);
+    if(pose.done&&!captureFinished){
+      captureFinished=true;$("death-result").hidden=false;
+      $("death-checkpoint").textContent=deathCheckpoint
+        ? `${deathCheckpoint.slot}번 저장 지점에서 이어집니다. 저장 이후의 진행은 사라집니다.`
+        : "불러올 수 있는 저장이 없습니다. 이야기의 처음부터 시작합니다.";
+      $("death-retry").textContent=deathCheckpoint?"저장 지점에서 이어하기":"처음부터 시작하기";
+      $("death-retry").disabled=false;$("death-retry").focus();
+    }
+    return;
+  }
   let dx = 0,
     dy = 0;
   if (!eventActive && !dialog && !phone && !traveling) {
@@ -1015,6 +1036,11 @@ function flashlight() {
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   if (eventActive) {
+    if(!$("death-screen").hidden){
+      if(k==='tab'){e.preventDefault();if(captureFinished)$("death-retry").focus();}
+      else if(!captureFinished)e.preventDefault();
+      return;
+    }
     if(!$('story-sequence').hidden&&k==='tab'){
       e.preventDefault();const buttons=[...$('story-actions').querySelectorAll('button:not(:disabled)')];
       if(buttons.length){const i=buttons.indexOf(document.activeElement);buttons[(i+(e.shiftKey?-1:1)+buttons.length)%buttons.length].focus();}return;

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#111110" />
     <title>잔류 — 마지막 입주자</title>
-    <link rel="stylesheet" href="style.css?v=55c5ee831762" />
+    <link rel="stylesheet" href="style.css?v=7a030f85f62d" />
   </head>
   <body>
     <div class="grain"></div>
@@ -119,7 +119,7 @@
         <div class="dialog-content">
           <img
             id="portrait"
-            src="assets/seoha.png?v=55c5ee831762"
+            src="assets/seoha.png?v=7a030f85f62d"
             alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상"
             hidden
           />
@@ -136,7 +136,7 @@
         휴대폰 내려놓기 <kbd>Esc</kbd>
       </button>
       <div class="hand">
-        <img class="hand-back" src="assets/hand.png?v=55c5ee831762" alt="" />
+        <img class="hand-back" src="assets/hand.png?v=7a030f85f62d" alt="" />
         <div class="phone">
           <div class="island"></div>
           <div class="phone-status"><span>23:41</span><span>••• ▰</span></div>
@@ -250,7 +250,11 @@
       <div class="story-caption"><small id="story-kicker"></small><h2 id="story-heading"></h2><p id="story-line"></p><div id="story-actions"></div><p id="story-evidence"></p></div>
       <span id="story-stamp" class="story-stamp" hidden>증거 접수</span>
     </section>
+    <section id="death-screen" role="dialog" aria-modal="true" aria-labelledby="death-title" hidden>
+      <canvas id="capture-animation" width="1280" height="800" aria-label="정우가 서하를 덮쳐 목을 조르고, 몸부림이 멎으며 시야가 어두워진다."></canvas>
+      <div id="death-result" hidden><small>잔류 · 사망</small><h2 id="death-title">숨이 멎었다.</h2><p id="death-checkpoint"></p><button id="death-retry" disabled>다시 시작</button></div>
+    </section>
     <div id="toast" role="status" hidden></div>
-    <script type="module" src="app.js?v=55c5ee831762"></script>
+    <script type="module" src="app.js?v=7a030f85f62d"></script>
   </body>
 </html>

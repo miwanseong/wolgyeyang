@@ -1,4 +1,4 @@
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=55c5ee831762";
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=7a030f85f62d";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -166,26 +166,26 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=55c5ee831762",
-        "assets/seoha-walk.png?v=55c5ee831762",
-        "assets/props-painted.png?v=55c5ee831762",
-        "assets/floors-painted.png?v=55c5ee831762",
-        "assets/jeongwoo-motions.png?v=55c5ee831762",
-        "assets/seoha-diagonal.png?v=55c5ee831762",
-        "assets/shoe-cabinet.png?v=55c5ee831762",
-        "assets/chair-turn.png?v=55c5ee831762",
-        "assets/room-modules.png?v=55c5ee831762",
-        "assets/dining-table.png?v=55c5ee831762",
-        "assets/regional-props.png?v=55c5ee831762",
-        "assets/wall-side.png?v=55c5ee831762",
-        "assets/architecture.png?v=55c5ee831762",
-        "assets/technical-kit.png?v=55c5ee831762",
-        "assets/technical-doors.png?v=55c5ee831762",
-        "assets/kitchen-kit.png?v=55c5ee831762",
-        "assets/decor-kit.png?v=55c5ee831762",
-        "assets/supply-kit.png?v=55c5ee831762",
-        "assets/room-details.png?v=55c5ee831762",
-        "assets/seoyun-echo.png?v=55c5ee831762",
+        "assets/props-support.png?v=7a030f85f62d",
+        "assets/seoha-walk.png?v=7a030f85f62d",
+        "assets/props-painted.png?v=7a030f85f62d",
+        "assets/floors-painted.png?v=7a030f85f62d",
+        "assets/jeongwoo-motions.png?v=7a030f85f62d",
+        "assets/seoha-diagonal.png?v=7a030f85f62d",
+        "assets/shoe-cabinet.png?v=7a030f85f62d",
+        "assets/chair-turn.png?v=7a030f85f62d",
+        "assets/room-modules.png?v=7a030f85f62d",
+        "assets/dining-table.png?v=7a030f85f62d",
+        "assets/regional-props.png?v=7a030f85f62d",
+        "assets/wall-side.png?v=7a030f85f62d",
+        "assets/architecture.png?v=7a030f85f62d",
+        "assets/technical-kit.png?v=7a030f85f62d",
+        "assets/technical-doors.png?v=7a030f85f62d",
+        "assets/kitchen-kit.png?v=7a030f85f62d",
+        "assets/decor-kit.png?v=7a030f85f62d",
+        "assets/supply-kit.png?v=7a030f85f62d",
+        "assets/room-details.png?v=7a030f85f62d",
+        "assets/seoyun-echo.png?v=7a030f85f62d",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho]) => {
       Object.assign(this, {

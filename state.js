@@ -1,5 +1,5 @@
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=55c5ee831762";
-import { canSurrender } from "./story.js?v=55c5ee831762";
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=7a030f85f62d";
+import { canSurrender } from "./story.js?v=7a030f85f62d";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
