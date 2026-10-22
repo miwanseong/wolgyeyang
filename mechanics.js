@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=7b5bc40c7b84";
+import { canMove, sight, findPath } from "./world.js?v=fc53a15ca23c";
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
     wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),
@@ -31,6 +31,7 @@ export class Pursuer {
     this.x = 0;
     this.y = 0;
     this.path = [];
+    this.target=null;
     this.repath = 0;
     this.lost = 0;
     this.alert = 0;
@@ -45,18 +46,15 @@ export class Pursuer {
       for (let x = 2; x < map.w - 2; x++) {
         const p = { x: x * 32 + 16, y: y * 32 + 16 },
           d = Math.hypot(p.x - s.x, p.y - s.y);
-        if (
-          d > 260 &&
-          d < 550 &&
-          canMove(map, p.x, p.y) &&
-          findPath(map, p, s).length
-        )
-          possible.push(p);
+        if(d>260&&d<550&&canMove(map,p.x,p.y)){
+          const path=findPath(map,p,s);
+          if(path.length)possible.push({...p,score:path.length+(sight(map,p,s)?3:0)});
+        }
       }
-    if (!possible.length) return false;
-    const p =
-      possible.find((p) => !sight(map, p, s)) || possible[possible.length - 1];
-    Object.assign(this, p, { active: true, mode: "search" });
+    if(!possible.length)return false;
+    possible.sort((a,b)=>a.score-b.score);
+    const p=possible[0];
+    Object.assign(this,{x:p.x,y:p.y,active:true,mode:'search',target:{x:s.x,y:s.y}});
     return true;
   }
   update(map, s, dt) {
@@ -76,7 +74,7 @@ export class Pursuer {
     } else {
       this.lost += dt;
       if (this.lost > 2) this.mode = "search";
-      if ((s.hidden && this.lost > 4) || this.lost > 12) {
+      if ((s.hidden && this.lost > 4) || this.lost > 18) {
         this.active = false;
         this.mode = "gone";
         return "escaped";
@@ -92,7 +90,7 @@ export class Pursuer {
       const dx = next.x - this.x,
         dy = next.y - this.y,
         dist = Math.hypot(dx, dy),
-        speed = this.mode === "chase" ? 125 : 65;
+        speed = this.mode === "chase" ? 125 : 85;
       if (dist < 5) this.path.shift();
       else {
         const step = Math.min(dist, speed * dt);

@@ -1,4 +1,4 @@
-import { sight } from "./world.js?v=7b5bc40c7b84";
+import { sight } from "./world.js?v=fc53a15ca23c";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -20,6 +20,7 @@ export const PROP_TYPES = [
   "radiator",
   "monitor",
 ];
+const EXTRAS=["bench","chair","cabinet","crates","rack","radiator","notice","calendar","photo","window","monitor","door"];
 const PAINTED = [
   "desk",
   "locker",
@@ -93,16 +94,14 @@ export class Scene {
     this.mask.height = canvas.height;
     this.assets = Promise.all(
       [
-        "assets/tileset.svg?v=7b5bc40c7b84",
-        "assets/props.svg?v=7b5bc40c7b84",
-        "assets/seoha-walk.png?v=7b5bc40c7b84",
-        "assets/props-painted.png?v=7b5bc40c7b84",
-        "assets/floors-painted.png?v=7b5bc40c7b84",
-        "assets/jeongwoo.png?v=7b5bc40c7b84",
+        "assets/props-support.png?v=fc53a15ca23c",
+        "assets/seoha-walk.png?v=fc53a15ca23c",
+        "assets/props-painted.png?v=fc53a15ca23c",
+        "assets/floors-painted.png?v=fc53a15ca23c",
+        "assets/jeongwoo.png?v=fc53a15ca23c",
       ].map(load),
-    ).then(([tiles, props, actor, painted, floors, monster]) => {
+    ).then(([props, actor, painted, floors, monster]) => {
       Object.assign(this, {
-        tiles,
         props,
         actor,
         painted,
@@ -174,36 +173,11 @@ export class Scene {
         c.textAlign = "center";
         c.fillText(o.label || "STAIRS", 0, -73);
       } else {
-        c.fillStyle = "#111";
-        c.fillRect(-31, -68, 62, 81);
-        c.fillStyle = "#8a8a8a";
-        c.fillRect(-32, -70, 64, 5);
-        c.fillRect(-32, -70, 5, 83);
-        c.fillRect(27, -70, 5, 83);
-        c.fillStyle = "#363636";
-        c.fillRect(-26, -64, 52, 70);
-        c.strokeStyle = "#676767";
-        c.strokeRect(-21, -59, 42, 52);
-        c.fillStyle = "#c6c6c6";
-        c.fillRect(17, -24, 3, 9);
-        c.fillStyle = "#aaa";
-        c.font = "6px monospace";
-        c.textAlign = "center";
-        c.fillText(
-          o.kind === "exit"
-            ? "EXIT"
-            : o.barrier
-              ? "FIRE DOOR"
-              : o.id === "apartment-door"
-                ? "101"
-                : "",
-          0,
-          -48,
-        );
-        if (o.kind === "exit" && s.flags.listened) {
-          c.fillStyle = "#090909";
-          c.fillRect(-15, -58, 37, 62);
-        }
+        const frame=o.kind==='exit'&&s.flags.listened||s.flags['seen_'+o.id]?1:0;
+        const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;
+        c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,-42,-81,84,100);
+        c.fillStyle='#aaa';c.font='6px monospace';c.textAlign='center';
+        c.fillText(o.kind==='exit'?'EXIT':o.barrier?'FIRE DOOR':o.id==='apartment-door'?'101':'',0,-84);
       }
       c.restore();
       return;
@@ -213,8 +187,8 @@ export class Scene {
     blend += (changed - blend) * (this.reduced ? 1 : 1 - Math.exp(-dt * 12));
     this.objectStates.set(o.id, blend);
     const size =
-        o.kind === "bed" ? 114 : o.kind === "bench" ? 93 : o.mount ? 66 : 88,
-      dy = o.mount ? o.y - 40 : o.y - size * 0.76;
+        o.kind === "bed" ? 114 : o.kind === "bench" ? 93 : o.mount ? 54 : 88,
+      dy = o.mount ? o.y - 37 : o.y - size * 0.76;
     for (const [frame, alpha] of [
       [0, 1 - blend],
       [1, blend],
@@ -237,13 +211,13 @@ export class Scene {
           size,
         );
       } else {
-        const n = Math.max(0, PROP_TYPES.indexOf(o.kind)) * 2 + frame;
+        const n = Math.max(0, EXTRAS.indexOf(o.kind)) * 2 + frame;
         c.drawImage(
           this.props,
-          (n % 6) * 128,
-          Math.floor(n / 6) * 128,
-          128,
-          128,
+          (n % 6) * (this.props.width/6),
+          Math.floor(n / 6) * (this.props.height/4),
+          this.props.width/6,
+          this.props.height/4,
           o.x - size / 2,
           dy,
           size,

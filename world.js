@@ -227,9 +227,12 @@ M.upper.objects = [
     description: "잠깐 추격을 늦출 수 있다. 문을 닫아도 오래 버티지는 못한다.",
   }),
 ];
+M.basement.objects.push(prop('utility-hide','cabinet',39,15,'수변전실 청소함',{hide:true,description:'분전반 옆 피난용 청소함. 불을 끄고 몸을 숨길 수 있다.'}));
+M.upper.objects.push(prop('broadcast-hide','cabinet',38,14,'방송실 장비 보관장',{hide:true,description:'케이블이 빠진 보관장. 안에서 문을 닫을 수 있다.'}));
 // Room entrances are actual openings, rather than painted doors through solid walls.
 for (const id of ["basement", "upper"]) {
   const m = M[id];
+  for(const [left,right] of (id==="basement"?[[5,20],[27,40]]:[[4,20],[26,40]]))for(let x=left;x<=right;x++)m.grid[16][x]=2;
   for (const x of id === "basement" ? [13, 33] : [12, 33])
     for (let y = 15; y <= 17; y++) {
       m.grid[y][x] = 1;

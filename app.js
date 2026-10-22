@@ -1,7 +1,7 @@
-import { Scene } from "./scene.js?v=7b5bc40c7b84";
-import { MAPS, sight, canMove } from "./world.js?v=7b5bc40c7b84";
-import { locomotion, Pursuer } from "./mechanics.js?v=7b5bc40c7b84";
-import { AudioDirector, TRACKS } from "./audio.js?v=7b5bc40c7b84";
+import { Scene } from "./scene.js?v=fc53a15ca23c";
+import { MAPS, sight, canMove } from "./world.js?v=fc53a15ca23c";
+import { locomotion, Pursuer } from "./mechanics.js?v=fc53a15ca23c";
+import { AudioDirector, TRACKS } from "./audio.js?v=fc53a15ca23c";
 import {
   initial,
   ITEMS,
@@ -11,7 +11,7 @@ import {
   unlock,
   repair,
   finish,
-} from "./state.js?v=7b5bc40c7b84";
+} from "./state.js?v=fc53a15ca23c";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -168,7 +168,7 @@ function transition(to, spawn) {
     [state.x, state.y] = spawn.map((n) => n * 32);
     scene.begin(state, MAPS[to]);
     if (state.flags.power && ["basement", "upper"].includes(to)) {
-      huntDelay = 7;
+      huntDelay = to === "upper" ? 12 : 7;
       toast("계단 아래에서 발소리가 따라온다. 숨을 곳을 먼저 확인하자.");
     }
     updateSound();
@@ -201,6 +201,7 @@ function interact() {
   const o = nearest,
     id = o.id;
   if (o.to) {
+    state.flags["seen_"+id]=true;
     transition(o.to, o.spawn);
     return;
   }
@@ -316,6 +317,7 @@ function interact() {
         break;
       }
       sound.effect("thud");
+      state.stamina=100;
       toast("전력 복구 · 방송 장치가 켜졌다");
       scene.burst(nearest.x,nearest.y,"spark");
       scene.impact();
@@ -400,6 +402,7 @@ function interact() {
         break;
       }
       state.flags.listened = true;
+      state.stamina=100;
       addNote(
         "tape",
         "서윤의 녹음: 문을 연 사람보다, 문이 있었다는 사실을 지우는 사람이 무서워. 이번에는 기록을 남겨 줘.",
@@ -768,6 +771,7 @@ function render(t) {
     )
       huntDelay = 14;
   }
+  if((dialog||phone)&&!traveling)locomotion(state,0,0,false,dt,MAPS[state.map]);
   scene.moved(dx, dy, dt, state.running);
   if (scene.moving) {
     stepClock += dt;
@@ -801,7 +805,7 @@ function render(t) {
     (!nearest && !state.hidden) || dialog || phone || traveling;
   $("interaction").querySelector("span").textContent = state.hidden
     ? "숨은 곳에서 나온다"
-    : nearest?.name || "";
+    : (nearest?.id === "exit" && state.flags.listened ? "열린 현관 · 밖으로" : nearest?.name) || "";
   $("objective").textContent = objective();
   if ($("room-name").textContent !== map.name) {
     $("room-name").textContent = map.name;
