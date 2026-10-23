@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=76c32dfe0f02";
-import { addRelayChapter } from "./chapter-world.js?v=76c32dfe0f02";
+import { STORY } from "./story.js?v=2c522cd53d9d";
+import { addRelayChapter } from "./chapter-world.js?v=2c522cd53d9d";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -552,42 +552,75 @@ export function sight(map, a, b) {
   return true;
 }
 export function clearSegment(map,a,b){
-  const steps=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)/8));
-  for(let i=1;i<=steps;i++)if(!canMove(map,a.x+(b.x-a.x)*i/steps,a.y+(b.y-a.y)*i/steps))return false;
-  return true;
-}
-export function findPath(map, from, to) {
-  const start = [Math.floor(from.x / 32), Math.floor(from.y / 32)],
-    goal = [Math.floor(to.x / 32), Math.floor(to.y / 32)],
-    q = [start],
-    seen = new Set([start.join(",")]),
-    parent = new Map();
-  let head = 0;
-  while (head < q.length) {
-    const v = q[head++];
-    if (v[0] === goal[0] && v[1] === goal[1]) {
-      const path = [];
-      let p = v;
-      while (p.join(",") !== start.join(",")) {
-        path.unshift({ x: p[0] * 32 + 16, y: p[1] * 32 + 16 });
-        p = parent.get(p.join(","));
-      }
-      return path;
-    }
-    for (const [dx, dy] of [
-      [0, 1],
-      [1, 0],
-      [0, -1],
-      [-1, 0],
-    ]) {
-      const n = [v[0] + dx, v[1] + dy],
-        key = n.join(",");
-      if (seen.has(key) || !clearSegment(map, v===start?from:{x:v[0]*32+16,y:v[1]*32+16}, {x:n[0]*32+16,y:n[1]*32+16}))
-        continue;
-      seen.add(key);
-      parent.set(key, v);
-      q.push(n);
-    }
+ if(!canMove(map,a.x,a.y)||!canMove(map,b.x,b.y))return false;
+ // Exact swept rectangle checks: sampling can skip the thin corner of a chair.
+ function crosses(left,top,right,bottom){
+  let enter=0,leave=1;
+  for(const [origin,delta,min,max]of [[a.x,b.x-a.x,left,right],[a.y,b.y-a.y,top,bottom]]){
+   if(Math.abs(delta)<1e-10){if(origin<=min||origin>=max)return false;continue;}
+   let lo=(min-origin)/delta,hi=(max-origin)/delta;if(lo>hi)[lo,hi]=[hi,lo];
+   enter=Math.max(enter,lo);leave=Math.min(leave,hi);if(leave-enter<1e-9)return false;
   }
-  return [];
+  return leave-enter>1e-9;
+ }
+ const left=Math.floor((Math.min(a.x,b.x)-7)/32),right=Math.floor((Math.max(a.x,b.x)+7)/32),top=Math.floor((Math.min(a.y,b.y)-5)/32),bottom=Math.floor((Math.max(a.y,b.y)+5)/32);
+ for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++)if(map.grid[y]?.[x]!==1&&crosses(x*32-7,y*32-5,(x+1)*32+7,(y+1)*32+5))return false;
+ for(const o of map.objects)if(o.solid&&!(o.internalDoor&&doorOpen(map,o))&&crosses(o.x-o.w-6,o.y-(o.back??o.h)-4,o.x+o.w+6,o.y+(o.front??o.h)+4))return false;
+ return true;
 }
+// Fine navigation shares the actor's collision footprint, including furniture and doors.
+const navigationCache=new WeakMap(),NAV_STEP=8;
+class NavigationHeap{
+ constructor(){this.items=[];}
+ push(item){const a=this.items;let i=a.length;a.push(item);while(i){const p=(i-1)>>1;if(a[p].f<=item.f)break;a[i]=a[p];i=p;}a[i]=item;}
+ pop(){const a=this.items,first=a[0],last=a.pop();if(a.length){let i=0;while(i*2+1<a.length){let c=i*2+1;if(c+1<a.length&&a[c+1].f<a[c].f)c++;if(a[c].f>=last.f)break;a[i]=a[c];i=c;}a[i]=last;}return first;}
+}
+function navigationFor(map){
+ const doors=map.objects.filter(o=>o.internalDoor).map(o=>o.id+':'+doorOpen(map,o)).join('|');
+ let nav=navigationCache.get(map.grid);
+ if(!nav||nav.objects!==map.objects||nav.doors!==doors){
+  const width=map.grid[0].length*4,height=map.grid.length*4;
+  nav={width,height,objects:map.objects,doors,walkable:new Uint8Array(width*height)};navigationCache.set(map.grid,nav);
+ }
+ return nav;
+}
+export function findPath(map,from,to){
+ if(clearSegment(map,from,to))return[{x:to.x,y:to.y}];
+ const nav=navigationFor(map),{width,height}=nav,count=width*height;
+ const point=id=>({x:(id%width)*NAV_STEP+4,y:Math.floor(id/width)*NAV_STEP+4});
+ const walkable=id=>{if(!nav.walkable[id]){const p=point(id);nav.walkable[id]=canMove(map,p.x,p.y)?2:1;}return nav.walkable[id]===2;};
+ function anchors(p,approach=false){
+  const result=[],cx=Math.floor(p.x/NAV_STEP),cy=Math.floor(p.y/NAV_STEP);
+  for(let dy=-3;dy<=3;dy++)for(let dx=-3;dx<=3;dx++){
+   const x=cx+dx,y=cy+dy;if(x<0||y<0||x>=width||y>=height)continue;
+   const id=y*width+x;if(!walkable(id))continue;const q=point(id),distance=Math.hypot(q.x-p.x,q.y-p.y);
+   if(approach||clearSegment(map,p,q))result.push({id,distance});
+  }
+  return result;
+ }
+ const starts=anchors(from),exactGoal=canMove(map,to.x,to.y),goals=anchors(to,!exactGoal);
+ if(!starts.length||!goals.length)return[];
+ const goalIds=new Map(goals.map(g=>[g.id,g.distance])),gscore=new Float64Array(count).fill(Infinity),parents=new Int32Array(count).fill(-1),closed=new Uint8Array(count),heap=new NavigationHeap();
+ const estimate=id=>{const p=point(id);return Math.hypot(p.x-to.x,p.y-to.y);};
+ for(const start of starts){gscore[start.id]=start.distance;heap.push({id:start.id,f:start.distance+estimate(start.id)});}
+ let found=-1;
+ while(heap.items.length){
+  const {id}=heap.pop();if(closed[id])continue;closed[id]=1;
+  if(goalIds.has(id)){found=id;break;}
+  const x=id%width,y=Math.floor(id/width),a=point(id);
+  for(const [dx,dy]of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,1],[1,-1],[-1,-1]]){
+   const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height)continue;
+   const next=ny*width+nx;if(closed[next]||!walkable(next))continue;
+   const b=point(next);if(!clearSegment(map,a,b))continue;
+   const cost=gscore[id]+NAV_STEP*(dx&&dy?Math.SQRT2:1);
+   if(cost>=gscore[next])continue;gscore[next]=cost;parents[next]=id;heap.push({id:next,f:cost+estimate(next)});
+  }
+ }
+ if(found<0)return[];
+ const raw=[];for(let id=found;id>=0;id=parents[id])raw.push(point(id));raw.reverse();if(exactGoal)raw.push({x:to.x,y:to.y});
+ // Remove only waypoints that can be traversed with the full collision footprint.
+ const path=[];let previous=from;
+ for(let i=0;i<raw.length;){let end=i;while(end+1<raw.length&&clearSegment(map,previous,raw[end+1]))end++;path.push(raw[end]);previous=raw[end];i=end+1;}
+ return path;
+}
+

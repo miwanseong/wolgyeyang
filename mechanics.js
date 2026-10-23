@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=76c32dfe0f02";
+import { canMove, sight, findPath, clearSegment } from "./world.js?v=2c522cd53d9d";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -62,6 +62,7 @@ export class Pursuer {
     this.path = [];
     this.target=null;
     this.repath = 0;
+    this.routeTarget=null;
     this.lost = 0;
     this.alert = 0;
     this.stunned = 0;
@@ -78,13 +79,18 @@ export class Pursuer {
       if(d<220||d>650||!canMove(map,p.x,p.y))continue;
       const path=findPath(map,p,s);if(path.length)possible.push({...p,score:path.length});
     }
-    if(!possible.length)for (let y = 2; y < map.h - 2; y++)
-      for (let x = 2; x < map.w - 2; x++) {
-        const p = { x: x * 32 + 16, y: y * 32 + 16 },d = Math.hypot(p.x - s.x, p.y - s.y);
-        if(d>260&&d<550&&canMove(map,p.x,p.y)){
-          const path=findPath(map,p,s);if(path.length)possible.push({...p,score:path.length+(sight(map,p,s)?3:0)});
-        }
+    if(!possible.length){
+      const candidates=[];
+      for(let y=2;y<map.h-2;y++)for(let x=2;x<map.w-2;x++){
+        const p={x:x*32+16,y:y*32+16},d=Math.hypot(p.x-s.x,p.y-s.y);
+        if(d>260&&d<550&&canMove(map,p.x,p.y))candidates.push({...p,score:d+(sight(map,p,s)?0:600)});
       }
+      candidates.sort((a,b)=>a.score-b.score);
+      // Test promising entrances first, rather than hundreds of full route searches.
+      const direct=candidates.find(p=>clearSegment(map,p,s));
+      if(direct)possible.push(direct);
+      else for(const p of candidates.slice(0,24)){if(findPath(map,p,s).length){possible.push(p);break;}}
+    }
     if(!possible.length)return false;
     possible.sort((a,b)=>a.score-b.score);
     const p=possible[0];
@@ -101,13 +107,28 @@ export class Pursuer {
     Object.assign(this,{active:true,x:point.x,y:point.y,age:1.2,grace:1.2,mode:'search',target:{x:entry.targetX??entry.x,y:entry.targetY??entry.y}});
     return true;
   }
+  navigate(map,target,dt,speed){
+    this.repath-=dt;
+    const changed=!this.routeTarget||Math.hypot(target.x-this.routeTarget.x,target.y-this.routeTarget.y)>20;
+    if(this.repath<=0||changed){this.path=findPath(map,this,target);this.routeTarget={x:target.x,y:target.y};this.repath=.45;}
+    let distance=speed*dt,moved=0;
+    while(distance>.001&&this.path.length){
+      const next=this.path[0],dx=next.x-this.x,dy=next.y-this.y,d=Math.hypot(dx,dy);
+      if(d<.1){this.path.shift();continue;}
+      const step=Math.min(d,distance),point={x:this.x+dx/d*step,y:this.y+dy/d*step};
+      if(!clearSegment(map,this,point)){this.path=[];this.repath=0;break;}
+      this.facing=Math.atan2(dy,dx);this.x=point.x;this.y=point.y;distance-=step;moved+=step;
+      if(step>=d-.001)this.path.shift();
+    }
+    return moved;
+  }
   update(map, s, dt) {
     if (!this.active) return null;
     this.age+=dt;
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
       const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
       const dx=s.x-this.x,dy=s.y-this.y,d=Math.hypot(dx,dy);
-      if(d>38){this.repath-=dt;if(this.repath<=0){this.path=findPath(map,this,s);this.repath=.45;}const p=this.path[0]||s,px=p.x-this.x,py=p.y-this.y,n=Math.hypot(px,py);if(n<5)this.path.shift();else{const step=Math.min(n,dt*100);if(canMove(map,this.x+px/n*step,this.y))this.x+=px/n*step;if(canMove(map,this.x,this.y+py/n*step))this.y+=py/n*step;}}
+      if(d>38)this.navigate(map,s,dt,100);
       else{h.opening=Math.min(1,h.opening+dt/1.3);if(h.opening>=1)return 'caught';}
       return null;
     }
@@ -137,32 +158,14 @@ export class Pursuer {
     if(this.motion==='windup'&&!this.windup)this.rush=.65;
     if(this.mode==='chase'&&!s.hidden){
       this.rushClock+=dt;
-      if(this.rushClock>4.5&&!this.grace&&d<170&&!this.rush&&!this.windup){this.windup=.65;this.rushClock=0;}
+      if(this.rushClock>4.5&&!this.grace&&d<170&&clearSegment(map,this,s)&&!this.rush&&!this.windup){this.windup=.65;this.rushClock=0;}
     }else{this.rushClock=4.5;this.windup=0;this.rush=0;}
     this.motion=this.age<1.2&&this.grace>0?'rise':this.windup>0?'windup':this.rush>0?'lunge':this.mode==='chase'?'crawl':'search';
-    this.repath -= dt;
-    if (this.target && this.repath <= 0) {
-      this.path = findPath(map, this, this.target);
-      this.repath = 0.45;
+    if(this.target){
+      const speed=this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
+      this.navigate(map,this.target,dt,speed);
     }
-    // BFS ends when the target tile is reached; finish the last few pixels too.
-    const next = this.path[0] || (this.target && sight(map, this, this.target) ? this.target : null);
-    if (next) {
-      const dx = next.x - this.x,
-        dy = next.y - this.y,
-        dist = Math.hypot(dx, dy),
-        speed = this.motion==="rise"?25:this.motion==="windup"?12:this.motion==="lunge"?170:this.mode === "chase" ? 125 : 85;
-      if (dist < 5) this.path.shift();
-      else {
-        this.facing=Math.atan2(dy,dx);
-        const step = Math.min(dist, speed * dt);
-        if (canMove(map, this.x + (dx / dist) * step, this.y))
-          this.x += (dx / dist) * step;
-        if (canMove(map, this.x, this.y + (dy / dist) * step))
-          this.y += (dy / dist) * step;
-      }
-    }
-    if (!this.grace && !s.hidden && Math.hypot(s.x - this.x, s.y - this.y) < 20)
+    if (!this.grace && !s.hidden && Math.hypot(s.x - this.x, s.y - this.y) < 20 && clearSegment(map,this,s))
       return "caught";
     return null;
   }
