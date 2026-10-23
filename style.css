@@ -1428,3 +1428,9 @@ button:active:not(:disabled) {
 @media(max-width:600px){#photo-map{width:116px;height:84px;right:9px;top:44px;border-width:3px}.roll-card{padding:22px}}
 
 #roll-panel[data-result=rolling] #roll-face{animation:die-tumble .18s ease-in-out infinite alternate}@keyframes die-tumble{from{transform:translateY(-7px) rotate(-13deg)}to{transform:translateY(5px) rotate(14deg)}}@media(prefers-reduced-motion:reduce){#roll-panel[data-result=rolling] #roll-face{animation:none}}
+
+#sanity-meter{position:absolute;left:18px;bottom:47px;z-index:8;font:10px monospace;letter-spacing:.12em;color:#c9c4b7;pointer-events:none}.fractured #world{filter:saturate(.3) contrast(1.12)}.fractured #sanity-meter{color:#d57c7c}
+
+.puzzle-body.sync canvas{width:100%;height:auto;border:1px solid #5f6d73;margin:14px 0}.puzzle-body.sync label{display:block}.puzzle-body.sync input[type=range]{width:100%;min-height:44px}.puzzle-body.sync>button{margin:5px;padding:12px}.puzzle-body.sync{max-height:88vh;overflow:auto}
+
+@media(max-width:600px){.room-reveal{max-width:calc(100% - 146px);overflow-wrap:anywhere}.room-reveal h2{font-size:14px;letter-spacing:.12em}}

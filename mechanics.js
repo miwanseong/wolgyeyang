@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=33fa1af3e093";
+import { canMove, sight, findPath } from "./world.js?v=eaf575030a38";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -67,7 +67,7 @@ export class Pursuer {
     this.stunned = 0;
     this.grace = 3;
     this.mode = "idle";
-    this.age=0;this.motion="search";this.rushClock=4.5;this.windup=0;this.rush=0;
+    this.facing=0;this.age=0;this.motion="search";this.rushClock=4.5;this.windup=0;this.rush=0;
   }
   spawn(map, s) {
     this.reset();
@@ -154,6 +154,7 @@ export class Pursuer {
         speed = this.motion==="rise"?25:this.motion==="windup"?12:this.motion==="lunge"?170:this.mode === "chase" ? 125 : 85;
       if (dist < 5) this.path.shift();
       else {
+        this.facing=Math.atan2(dy,dx);
         const step = Math.min(dist, speed * dt);
         if (canMove(map, this.x + (dx / dist) * step, this.y))
           this.x += (dx / dist) * step;
@@ -167,7 +168,7 @@ export class Pursuer {
   }
 }
 
-const PROGRESS_FLAGS=['power','locker','listened','shutterOpen','chapter2','relayIncoming','relayCancel','relayOverride','relayCompared','relaySlide','relayLogic','relayPipes','relayCooling','relayIsolated','relayPower','relayLastVoice','relayErasure','relayProofTimeline','relayProofAccount'];
+const PROGRESS_FLAGS=['power','locker','listened','shutterOpen','chapter2','relayIncoming','relayCancel','relayOverride','relayCompared','relaySlide','relayLogic','relayPipes','relayCooling','relayIsolated','relayPower','relayLastVoice','relaySync','relayErasure','relayProofTimeline','relayProofAccount'];
 export function progressSignature(s){return JSON.stringify([s.bag.slice().sort(),s.notes.map(n=>n.id).sort(),PROGRESS_FLAGS.map(k=>!!s.flags[k])]);}
 export class ProgressHaunt{
  constructor(){this.reset();}

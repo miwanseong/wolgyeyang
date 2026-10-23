@@ -48,7 +48,7 @@ export function addRelayChapter(M,map,prop,door){
  wall('relayEntry','relay-duty-intercom',3,38,6.5,'내선 수화기','수화기 속에서 종이가 넘어가는 소리만 난다.');
  hide('relayEntry',39,17);
  for(const [x,id]of [[10,'a'],[23,'b'],[36,'c']])furniture('relayEntry','relay-wait-'+id,'bench',x,27,'벽 쪽 대기 의자','각 의자 아래의 먼지 자국이 바깥 문에서 기록동으로 이어진다.',{w:37,back:18,front:10});
- detail('relayEntry','relay-entry-umbrella',1,44,27,'젖은 우산꽂이','들어올 때 비는 오지 않았다.');
+ detail('relayEntry','relay-entry-umbrella',1,44,27,'젖은 우산꽂이','동행자들이 접어 둔 우산. 받침 트레이에 빗물이 모여 있다.');
  // Archive: raw intake and return-channel records are on different sides.
  leaf('relayArchive','relay-raw-door',15,23,'접수 기록실 문');
  leaf('relayArchive','relay-audit-door',39,23,'대조 청취실 문');
@@ -153,7 +153,7 @@ export function addRelayChapter(M,map,prop,door){
  Object.assign(M.relayYard.objects.find(o=>o.id==='relay-yard-bench'),{parkingBench:true,description:'야외 금속 슬랫 벤치. 좌석 오른쪽에는 뚜껑을 닫은 물병, 중앙에는 작업 장갑이 놓여 있다. 실제로 온 동행자들의 휴게 흔적이다.'});
  furniture('relayYard','relay-yard-barrier','barrier',7,17,'차량 진입 차단기와 인터폰','방문 차량의 진입을 관리하는 차단기. 오른쪽 보행 통로는 별도로 열려 있다.',{parkingBarrier:true,w:40,back:28,front:12,solid:false});
  for(const [m,id,patch]of [
- ['relayEntry','relay-register',{facility:undefined,counter:1,x:14*32,y:12*32,w:31,back:31,front:14,name:'연속 안내 카운터 · 인계 서랍'}],
+ ['relayEntry','relay-register',{facility:undefined,counter:1,x:14*32,y:12*32,w:31,back:31,front:14,name:'안내 데스크 · 인계 서랍과 시설 지도'}],
  ['relayEntry','relay-duty-sofa',{kind:'bed',name:'당직자용 단일 침대',description:'접수 당직자가 교대 때 사용하는 좁은 침대. 침구와 머리맡이 벽 쪽에 정돈되어 있다.',facility:1,x:29*32,y:19*32,w:25,back:58,front:14}],
  ['relayEntry','relay-duty-table',{facility:2,x:36*32,y:20*32,w:30,back:26,front:10,name:'당직실 탕비대'}],
  ['relayArchive','relay-shelf-a',{facility:3}],['relayArchive','relay-shelf-c',{facility:3}],

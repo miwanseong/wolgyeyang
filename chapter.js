@@ -1,6 +1,6 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=33fa1af3e093";
-import { MAPS, sight, worldFor } from "./world.js?v=33fa1af3e093";
-import { take, note } from "./state.js?v=33fa1af3e093";
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=eaf575030a38";
+import { MAPS, sight, worldFor } from "./world.js?v=eaf575030a38";
+import { take, note } from "./state.js?v=eaf575030a38";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -95,6 +95,7 @@ export function relayAction(s,o,choice=null){
  if(!s.flags.chapter2||!MAPS[s.map]?.objects.includes(o)||!o.chapterAction||Math.hypot(s.x-o.x,s.y-o.y)>=70||!sight(worldFor(s),s,o))return null;
  const action=o.chapterAction;
  if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다.');
+ if(action==='lastVoice'&&!s.flags.relayLastVoice&&!s.flags.relaySync)return result(o.name,'두 복제 신호가 어긋나 말소리가 묻힌다. 기준 펄스를 먼저 대조해야 한다.',{puzzle:'sync'});
  if(records[action]){
   const [flag,title,text]=records[action];const first=!s.flags[flag];s.flags[flag]=true;note(s,o.id,text);
   if(action==='register')take(s,'relayBadge');
@@ -105,7 +106,7 @@ export function relayAction(s,o,choice=null){
   if(!s.flags.relayIncoming||!s.flags.relayCancel||!s.flags.relayOverride)return result(o.name,'서류와 데크 세 곳을 먼저 조사해야 한다.\n서쪽 최초 접수지 / 동쪽 취소 통화 데크 / 동쪽 원격 회신 단말.');
   if(!s.flags.relaySlide)return result(o.name,'대조 장치의 밀판이 어긋나 있다.',{puzzle:'slide'});
   if(choice===null)return result(o.name,'세 기록은 한 번의 통화가 아니다. 실제로 일어난 순서대로 대조한다.\n기록 앱에 각 시각과 발신 내용이 남아 있다.',{choices:[['접수 → 취소 → 잠금 유지 회신','chronological'],['접수 → 잠금 유지 회신 → 취소','wrong'],['취소 → 접수 → 잠금 유지 회신','wrong']]});
-  if(choice!=='chronological')return result(o.name,'시각이 맞지 않는다. 23:41, 23:43, 23:47의 순서와 각 발신 내용을 다시 확인하자. 기록은 사라지지 않았다.');
+  if(choice!=='chronological')return result(o.name,'시각이 맞지 않는다. 23:41, 23:43, 23:47의 순서와 각 발신 내용을 다시 확인하자. 기록은 사라지지 않았다.',{mistake:true});
   take(s,'relayCopy');s.flags.relayCompared=true;note(s,'relay-comparison','23:41 접수 → 23:43 취소 → 23:47 잠금 유지. 취소가 개방을 뜻하지 않았다. 해린의 삭제 이력을 붙인 사본을 확보했다.');
   return result('대조 사본 출력','출력된 종이의 빈 줄에서 서윤의 손글씨가 떠오른다.\n「답을 보내 줘. 아직 기다리고 있어.」',{sound:'item',haunt:'아직 기다리고 있어'});
  }
@@ -137,6 +138,7 @@ export function relayAction(s,o,choice=null){
   note(s,'relay-ending',CINEMATICS[s.ending].label);return {cinematic:s.ending};
  }
  if(action==='transmit'){
+  if(choice==='wrong-proof')return result(o.name,'선택한 진술과 원본 기록이 일치하지 않는다.',{mistake:true});
   if(s.bag.includes('relayExport'))return result(o.name,'대조 기록과 23:44 통화를 증거 매체로 내보냈다.');
   if(!s.flags.relayPower||!s.bag.includes('relayCopy')||!s.flags.relayLastVoice)return result(o.name,'대조 사본, 비상 회선, 마지막 회신 청취가 모두 필요하다. 서쪽 청취실에서 서윤의 목소리를 끝까지 듣자.');
   if(!s.flags.relayErasure)return result(o.name,'대조 사본에 지워진 문장의 출처가 없다. 기록동 동쪽 청취실의 「해린의 수정 이력 서랍」을 확인해야 한다.');

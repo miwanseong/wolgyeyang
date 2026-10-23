@@ -18,6 +18,7 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  hallucination: "fx_hallucination.wav",
   checkSuccess: "fx_check_success.wav",
   checkFailure: "fx_check_failure.wav",
   photo: "fx_photo.wav",
@@ -55,7 +56,7 @@ export class AudioDirector {
     this.buffers = new Map();
     this.stepIndex = 0;
     this.playedEffects = 0;
-    this.lastError = "";
+    this.lastError = "";this.doorRequestedAt=-Infinity;this.doorSource=null;
     this.token = 0;
   }
   async start(cue = "main") {
@@ -152,6 +153,7 @@ export class AudioDirector {
   }
   async effect(name, level=1) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;
+    if(name==='door'){const now=performance.now();if(now-this.doorRequestedAt<650)return;this.doorRequestedAt=now;}
     try {
       let buffer = this.buffers.get(name);
       if (!buffer) {
@@ -164,8 +166,8 @@ export class AudioDirector {
       s.buffer = buffer;
       const gain=this.ctx.createGain();gain.gain.value=Math.max(0,Math.min(1,level));
       s.connect(gain).connect(this.fxBus);
-      s.onended=()=>gain.disconnect();
-      s.start();
+      s.onended=()=>{gain.disconnect();s.disconnect();if(this.doorSource===s)this.doorSource=null;};
+      if(name==='door'){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+.55,.08);s.start(0,0,Math.min(.9,buffer.duration));}else s.start();
       this.playedEffects++;
     } catch {
       this.error("효과음을 불러오지 못했습니다: " + name);
@@ -175,7 +177,7 @@ export class AudioDirector {
     if (!this.ctx || !this.enabled) return;
     const c = this.ctx,
       rate = c.sampleRate,
-      length = Math.floor(rate * 0.11),
+      length = Math.floor(rate * (surface==='water'?.18:.11)),
       b = c.createBuffer(1, length, rate),
       data = b.getChannelData(0);
     let sample = 0;
@@ -183,7 +185,7 @@ export class AudioDirector {
       sample = sample * 0.62 + (Math.random() * 2 - 1) * 0.38;
       data[i] =
         sample *
-        Math.exp(-i / (length * 0.16)) *
+        Math.exp(-i / (length * (surface==='water'?.4:.16))) *
         (surface === "wood" ? 0.75 : 1);
     }
     const source = c.createBufferSource(),
@@ -191,7 +193,7 @@ export class AudioDirector {
       gain = c.createGain();
     source.buffer = b;
     filter.type = "lowpass";
-    filter.frequency.value = surface === "wood" ? 850 : 1900;
+    filter.frequency.value = surface === "wood" ? 850 : surface==='water'?3200:1900;
     gain.gain.value = running ? 0.75 : 0.48;
     source.playbackRate.value = 0.88 + (this.stepIndex++ % 3) * 0.11;
     source.connect(filter).connect(gain).connect(this.fxBus);

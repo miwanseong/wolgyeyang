@@ -1,5 +1,6 @@
-import {facilityArt} from './facility-art.js?v=33fa1af3e093';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=33fa1af3e093";
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=eaf575030a38';
+import {facilityArt} from './facility-art.js?v=eaf575030a38';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=eaf575030a38";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -168,36 +169,38 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=33fa1af3e093",
-        "assets/seoha-walk.png?v=33fa1af3e093",
-        "assets/props-painted.png?v=33fa1af3e093",
-        "assets/floors-painted.png?v=33fa1af3e093",
-        "assets/jeongwoo-motions.png?v=33fa1af3e093",
-        "assets/seoha-diagonal.png?v=33fa1af3e093",
-        "assets/shoe-cabinet.png?v=33fa1af3e093",
-        "assets/chair-turn.png?v=33fa1af3e093",
-        "assets/room-modules.png?v=33fa1af3e093",
-        "assets/dining-table.png?v=33fa1af3e093",
-        "assets/regional-props.png?v=33fa1af3e093",
-        "assets/wall-side.png?v=33fa1af3e093",
-        "assets/architecture.png?v=33fa1af3e093",
-        "assets/technical-kit.png?v=33fa1af3e093",
-        "assets/technical-doors.png?v=33fa1af3e093",
-        "assets/kitchen-kit.png?v=33fa1af3e093",
-        "assets/decor-kit.png?v=33fa1af3e093",
-        "assets/supply-kit.png?v=33fa1af3e093",
-        "assets/room-details.png?v=33fa1af3e093",
-        "assets/seoyun-echo.png?v=33fa1af3e093",
-        "assets/relay-floors.png?v=33fa1af3e093",
-        "assets/haunted-portraits.png?v=33fa1af3e093",
-        "assets/reception-parking.png?v=33fa1af3e093",
-        "assets/resident-walk.png?v=33fa1af3e093",
-        "assets/relay-furniture.png?v=33fa1af3e093",
+        "assets/props-support.png?v=eaf575030a38",
+        "assets/seoha-walk.png?v=eaf575030a38",
+        "assets/props-painted.png?v=eaf575030a38",
+        "assets/floors-painted.png?v=eaf575030a38",
+        "assets/jeongwoo-motions.png?v=eaf575030a38",
+        "assets/seoha-diagonal.png?v=eaf575030a38",
+        "assets/shoe-cabinet.png?v=eaf575030a38",
+        "assets/chair-turn.png?v=eaf575030a38",
+        "assets/room-modules.png?v=eaf575030a38",
+        "assets/dining-table.png?v=eaf575030a38",
+        "assets/regional-props.png?v=eaf575030a38",
+        "assets/wall-side.png?v=eaf575030a38",
+        "assets/architecture.png?v=eaf575030a38",
+        "assets/technical-kit.png?v=eaf575030a38",
+        "assets/technical-doors.png?v=eaf575030a38",
+        "assets/kitchen-kit.png?v=eaf575030a38",
+        "assets/decor-kit.png?v=eaf575030a38",
+        "assets/supply-kit.png?v=eaf575030a38",
+        "assets/room-details.png?v=eaf575030a38",
+        "assets/seoyun-echo.png?v=eaf575030a38",
+        "assets/relay-floors.png?v=eaf575030a38",
+        "assets/haunted-portraits.png?v=eaf575030a38",
+        "assets/reception-parking.png?v=eaf575030a38",
+        "assets/resident-walk.png?v=eaf575030a38",
+        "assets/relay-furniture.png?v=eaf575030a38",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, relayFurniture]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
-      for(let row=0;row<4;row++)for(let col=0;col<6;col++){let left=sw,right=0,top=sh,bottom=0;for(let y=0;y<sh;y++)for(let x=0;x<sw;x++)if(pixels[((row*sh+y)*measure.width+col*sw+x)*4+3]>160){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}this.residentBounds.push({x:col*sw+left,y:row*sh+top,w:right-left+1,h:bottom-top+1});}
+      // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
+      const rowEdges=[0,280,532,778,1024].map(v=>Math.round(v*measure.height/1024));
+      for(let row=0;row<4;row++)for(let col=0;col<6;col++){const sy=rowEdges[row],rh=rowEdges[row+1]-sy;let left=sw,right=0,top=rh,bottom=0;for(let y=0;y<rh;y++)for(let x=0;x<sw;x++)if(pixels[((sy+y)*measure.width+col*sw+x)*4+3]>160){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}this.residentBounds.push({x:col*sw+left,y:sy+top,w:right-left+1,h:bottom-top+1});}
       Object.assign(this, {
         props,
         actor,
@@ -583,7 +586,7 @@ export class Scene {
       py = (s.y - camY) * z;
     m.clearRect(0, 0, w, h);
     m.globalCompositeOperation = "source-over";
-    m.fillStyle = "rgba(0,0,0,.88)";
+    m.fillStyle = this.map.chapter===2 ? `rgba(0,0,0,${this.map.id==='relayEntry'?.53:this.map.id==='relayPlant'?.91:.79})` : "rgba(0,0,0,.88)";
     m.fillRect(0, 0, w, h);
     m.globalCompositeOperation = "destination-out";
     const ambient = m.createRadialGradient(
@@ -599,10 +602,8 @@ export class Scene {
     ambient.addColorStop(1, "#fff0");
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
-    if(this.map.outdoor){
-      for(const [x,y]of [[12,19],[30,13],[24,7]]){
-        const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,95*z);g.addColorStop(0,'#ffffffb0');g.addColorStop(1,'#fff0');m.fillStyle=g;m.fillRect(xx-95*z,yy-95*z,190*z,190*z);
-      }
+    for(const [x,y,r,kind]of LAMPS[this.map.id]||[]){
+      const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,r*z),strength=lampStrength(kind,t,this.reduced);g.addColorStop(0,`rgba(255,255,255,${strength*.9})`);g.addColorStop(.45,`rgba(255,255,255,${strength*.55})`);g.addColorStop(1,'#fff0');m.save();m.beginPath();for(let a=0;a<=Math.PI*2+.13;a+=.13){let d=8;for(;d<r;d+=8)if(opaque(this.map,Math.floor((x*32+Math.cos(a)*d)/32),Math.floor((y*32+Math.sin(a)*d)/32))||closedDoorAt(this.map,x*32+Math.cos(a)*d,y*32+Math.sin(a)*d))break;const ax=xx+Math.cos(a)*Math.min(d,r)*z,ay=yy+Math.sin(a)*Math.min(d,r)*z;if(a===0)m.moveTo(ax,ay);else m.lineTo(ax,ay);}m.closePath();m.clip();m.fillStyle=g;m.fillRect(xx-r*z,yy-r*z,r*z*2,r*z*2);m.restore();
     }
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
       const grip=handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1),beamX=px+grip.x*z,beamY=py+grip.y*z;
@@ -800,7 +801,15 @@ export class Scene {
       c.fillStyle='#d2d2c94a';for(let i=0;i<3;i++){c.fillRect((8+i*5)*32,6.5*32,2*32,6);}
 
       for(let i=0;i<3;i++)c.strokeRect((7+i*5)*32,6*32,4*32,5*32);
-      c.fillStyle='#0c161950';for(let i=0;i<6;i++){c.beginPath();c.ellipse((9+i*4)*32,18*32,32+i*3,9,0,0,7);c.fill();}
+      for(const [x,y,rx,ry]of PUDDLES){
+        c.save();c.beginPath();for(let i=0;i<18;i++){const a=i/18*Math.PI*2,rag=1+.11*Math.sin(i*2.7+x);const xx=x*32+Math.cos(a)*rx*rag,yy=y*32+Math.sin(a)*ry*rag;if(!i)c.moveTo(xx,yy);else c.lineTo(xx,yy);}c.closePath();c.clip();
+        c.fillStyle='#10213055';c.fillRect(x*32-rx*1.2,y*32-ry*1.2,rx*2.4,ry*2.4);
+        const reflection=c.createRadialGradient(x*32-10,y*32-ry,0,x*32,y*32,rx);reflection.addColorStop(0,'#afbcc146');reflection.addColorStop(.6,'#829ba21a');reflection.addColorStop(1,'#3f515500');c.fillStyle=reflection;c.fillRect(x*32-rx*1.2,y*32-ry*1.2,rx*2.4,ry*2.4);
+        c.fillStyle='#d0d3ce45';for(let k=0;k<9;k++){const xx=x*32+Math.sin(k*2.3+x)*rx*.8,yy=y*32+Math.cos(k*1.7)*ry*.8;c.fillRect(xx,yy,3+(k%3)*2,.5);}
+        for(let k=0;k<3;k++){const q=this.reduced?.5:((t/1100+k*.34+x*.17)%1);c.strokeStyle=`rgba(195,211,219,${(1-q)*.4})`;c.lineWidth=.6;c.beginPath();c.ellipse(x*32+(k-1)*rx*.4,y*32+(k%2)*3,q*9,q*2.3,0,0,7);c.stroke();}c.restore();
+      }
+      // A grated drainage trench collects runoff at the low edge, away from the entry.
+      c.fillStyle='#141819';c.fillRect(5*32,27*32,29*32,7);c.strokeStyle='#6d7578';for(let x=5*32;x<34*32;x+=7){c.beginPath();c.moveTo(x,27*32);c.lineTo(x-2,27*32+7);c.stroke();}
       c.fillStyle='#79857777';c.font='12px sans-serif';c.fillText('안내 · 접수동 →',26*32,18*32);c.fillText('← 산길 / 정류장',6*32,26*32);
       c.fillStyle='#a4ada14a';for(let i=0;i<14;i++)c.fillRect((31+(i%3)*.3)*32,(17+i*.6)*32,3,5);
     }

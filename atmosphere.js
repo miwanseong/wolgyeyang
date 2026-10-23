@@ -1,7 +1,7 @@
 // Photograph-derived floor plan and procedural weather. No story objectives leak here.
 export class Atmosphere{
  constructor(sound){this.sound=sound;this.lastStorm=0;this.flash=0;this.rain=null;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;}
- noise(duration,volume,thunder=false){const a=this.sound(),ctx=a.ctx;if(!ctx||ctx.state!=='running'||!a.enabled)return null;const b=ctx.createBuffer(1,ctx.sampleRate*duration,ctx.sampleRate),data=b.getChannelData(0);let low=0;for(let i=0;i<data.length;i++){low=low*.97+(Math.random()*2-1)*.03;data[i]=(thunder?low*7:Math.random()*2-1)*(thunder?Math.exp(-i/data.length*5):1);}const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=b;filter.type=thunder?'lowpass':'highpass';filter.frequency.value=thunder?350:1300;gain.gain.value=volume;source.connect(filter).connect(gain).connect(a.fxBus);source.loop=!thunder;source.start();return{source,gain};}
+ noise(duration,volume,thunder=false){const a=this.sound(),ctx=a.ctx;if(!ctx||ctx.state!=='running'||!a.enabled)return null;const b=ctx.createBuffer(1,ctx.sampleRate*duration,ctx.sampleRate),data=b.getChannelData(0);let low=0;for(let i=0;i<data.length;i++){low=low*.97+(Math.random()*2-1)*.03;data[i]=(thunder?low*7:Math.random()*2-1)*(thunder?Math.exp(-i/data.length*5):1);}const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();source.buffer=b;filter.type=thunder?'lowpass':'highpass';filter.frequency.value=thunder?350:1300;gain.gain.value=volume;source.connect(filter).connect(gain).connect(a.fxBus);source.loop=!thunder;source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect();};source.start();return{source,gain};}
  update(s,map,enemy,t,dt,active){
  const weather=document.getElementById('weather'),mini=document.getElementById('photo-map'),out=s.flags.chapter2&&map.outdoor;
  weather.hidden=!out;weather.classList.toggle('reduced',this.reduced);
@@ -9,7 +9,7 @@ export class Atmosphere{
  this.flash=Math.max(0,this.flash-dt*.6);weather.style.backgroundColor=`rgba(205,215,225,${this.flash})`;
  if(out&&active&&!this.rain)this.rain=this.noise(3,.025);
  if((!out||!active||!this.sound().enabled)&&this.rain){this.rain.source.stop();this.rain=null;}
- mini.hidden=!s.flags.chapter2||!s.flags['photo_'+s.map];if(mini.hidden)return;
+ mini.hidden=!s.flags.chapter2||!(s.flags.relayMap||s.flags['photo_'+s.map]);if(mini.hidden)return;
  const c=mini.getContext('2d'),w=mini.width,h=mini.height;c.fillStyle='#15191c';c.fillRect(0,0,w,h);
  const jam=enemy.active||enemy.mode==='chase';mini.setAttribute('aria-label',jam?'도면 사진 · 신호 간섭':'촬영한 구역 도면과 현재 위치');
  const z=Math.min((w-16)/map.w,(h-16)/map.h),ox=(w-map.w*z)/2,oy=(h-map.h*z)/2;
