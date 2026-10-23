@@ -1,4 +1,4 @@
-import {canMove,sight,clearSegment} from './world.js?v=f48a4f17ba23';
+import {canMove,sight,clearSegment} from './world.js?v=77cf709867cd';
 export const OMEN_ART=[{"x":50,"y":123,"w":444,"h":330},{"x":575,"y":58,"w":423,"h":400},{"x":1059,"y":61,"w":438,"h":393},{"x":149,"y":543,"w":245,"h":428},{"x":651,"y":541,"w":248,"h":438},{"x":1081,"y":566,"w":405,"h":423}];
 export function rememberedHides(map,s){return map.objects.filter(o=>o.hide&&(s.flags['hide_known_'+map.id+'_'+o.id]||s.flags['seen_'+o.id]));}
 export function rememberHide(map,s,o){if(!o?.hide)return false;s.flags['hide_known_'+map.id+'_'+o.id]=true;s.flags['seen_'+o.id]=true;return true;}
@@ -27,14 +27,14 @@ export class RoomHaunts{
   }
   this.quiet-=dt;if(this.quiet>0)return null;
   const anchor=floorOmenAnchor(map,s);if(!anchor){this.quiet=3;return null;}
-  const key='room_omens_'+map.id,count=Number(s.flags[key])||0;
+  const visits=s.omenVisits||(s.omenVisits={}),key=map.id,count=Number(visits[key])||0;
   const sequence=s.flags.chapter2?['footsteps','blood','shadow','knock']:['blood','footsteps','knock','shadow'];const offset={apartment:1,upper:2,basement:3,relayArchive:1,relayPlant:3,relaySignal:2,relayYard:2}[map.id]||0;let kind=this.pendingKind||sequence[(count+offset)%sequence.length];
   const fixture=map.objects.filter(o=>(o.swivel||o.internalDoor)&&Math.hypot(o.x-s.x,o.y-s.y)<200&&sight(map,s,o)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0];
   if(kind==='knock'&&!fixture)kind='shadow';
   const points=[anchor];if(kind==='footsteps')for(let i=1;i<5;i++){const p={x:anchor.x+Math.cos(anchor.angle)*i*15,y:anchor.y+Math.sin(anchor.angle)*i*15,angle:anchor.angle};if(!clearSegment(map,points.at(-1),p))break;points.push(p);}
   this.active={kind,points,elapsed:0,duration:kind==='shadow'?2.4:kind==='knock'?2.2:4.6,fixture:fixture?.id,swivel:!!fixture?.swivel,seed:count+map.id.length};
-  this.pendingKind=null;s.flags[key]=count+1;this.quiet=34+this.random()*22;
-  return{kind,sound:kind==='blood'||kind==='footsteps'?'bloodDrip':kind==='knock'?'omenKnock':'giggle',...this.active};
+  this.pendingKind=null;visits[key]=count+1;this.quiet=34+this.random()*22;
+  return{kind,sound:kind==='blood'||kind==='footsteps'?'bloodDrip':kind==='knock'?'omenKnock':'whisper',...this.active};
  }
 }
 export function omenOpacity(e){return Math.max(0,Math.min(1,e.elapsed/.22,(e.duration-e.elapsed)/.6));}

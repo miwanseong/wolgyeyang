@@ -1,7 +1,8 @@
-import {validInvestigation} from './investigation.js?v=f48a4f17ba23';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=f48a4f17ba23';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=f48a4f17ba23";
-import { canSurrender } from "./story.js?v=f48a4f17ba23";
+import {bodyState,validBody} from './body.js?v=77cf709867cd';
+import {validInvestigation} from './investigation.js?v=77cf709867cd';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=77cf709867cd';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=77cf709867cd";
+import { canSurrender } from "./story.js?v=77cf709867cd";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -9,6 +10,8 @@ export const initial = () => ({
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
+  body: {leg:false,arm:false},
+  omenVisits: {},
   stamina: 100,
   exhausted: false,
   flashlight: false,
@@ -42,6 +45,10 @@ export function note(s, id, text) {
 }
 export function restore(raw) {
   let s = JSON.parse(raw);
+  // Migrate our earlier numeric omen counters out of the boolean story flags.
+  if(s?.flags&&typeof s.flags==='object'&&!Array.isArray(s.flags))for(const key of Object.keys(s.flags))if(key.startsWith('room_omens_')&&Number.isInteger(s.flags[key])&&s.flags[key]>=0){s.omenVisits={...s.omenVisits,[key.slice(11)]:s.flags[key]};delete s.flags[key];}
+  if(!validBody(s?.body))throw Error('유효하지 않은 신체 상태');
+  if(s?.omenVisits!==undefined&&(!s.omenVisits||typeof s.omenVisits!=='object'||Array.isArray(s.omenVisits)||!Object.entries(s.omenVisits).every(([key,value])=>Object.hasOwn(MAPS,key)&&Number.isInteger(value)&&value>=0&&value<=1000000)))throw Error('유효하지 않은 잔상 기록');
   if (!s || ![1, VERSION].includes(s.version))
     throw Error("지원하지 않는 기억");
   if(!validPuzzles(s.puzzles))throw Error("유효하지 않은 퍼즐 기록");
@@ -93,7 +100,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:12, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:12, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&!bodyState(s).arm, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

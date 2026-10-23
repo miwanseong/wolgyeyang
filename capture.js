@@ -1,4 +1,5 @@
-import { restore } from './state.js?v=f48a4f17ba23';
+import {HOLLOW_POSES} from './hollow-art.js?v=77cf709867cd';
+import { restore } from './state.js?v=77cf709867cd';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -22,14 +23,15 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=f48a4f17ba23';
-    this.ready=this.image.decode().catch(()=>{});
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=77cf709867cd';
+    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=77cf709867cd';this.ready=Promise.all([this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{})]);
   }
-  reset(){this.time=0;}
+  reset(kind="jeongwoo"){this.time=0;this.kind=kind;}
   draw(dt,reduced=false){
     this.time+=dt;const p=capturePose(this.time),c=this.ctx,w=this.canvas.width,h=this.canvas.height;
     c.fillStyle='#080809';c.fillRect(0,0,w,h);
-    if(this.image.naturalWidth){
+    if(this.kind==='hollow'&&this.hollow.naturalWidth){const pose=HOLLOW_POSES[reduced?5:4+Math.min(3,Math.floor(this.time/.7))],scale=Math.min(w/pose.w,h/pose.h)*(reduced?1:.9+Math.min(this.time,3)*.06);c.drawImage(this.hollow,pose.x,pose.y,pose.w,pose.h,(w-pose.w*scale)/2,(h-pose.h*scale)/2,pose.w*scale,pose.h*scale);}
+    else if(this.image.naturalWidth){
       const sw=this.image.width/4,sh=this.image.height/3;
       const scale=Math.min(w/sw,h/sh)*(.92+Math.min(this.time,3)*.018);
       const shake=reduced?0:Math.sin(this.time*43)*Math.max(0,1-this.time/3)*5;

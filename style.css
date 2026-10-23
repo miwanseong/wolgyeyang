@@ -1440,3 +1440,5 @@ button:active:not(:disabled) {
 @media(max-width:600px){.reasoning-body{padding:15px}.reasoning-body h2{font-size:17px}.reasoning-columns{gap:10px}.reasoning-body button{font-size:12px;padding:10px}.inventory-grid{gap:5px}#sanity-loss{width:max-content;max-width:90vw;font-size:13px}}
 
 .inventory-item[aria-pressed=true]{color:#f5f0e4}
+
+#injury-screen{position:fixed;inset:0;z-index:155;background:#050506;display:grid;place-items:center}#injury-screen[hidden],#injury-result[hidden],#body-state[hidden]{display:none}#injury-animation{position:absolute;width:100%;height:100%;object-fit:contain}#injury-result{position:relative;margin-top:25vh;background:#09090bf0;border:1px solid #50464b;padding:24px;width:min(90vw,440px);text-align:center}#injury-result small{color:#ad8389;letter-spacing:.25em}#injury-result p{white-space:pre-line;color:#c8bdc0;line-height:1.8}#injury-resume{min-height:48px;padding:10px 24px}#body-state{position:absolute;left:16px;bottom:68px;z-index:8;max-width:85%;padding:5px 8px;background:#171114e8;color:#e2b8be;font-size:11px;pointer-events:none}.body-summary{padding:12px;border:1px solid #77515c;color:#e2b8be;line-height:1.7}

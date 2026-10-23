@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=f48a4f17ba23";
-import { addRelayChapter } from "./chapter-world.js?v=f48a4f17ba23";
+import { STORY } from "./story.js?v=77cf709867cd";
+import { addRelayChapter } from "./chapter-world.js?v=77cf709867cd";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -407,6 +407,7 @@ M.basement.objects.find(o=>o.id==='utility-hide').description='분전반 옆의 
 // Settle the sink/worktop/stove as different modules, rather than repeating a sink sprite.
 const kitchenKinds=[['kitchen-cabinet',0,'가스레인지와 환풍 후드','가스 밸브가 잠겨 있다. 버너 위에 맞춰 달린 환풍 후드의 스위치를 눌러도 팬이 돌지 않는다.'],['kitchen-counter-a',1,'주방 조리대','칼자국이 남은 빈 조리대. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'],['kitchen-sink',2,'주방 싱크대','수전 하나와 개수대 하나. 배수구 안에는 아무것도 없다.'],['kitchen-counter-b',1,'주방 서랍장','수저와 행주가 용도별로 나뉘어 있다.'],['kitchen-rack',3,'식기 건조대','컵 두 개가 엎어져 있다. 접수증은 건조대가 아니라 식탁의 컵 아래에 있었다.']];
 for(const [id,index,name,description]of kitchenKinds){const o=M.apartment.objects.find(o=>o.id===id);delete o.module;Object.assign(o,{kitchenTile:index,artRole:'kitchen-'+index,name,description,w:31,back:36,front:14});}
+Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{emergencyCandle:true,description:'정전 때 쓰던 비상초와 라이터가 조리대 위에 놓여 있다. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-tv'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-bench'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='kitchen'),{w:46,back:24,front:20});

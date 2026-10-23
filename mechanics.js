@@ -1,4 +1,5 @@
-import { canMove, sight, findPath, clearSegment } from "./world.js?v=f48a4f17ba23";
+import {bodyState} from './body.js?v=77cf709867cd';
+import { canMove, sight, findPath, clearSegment } from "./world.js?v=77cf709867cd";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -30,14 +31,14 @@ export class StillnessHaunt {
 }
 export function locomotion(s, dx, dy, sprint, dt, map) {
   const n = Math.hypot(dx, dy),
-    wantsRun = !!(n && sprint && s.stamina > 0 && !s.exhausted && !s.hidden),
+    wantsRun = !!(n && sprint && s.stamina > 0 && !bodyState(s).leg && !s.exhausted && !s.hidden),
     oldX = s.x,
     oldY = s.y;
   if (n && !s.hidden) {
     dx /= n;
     dy /= n;
     s.facing = Math.atan2(dy, dx);
-    const speed = wantsRun ? 190 : 102;
+    const speed = bodyState(s).leg ? 78 : wantsRun ? 190 : 102;
     if (canMove(map, s.x + dx * speed * dt, s.y)) s.x += dx * speed * dt;
     if (canMove(map, s.x, s.y + dy * speed * dt)) s.y += dy * speed * dt;
   }
@@ -57,6 +58,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
+    this.kind="jeongwoo";this.hollowTime=0;
     this.x = 0;
     this.y = 0;
     this.path = [];
@@ -125,6 +127,7 @@ export class Pursuer {
   update(map, s, dt) {
     if (!this.active) return null;
     this.age+=dt;
+    if(this.kind==='hollow'){this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
       const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
       const dx=s.x-this.x,dy=s.y-this.y,d=Math.hypot(dx,dy);
@@ -138,8 +141,8 @@ export class Pursuer {
     if (this.stunned) {this.motion="search";return null;}
     const d = Math.hypot(s.x - this.x, s.y - this.y),
       visible =
-        !s.hidden && d < (s.flashlight ? 300 : 180) && sight(map, this, s),
-      heard = !s.hidden && s.running && d < 430;
+        !s.hidden && d < (this.kind==='hollow'?260:s.flashlight ? 300 : 180) && sight(map, this, s),
+      heard = this.kind!=='hollow' && !s.hidden && s.running && d < 430;
     if (visible || heard) {
       this.alert = 1;
       this.lost = 0;
@@ -162,7 +165,7 @@ export class Pursuer {
     }else{this.rushClock=4.5;this.windup=0;this.rush=0;}
     this.motion=this.age<1.2&&this.grace>0?'rise':this.windup>0?'windup':this.rush>0?'lunge':this.mode==='chase'?'crawl':'search';
     if(this.target){
-      const speed=this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
+      const speed=this.kind==='hollow'?(bodyState(s).leg?92:118):this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
       this.navigate(map,this.target,dt,speed);
     }
     if (!this.grace && !s.hidden && Math.hypot(s.x - this.x, s.y - this.y) < 20 && clearSegment(map,this,s))

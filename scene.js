@@ -1,9 +1,11 @@
-import {drawFloorOmen,omenOpacity} from './haunting.js?v=f48a4f17ba23';
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=f48a4f17ba23';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=f48a4f17ba23';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=f48a4f17ba23';
-import {facilityArt} from './facility-art.js?v=f48a4f17ba23';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=f48a4f17ba23";
+import {bodyState,injuryRow,injuryDirection} from './body.js?v=77cf709867cd';
+import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=77cf709867cd';
+import {drawFloorOmen,omenOpacity} from './haunting.js?v=77cf709867cd';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=77cf709867cd';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=77cf709867cd';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=77cf709867cd';
+import {facilityArt} from './facility-art.js?v=77cf709867cd';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=77cf709867cd";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -159,37 +161,39 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=f48a4f17ba23",
-        "assets/seoha-walk.png?v=f48a4f17ba23",
-        "assets/props-painted.png?v=f48a4f17ba23",
-        "assets/floors-painted.png?v=f48a4f17ba23",
-        "assets/jeongwoo-motions.png?v=f48a4f17ba23",
-        "assets/seoha-diagonal.png?v=f48a4f17ba23",
-        "assets/shoe-cabinet.png?v=f48a4f17ba23",
-        "assets/chair-turn.png?v=f48a4f17ba23",
-        "assets/room-modules.png?v=f48a4f17ba23",
-        "assets/dining-table.png?v=f48a4f17ba23",
-        "assets/regional-props.png?v=f48a4f17ba23",
-        "assets/wall-side.png?v=f48a4f17ba23",
-        "assets/architecture.png?v=f48a4f17ba23",
-        "assets/technical-kit.png?v=f48a4f17ba23",
-        "assets/technical-doors.png?v=f48a4f17ba23",
-        "assets/kitchen-kit.png?v=f48a4f17ba23",
-        "assets/decor-kit.png?v=f48a4f17ba23",
-        "assets/supply-kit.png?v=f48a4f17ba23",
-        "assets/room-details.png?v=f48a4f17ba23",
-        "assets/seoyun-echo.png?v=f48a4f17ba23",
-        "assets/relay-floors.png?v=f48a4f17ba23",
-        "assets/haunted-portraits.png?v=f48a4f17ba23",
-        "assets/reception-parking.png?v=f48a4f17ba23",
-        "assets/resident-walk.png?v=f48a4f17ba23",
-        "assets/seoha-adult-walk.png?v=f48a4f17ba23",
-        "assets/player-side-walk.png?v=f48a4f17ba23",
-        "assets/resident-side-walk.png?v=f48a4f17ba23",
-        "assets/relay-furniture.png?v=f48a4f17ba23",
-        "assets/room-omens.png?v=f48a4f17ba23",
+        "assets/props-support.png?v=77cf709867cd",
+        "assets/seoha-walk.png?v=77cf709867cd",
+        "assets/props-painted.png?v=77cf709867cd",
+        "assets/floors-painted.png?v=77cf709867cd",
+        "assets/jeongwoo-motions.png?v=77cf709867cd",
+        "assets/seoha-diagonal.png?v=77cf709867cd",
+        "assets/shoe-cabinet.png?v=77cf709867cd",
+        "assets/chair-turn.png?v=77cf709867cd",
+        "assets/room-modules.png?v=77cf709867cd",
+        "assets/dining-table.png?v=77cf709867cd",
+        "assets/regional-props.png?v=77cf709867cd",
+        "assets/wall-side.png?v=77cf709867cd",
+        "assets/architecture.png?v=77cf709867cd",
+        "assets/technical-kit.png?v=77cf709867cd",
+        "assets/technical-doors.png?v=77cf709867cd",
+        "assets/kitchen-kit.png?v=77cf709867cd",
+        "assets/decor-kit.png?v=77cf709867cd",
+        "assets/supply-kit.png?v=77cf709867cd",
+        "assets/room-details.png?v=77cf709867cd",
+        "assets/seoyun-echo.png?v=77cf709867cd",
+        "assets/relay-floors.png?v=77cf709867cd",
+        "assets/haunted-portraits.png?v=77cf709867cd",
+        "assets/reception-parking.png?v=77cf709867cd",
+        "assets/resident-walk.png?v=77cf709867cd",
+        "assets/seoha-adult-walk.png?v=77cf709867cd",
+        "assets/player-side-walk.png?v=77cf709867cd",
+        "assets/resident-side-walk.png?v=77cf709867cd",
+        "assets/relay-furniture.png?v=77cf709867cd",
+        "assets/room-omens.png?v=77cf709867cd",
+        "assets/injury-walk.png?v=77cf709867cd",
+        "assets/hollow-hunter.png?v=77cf709867cd",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, hollowHunter]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -202,7 +206,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,omenAtlas,
+        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,omenAtlas,injuryWalk,hollowHunter,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -254,7 +258,17 @@ export class Scene {
       this.walk = advanceGait(this.walk,Math.hypot(dx,dy),actorStride(0,running));
     }
   }
-  torchGrip(){return (this.moving&&(this.direction===1||this.direction===2))?sideGrip(0,this.walk,this.direction===2,this.moving):handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1);}
+  drawHollow(c,enemy,t,alpha=1){
+    const gaze=enemy.target?.x<enemy.x-12?0:enemy.target?.x>enemy.x+12?2:1;
+    for(let i=0;i<3;i++){
+      const blink=!this.reduced&&(t+i*793)%5400>5200;
+      const frame=enemy.motion==='lunge'?(this.reduced?5:4+Math.floor(t/150)%4):blink?3:gaze,p=HOLLOW_POSES[frame];
+      const h=i?16:30,w=h*p.w/p.h,x=enemy.x+(i===1?-18:i===2?17:0)+(this.reduced?0:Math.sin(t*.0013+i*2.5)*4),y=enemy.y-(i===1?65:i===2?29:46)+(this.reduced?0:Math.sin(t*.0019+i*1.7)*5);
+      c.save();c.globalAlpha*=alpha*(i?.8:1);c.drawImage(this.hollowHunter,p.x,p.y,p.w,p.h,x-w/2,y-h/2,w,h);c.restore();
+    }
+  }
+  injuryPose(s){const row=injuryRow(s);return row<0?null:INJURY_POSES[row][injuryDirection(this.direction)*2+(this.moving?Math.floor(this.walk*(bodyState(s).leg?.5:1))%2:0)];}
+  torchGrip(){const p=this.playerState&&this.injuryPose(this.playerState);if(p)return{x:(p.grip[0]-p.pivot)*p.width,y:-56+p.grip[1]*61};return (this.moving&&(this.direction===1||this.direction===2))?sideGrip(0,this.walk,this.direction===2,this.moving):handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1);}
   inspect(o) {
     this.focus = o;
     if (o.swivel) this.chairTurns.set(o.id, performance.now());
@@ -276,10 +290,10 @@ export class Scene {
     const distance=Math.hypot(s.x-o.x,s.y-o.y),inFront=s.y>o.y+10;
     if(!inFront||distance>175)return;
     const delayed=this.reflections.find(p=>p.t>=t-260)||s,dx=Math.max(-pane.w*.3,Math.min(pane.w*.3,(o.x-delayed.x)*.22));
-    const c=this.ctx,p=PLAYER_POSES[0][1],scale=1-Math.min(.28,(distance-40)/500);
+    const injured=injuryRow(s),c=this.ctx,p=injured>=0?INJURY_POSES[injured][0]:PLAYER_POSES[0][1],scale=1-Math.min(.28,(distance-40)/500);
     c.save();c.beginPath();c.rect(pane.x,pane.y,pane.w,pane.h);c.clip();c.globalAlpha=opacity*Math.max(.15,1-distance/230);
     const h=Math.min(54,pane.h*1.1)*scale,w=h*p.w/p.h*.92;c.translate(pane.x+pane.w/2+dx,pane.y+pane.h*.7);c.scale(-1,1);
-    c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,-w/2,-h*.72,w,h);c.restore();
+    c.drawImage(injured>=0?this.injuryWalk:this.playerWalk,p.x,p.y,p.w,p.h,-w/2,-h*.72,w,h);c.restore();
   }
   prop(o, s, t, dt) {
     const c = this.ctx,
@@ -355,7 +369,9 @@ export class Scene {
     }
     if(o.kitchenTile!==undefined){
       const tile=this.kitchenTiles[o.kitchenTile],w=o.kitchenTile===4?40:64,h=o.kitchenTile===4?82:o.kitchenTile===5?52:68;
-      const g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y-h+14,w,h};c.drawImage(tile,g.x,g.y,g.w,g.h);return;
+      const g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y-h+14,w,h};c.drawImage(tile,g.x,g.y,g.w,g.h);
+      if(o.emergencyCandle){const x=o.x+8,y=o.y-31;c.fillStyle='#282729';c.beginPath();c.ellipse(x+2,y,5,1.6,0,0,7);c.fill();c.fillStyle='#bcb7a8';c.fillRect(x,y-9,4,9);c.fillStyle='#747066';c.fillRect(x,y-9,1,9);c.fillStyle='#37302d';c.fillRect(x+2,y-11,1,2);c.fillStyle='#55565b';c.fillRect(x-14,y-2,6,3);c.fillStyle='#a3a4a6';c.fillRect(x-14,y-2,2,3);if(s.flags.candle_kitchen){const flicker=this.reduced?0:Math.sin(t*.011)*.4;c.fillStyle='#c0a76f';c.beginPath();c.ellipse(x+2+flicker,y-13,1.7,4,0,0,7);c.fill();c.fillStyle='#eee1b4';c.fillRect(x+1,y-14,2,3);}}
+      return;
     }
     if(o.hauntedPortrait){
       const g=mountedGeometry(this.map,o,58,58),distance=Math.hypot(s.x-o.x,s.y-o.y),gone=s.flags.relaySlide;
@@ -597,7 +613,8 @@ export class Scene {
     ambient.addColorStop(1, "#fff0");
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
-    for(const [x,y,r,kind]of LAMPS[this.map.id]||[]){
+    const candle=this.map.id==='apartment'&&s.flags.candle_kitchen?this.map.objects.find(o=>o.emergencyCandle):null;
+    for(const [x,y,r,kind]of [...(LAMPS[this.map.id]||[]),...(candle?[[(candle.x+10)/32,(candle.y-44)/32,85,'steady']]:[])]){
       const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,r*z),strength=lampStrength(kind,t,this.reduced);g.addColorStop(0,`rgba(255,255,255,${strength*.9})`);g.addColorStop(.45,`rgba(255,255,255,${strength*.55})`);g.addColorStop(1,'#fff0');m.save();m.beginPath();for(let a=0;a<=Math.PI*2+.13;a+=.13){let d=8;for(;d<r;d+=8)if(opaque(this.map,Math.floor((x*32+Math.cos(a)*d)/32),Math.floor((y*32+Math.sin(a)*d)/32))||closedDoorAt(this.map,x*32+Math.cos(a)*d,y*32+Math.sin(a)*d))break;const ax=xx+Math.cos(a)*Math.min(d,r)*z,ay=yy+Math.sin(a)*Math.min(d,r)*z;if(a===0)m.moveTo(ax,ay);else m.lineTo(ax,ay);}m.closePath();m.clip();m.fillStyle=g;m.fillRect(xx-r*z,yy-r*z,r*z*2,r*z*2);m.restore();
     }
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
@@ -672,6 +689,7 @@ export class Scene {
   }
   draw(s, t, dt, nearest, dialog, enemy) {
     if (!this.ready) return;
+    this.playerState=s;
     const c = this.ctx,
       w = this.canvas.width,
       h = this.canvas.height,
@@ -863,8 +881,8 @@ export class Scene {
           c.ellipse(s.x, s.y + 5, 11, 4, 0, 0, 7);
           c.fill();
           const f=this.moving?Math.floor(this.walk)%4:1,p=PLAYER_POSES[this.direction][f];
-          if(this.moving&&(this.direction===1||this.direction===2))drawSide(c,this.playerSideWalk,0,this.walk,s.x,s.y,this.direction===2,this.moving);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
-          if (s.bag.includes("flashlight")) {
+          const injured=this.injuryPose(s);if(injured)c.drawImage(this.injuryWalk,injured.x,injured.y,injured.w,injured.h,s.x-injured.pivot*injured.width,s.y-56,injured.width,61);else if(this.moving&&(this.direction===1||this.direction===2))drawSide(c,this.playerSideWalk,0,this.walk,s.x,s.y,this.direction===2,this.moving);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
+          if (s.bag.includes("flashlight")&&!bodyState(s).arm) {
             const grip=this.torchGrip();
             c.save();c.translate(s.x+grip.x,s.y+grip.y);c.rotate(s.facing);
             c.fillStyle='#303030';c.beginPath();c.roundRect(0,-1.5,9,3,1.5);c.fill();
@@ -878,6 +896,7 @@ export class Scene {
       drawables.push({
         y: enemy.y,
         draw: () => {
+          if(enemy.kind==='hollow'){this.drawHollow(c,enemy,t);return;}
           const frame=ghostFrame(enemy,t),sw=this.monster.width/4,
             bounds=[0,.226,.498,.708,1],grounds=[.222,.49,.704,.977],
             sy=bounds[frame.row]*this.monster.height,sh=(bounds[frame.row+1]-bounds[frame.row])*this.monster.height,
@@ -906,6 +925,7 @@ export class Scene {
     for(const p of this.particles){p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=80*dt;c.globalAlpha=Math.max(0,Math.min(1,p.life*1.7));c.fillStyle=p.kind==='spark'?'#eee':'#aaa';c.fillRect(p.x,p.y,p.kind==='glass'?3:1,p.kind==='glass'?1:2)}c.globalAlpha=1;
     c.restore();
     this.light(s, cx, cy, z, enemy, t);
+    if(enemy?.active&&enemy.kind==='hollow'&&clearSegment(map,s,enemy)){c.save();c.scale(z,z);c.translate(-cx,-cy);this.drawHollow(c,enemy,t,.28);c.restore();}
     this.shock=Math.max(0,this.shock-dt);
     if(this.shock){
       const intensity=this.shock/1.3;

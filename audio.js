@@ -1,13 +1,13 @@
 export const TRACKS = {
-  main: "dread_hall.wav",
-  lobby: "dread_hall.wav",
-  home: "dread_rooms.wav",
+  main: "user_creepy_soundscape.mp3",
+  lobby: "user_creepy_soundscape.mp3",
+  home: "user_creepy_soundscape.mp3",
   memory: "dread_rooms.wav",
   warm: "dread_rooms.wav",
   basement: "dread_depths.wav",
   upper: "dread_depths.wav",
-  deduction: "dread_rooms.wav",
-  evidence: "dread_rooms.wav",
+  deduction: "user_creepy_soundscape.mp3",
+  evidence: "user_creepy_soundscape.mp3",
   missing: "dread_depths.wav",
   motif: "dread_depths.wav",
   hunt: "hunt_search.wav",
@@ -18,6 +18,7 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  scream:"user_female_scream.mp3",whisper:"user_ghost_whisper.wav",lighter:"user_lighter.mp3",screamAlt:"user_female_scream_alt.mp3",crowdNormal:"crowd_murmur.wav",
   bloodDrip: "fx_blood_drips.wav",
   omenKnock: "fx_three_knocks.wav",
   hallucination: "fx_hallucination.wav",
@@ -44,6 +45,7 @@ export const EFFECTS = {
   thud: "audiosfx_thud.mp3",
   glass: "sfx_glass_breaking.mp3",
 };
+export const EFFECT_MIX={scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:8,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;
@@ -55,7 +57,7 @@ export class AudioDirector {
     this.element = null;
     this.currentGain = null;
     this.errors = onError;
-    this.buffers = new Map();
+    this.buffers = new Map();this.loadingBuffers=new Map();this.effectTimes=new Map();this.ducks=new Map();
     this.stepIndex = 0;
     this.playedEffects = 0;
     this.lastError = "";this.doorRequestedAt=-Infinity;this.doorSource=null;
@@ -81,6 +83,7 @@ export class AudioDirector {
     this.enabled = true;
     this.apply();
     this.play(cue);
+    for(const name of ["scream","screamAlt","whisper","lighter"])this.loadEffect(name).catch(()=>{});
   }
   apply() {
     if (this.master)
@@ -91,7 +94,7 @@ export class AudioDirector {
       );
     if (this.musicBus)
       this.musicBus.gain.setTargetAtTime(
-        this.musicLevel,
+        this.musicLevel*Math.min(1,...this.ducks.values()),
         this.ctx.currentTime,
         0.05,
       );
@@ -141,35 +144,41 @@ export class AudioDirector {
       }, fade*1000+100);
     }
   }
+  async loadEffect(name){
+    if(this.buffers.has(name))return this.buffers.get(name);
+    if(this.loadingBuffers.has(name))return this.loadingBuffers.get(name);
+    const promise=fetch('assets/audio/'+EFFECTS[name]+new URL(import.meta.url).search).then(r=>{if(!r.ok)throw Error(r.status);return r.arrayBuffer();}).then(b=>this.ctx.decodeAudioData(b)).then(buffer=>{this.buffers.set(name,buffer);return buffer;}).finally(()=>this.loadingBuffers.delete(name));
+    this.loadingBuffers.set(name,promise);return promise;
+  }
   crowdLevel(level=0,distorted=false){
-    if(!this.ctx)return;
-    const changed=this.crowdTarget!==level||this.crowdDistorted!==distorted;
-    this.crowdTarget=level;this.crowdDistorted=distorted;
-    if(this.crowdGain&&!changed)return;
-    if(this.crowdGain){this.crowdGain.gain.setTargetAtTime(level,this.ctx.currentTime,.5);this.crowdSource.playbackRate.setTargetAtTime(distorted ? .76 : 1,this.ctx.currentTime,1);return;}
-    if(!level||this.crowdLoading)return;
-    this.crowdLoading=true;
-    fetch('assets/audio/crowd_murmur.wav'+new URL(import.meta.url).search).then(r=>{if(!r.ok)throw Error(r.status);return r.arrayBuffer();}).then(b=>this.ctx.decodeAudioData(b)).then(buffer=>{
-      this.crowdGain=this.ctx.createGain();this.crowdGain.gain.value=this.crowdTarget||0;this.crowdSource=this.ctx.createBufferSource();this.crowdSource.buffer=buffer;this.crowdSource.loop=true;this.crowdSource.playbackRate.value=this.crowdDistorted ? .76 : 1;this.crowdSource.connect(this.crowdGain).connect(this.fxBus);this.crowdSource.start();
-    }).catch(()=>{this.error('배경 웅성거림을 불러오지 못했습니다.');}).finally(()=>this.crowdLoading=false);
+    if(!this.ctx||!this.enabled)return;
+    const key='crowdNormal';this.crowdDesiredKey=key;this.crowdTarget=level*(distorted?.18:1);this.crowdDistorted=distorted;
+    if(this.crowdGain)this.crowdGain.gain.setTargetAtTime(this.crowdTarget,this.ctx.currentTime,.4);
+    if(!level||this.crowdSourceKey===key||this.crowdLoadingKey===key)return;
+    this.crowdLoadingKey=key;const token=(this.crowdToken||0)+1;this.crowdToken=token;
+    this.loadEffect(key).then(buffer=>{
+      if(token!==this.crowdToken||this.crowdDesiredKey!==key||!this.enabled)return;
+      const old=this.crowdSource,oldGain=this.crowdGain;if(old){oldGain.gain.setTargetAtTime(0,this.ctx.currentTime,.12);old.stop(this.ctx.currentTime+.6);}
+      const source=this.ctx.createBufferSource(),gain=this.ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;gain.gain.setTargetAtTime(this.crowdTarget,this.ctx.currentTime,.4);source.connect(gain).connect(this.fxBus);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();this.crowdGain=gain;this.crowdSource=source;this.crowdSourceKey=key;
+    }).catch(()=>this.error('배경 군중 음원을 불러오지 못했습니다.')).finally(()=>{if(token===this.crowdToken)this.crowdLoadingKey=null;});
   }
   async effect(name, level=1) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;
     if(name==='door'){const now=performance.now();if(now-this.doorRequestedAt<650)return;this.doorRequestedAt=now;}
+    const mix=EFFECT_MIX[name],now=this.ctx.currentTime||0;if(mix&&now-(this.effectTimes.get(name)??-Infinity)<mix.cooldown)return;if(mix)this.effectTimes.set(name,now);
     try {
       let buffer = this.buffers.get(name);
-      if (!buffer) {
-        const r = await fetch("assets/audio/" + EFFECTS[name] + new URL(import.meta.url).search);
-        if (!r.ok) throw Error(r.status);
-        buffer = await this.ctx.decodeAudioData(await r.arrayBuffer());
-        this.buffers.set(name, buffer);
-      }
+      if(!buffer)buffer=await this.loadEffect(name);
+      if(!this.enabled)return;
       const s = this.ctx.createBufferSource();
       s.buffer = buffer;
-      const gain=this.ctx.createGain();gain.gain.value=Math.max(0,Math.min(1,level));
+      const gain=this.ctx.createGain();gain.gain.value=Math.max(0,Math.min(1,level))*(mix?.gain??1);
       s.connect(gain).connect(this.fxBus);
-      s.onended=()=>{gain.disconnect();s.disconnect();if(this.doorSource===s)this.doorSource=null;};
-      if(name==='door'){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+.55,.08);s.start(0,0,Math.min(.9,buffer.duration));}else s.start();
+      const duration=mix?Math.min(mix.duration,buffer.duration):buffer.duration;
+      if(mix?.fade)gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(0,duration-mix.fade),mix.fade/4);
+      if(mix?.duck){this.ducks.set(s,mix.duck);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.04);}
+      s.onended=()=>{if(mix?.duck){this.ducks.delete(s);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.25);}gain.disconnect();s.disconnect();if(this.doorSource===s)this.doorSource=null;};
+      if(name==='door'){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+.55,.08);s.start(0,0,Math.min(.9,buffer.duration));}else if(mix)s.start(0,0,duration);else s.start();
       this.playedEffects++;
     } catch {
       this.error("효과음을 불러오지 못했습니다: " + name);
