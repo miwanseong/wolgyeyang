@@ -1,5 +1,5 @@
-import {advanceGait,actorStride} from './gait.js?v=4c269a40fa1c';
-import {canMove,findPath} from './world.js?v=4c269a40fa1c';
+import {advanceGait,actorStride} from './gait.js?v=76c32dfe0f02';
+import {canMove,findPath} from './world.js?v=76c32dfe0f02';
 export const CROWD_ROUTES={
  relayYard:[[[24,18],[30,18]],[[25,25],[31,25]],[[8,14],[17,14]]],
  relayEntry:[[[10,25],[20,25]],[[26,26],[36,26]],[[18.7,13],[19,15]]],

@@ -1,4 +1,4 @@
-import { restore } from './state.js?v=4c269a40fa1c';
+import { restore } from './state.js?v=76c32dfe0f02';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -22,7 +22,7 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=4c269a40fa1c';
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=76c32dfe0f02';
     this.ready=this.image.decode().catch(()=>{});
   }
   reset(){this.time=0;}

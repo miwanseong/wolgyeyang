@@ -1,6 +1,6 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=4c269a40fa1c";
-import { MAPS, sight, worldFor } from "./world.js?v=4c269a40fa1c";
-import { take, note } from "./state.js?v=4c269a40fa1c";
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=76c32dfe0f02";
+import { MAPS, sight, worldFor } from "./world.js?v=76c32dfe0f02";
+import { take, note } from "./state.js?v=76c32dfe0f02";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};

@@ -1,20 +1,20 @@
-import {footContacts} from './gait.js?v=4c269a40fa1c';
-import {Inventory} from './inventory.js?v=4c269a40fa1c';
-import {ReasoningPanel} from './reasoning.js?v=4c269a40fa1c';
-import {inPuddle,witnessesEntry} from './facility.js?v=4c269a40fa1c';
-import {sanity,strain,Hallucinations} from './mental.js?v=4c269a40fa1c';
-import {Atmosphere} from './atmosphere.js?v=4c269a40fa1c';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=4c269a40fa1c';
-import {Crowd} from './crowd.js?v=4c269a40fa1c';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=4c269a40fa1c';
-import { PuzzlePanel } from './puzzles.js?v=4c269a40fa1c';
-import { CaptureAnimation, checkpoints } from './capture.js?v=4c269a40fa1c';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=4c269a40fa1c";
-import { Scene, facingDirection } from "./scene.js?v=4c269a40fa1c";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=4c269a40fa1c";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=4c269a40fa1c";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=4c269a40fa1c";
-import { AudioDirector, TRACKS } from "./audio.js?v=4c269a40fa1c";
+import {footContacts} from './gait.js?v=76c32dfe0f02';
+import {Inventory} from './inventory.js?v=76c32dfe0f02';
+import {ReasoningPanel} from './reasoning.js?v=76c32dfe0f02';
+import {inPuddle,witnessesEntry} from './facility.js?v=76c32dfe0f02';
+import {sanity,strain,Hallucinations} from './mental.js?v=76c32dfe0f02';
+import {Atmosphere} from './atmosphere.js?v=76c32dfe0f02';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=76c32dfe0f02';
+import {Crowd} from './crowd.js?v=76c32dfe0f02';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=76c32dfe0f02';
+import { PuzzlePanel } from './puzzles.js?v=76c32dfe0f02';
+import { CaptureAnimation, checkpoints } from './capture.js?v=76c32dfe0f02';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=76c32dfe0f02";
+import { Scene, facingDirection } from "./scene.js?v=76c32dfe0f02";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=76c32dfe0f02";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=76c32dfe0f02";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=76c32dfe0f02";
+import { AudioDirector, TRACKS } from "./audio.js?v=76c32dfe0f02";
 import {
   initial,
   ITEMS,
@@ -26,7 +26,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=4c269a40fa1c";
+} from "./state.js?v=76c32dfe0f02";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -155,7 +155,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=4c269a40fa1c')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=76c32dfe0f02')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -892,7 +892,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=4c269a40fa1c", memory: "assets/event-memory.png?v=4c269a40fa1c"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=76c32dfe0f02", memory: "assets/event-memory.png?v=76c32dfe0f02"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
