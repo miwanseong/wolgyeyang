@@ -1,4 +1,5 @@
-import {canMove,findPath} from './world.js?v=9226cb9e0ebf';
+import {advanceGait,actorStride} from './gait.js?v=4c269a40fa1c';
+import {canMove,findPath} from './world.js?v=4c269a40fa1c';
 export const CROWD_ROUTES={
  relayYard:[[[24,18],[30,18]],[[25,25],[31,25]],[[8,14],[17,14]]],
  relayEntry:[[[10,25],[20,25]],[[26,26],[36,26]],[[18.7,13],[19,15]]],
@@ -17,7 +18,7 @@ export class Crowd{
    if(n.repath<=0){n.path=findPath(map,n,p);n.repath=.9;}
    const next=n.path[0]||p,dx=next.x-n.x,dy=next.y-n.y,d=Math.hypot(dx,dy);
    if(d<5)n.path.shift();if(Math.hypot(p.x-n.x,p.y-n.y)<8){n.target=1-n.target;n.wait=2;n.repath=0;continue;}
-   const step=Math.min(d,dt*(s.flags.relayPower?13:29));if(d){const x=n.x+dx/d*step,y=n.y+dy/d*step;if(canMove(map,x,y)&&Math.hypot(x-s.x,y-s.y)>26){n.x=x;n.y=y;n.walk+=dt*5;n.moving=true;n.direction=Math.abs(dx)>Math.abs(dy)?dx>0?2:1:dy<0?3:0;}}
+   const step=Math.min(d,dt*(s.flags.relayPower?13:29));if(d){const x=n.x+dx/d*step,y=n.y+dy/d*step;if(canMove(map,x,y)&&Math.hypot(x-s.x,y-s.y)>26){n.x=x;n.y=y;n.walk=advanceGait(n.walk,step,actorStride(n.column+1));n.moving=true;n.direction=Math.abs(dx)>Math.abs(dy)?dx>0?2:1:dy<0?3:0;}}
   }
   return this.people;
  }

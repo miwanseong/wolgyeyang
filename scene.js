@@ -1,7 +1,8 @@
-import {PLAYER_POSES,playerHand} from './player-art.js?v=9226cb9e0ebf';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=9226cb9e0ebf';
-import {facilityArt} from './facility-art.js?v=9226cb9e0ebf';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=9226cb9e0ebf";
+import {advanceGait,drawGait,rigGrip} from './gait.js?v=4c269a40fa1c';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=4c269a40fa1c';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=4c269a40fa1c';
+import {facilityArt} from './facility-art.js?v=4c269a40fa1c';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=4c269a40fa1c";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -157,34 +158,35 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=9226cb9e0ebf",
-        "assets/seoha-walk.png?v=9226cb9e0ebf",
-        "assets/props-painted.png?v=9226cb9e0ebf",
-        "assets/floors-painted.png?v=9226cb9e0ebf",
-        "assets/jeongwoo-motions.png?v=9226cb9e0ebf",
-        "assets/seoha-diagonal.png?v=9226cb9e0ebf",
-        "assets/shoe-cabinet.png?v=9226cb9e0ebf",
-        "assets/chair-turn.png?v=9226cb9e0ebf",
-        "assets/room-modules.png?v=9226cb9e0ebf",
-        "assets/dining-table.png?v=9226cb9e0ebf",
-        "assets/regional-props.png?v=9226cb9e0ebf",
-        "assets/wall-side.png?v=9226cb9e0ebf",
-        "assets/architecture.png?v=9226cb9e0ebf",
-        "assets/technical-kit.png?v=9226cb9e0ebf",
-        "assets/technical-doors.png?v=9226cb9e0ebf",
-        "assets/kitchen-kit.png?v=9226cb9e0ebf",
-        "assets/decor-kit.png?v=9226cb9e0ebf",
-        "assets/supply-kit.png?v=9226cb9e0ebf",
-        "assets/room-details.png?v=9226cb9e0ebf",
-        "assets/seoyun-echo.png?v=9226cb9e0ebf",
-        "assets/relay-floors.png?v=9226cb9e0ebf",
-        "assets/haunted-portraits.png?v=9226cb9e0ebf",
-        "assets/reception-parking.png?v=9226cb9e0ebf",
-        "assets/resident-walk.png?v=9226cb9e0ebf",
-        "assets/seoha-adult-walk.png?v=9226cb9e0ebf",
-        "assets/relay-furniture.png?v=9226cb9e0ebf",
+        "assets/props-support.png?v=4c269a40fa1c",
+        "assets/seoha-walk.png?v=4c269a40fa1c",
+        "assets/props-painted.png?v=4c269a40fa1c",
+        "assets/floors-painted.png?v=4c269a40fa1c",
+        "assets/jeongwoo-motions.png?v=4c269a40fa1c",
+        "assets/seoha-diagonal.png?v=4c269a40fa1c",
+        "assets/shoe-cabinet.png?v=4c269a40fa1c",
+        "assets/chair-turn.png?v=4c269a40fa1c",
+        "assets/room-modules.png?v=4c269a40fa1c",
+        "assets/dining-table.png?v=4c269a40fa1c",
+        "assets/regional-props.png?v=4c269a40fa1c",
+        "assets/wall-side.png?v=4c269a40fa1c",
+        "assets/architecture.png?v=4c269a40fa1c",
+        "assets/technical-kit.png?v=4c269a40fa1c",
+        "assets/technical-doors.png?v=4c269a40fa1c",
+        "assets/kitchen-kit.png?v=4c269a40fa1c",
+        "assets/decor-kit.png?v=4c269a40fa1c",
+        "assets/supply-kit.png?v=4c269a40fa1c",
+        "assets/room-details.png?v=4c269a40fa1c",
+        "assets/seoyun-echo.png?v=4c269a40fa1c",
+        "assets/relay-floors.png?v=4c269a40fa1c",
+        "assets/haunted-portraits.png?v=4c269a40fa1c",
+        "assets/reception-parking.png?v=4c269a40fa1c",
+        "assets/resident-walk.png?v=4c269a40fa1c",
+        "assets/seoha-adult-walk.png?v=4c269a40fa1c",
+        "assets/profile-rig.png?v=4c269a40fa1c",
+        "assets/relay-furniture.png?v=4c269a40fa1c",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, relayFurniture]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, profileRig, relayFurniture]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -197,7 +199,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,playerWalk,relayFurniture,
+        residentWalk,playerWalk,profileRig,relayFurniture,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -246,9 +248,10 @@ export class Scene {
     if (this.moving) {
       this.direction =
         facingDirection(dx / Math.hypot(dx,dy), dy / Math.hypot(dx,dy));
-      this.walk += dt * (running ? 11 : 6.7);
-    } else this.walk = 1;
+      this.walk = advanceGait(this.walk,Math.hypot(dx,dy));
+    }
   }
+  torchGrip(){return (this.direction===1||this.direction===2)?rigGrip(0,this.walk,this.direction===2,this.moving):handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1);}
   inspect(o) {
     this.focus = o;
     if (o.swivel) this.chairTurns.set(o.id, performance.now());
@@ -595,7 +598,7 @@ export class Scene {
       const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,r*z),strength=lampStrength(kind,t,this.reduced);g.addColorStop(0,`rgba(255,255,255,${strength*.9})`);g.addColorStop(.45,`rgba(255,255,255,${strength*.55})`);g.addColorStop(1,'#fff0');m.save();m.beginPath();for(let a=0;a<=Math.PI*2+.13;a+=.13){let d=8;for(;d<r;d+=8)if(opaque(this.map,Math.floor((x*32+Math.cos(a)*d)/32),Math.floor((y*32+Math.sin(a)*d)/32))||closedDoorAt(this.map,x*32+Math.cos(a)*d,y*32+Math.sin(a)*d))break;const ax=xx+Math.cos(a)*Math.min(d,r)*z,ay=yy+Math.sin(a)*Math.min(d,r)*z;if(a===0)m.moveTo(ax,ay);else m.lineTo(ax,ay);}m.closePath();m.clip();m.fillStyle=g;m.fillRect(xx-r*z,yy-r*z,r*z*2,r*z*2);m.restore();
     }
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
-      const grip=handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1),beamX=px+grip.x*z,beamY=py+grip.y*z;
+      const grip=this.torchGrip(),beamX=px+grip.x*z,beamY=py+grip.y*z;
       m.filter = "blur(7px)";
       const range = 170,
         pts = [];
@@ -837,6 +840,7 @@ export class Scene {
     }));
     for(const n of this.npcs){drawables.push({y:n.y,draw:()=>{
       c.save();c.fillStyle='#0007';c.beginPath();c.ellipse(n.x,n.y+3,12,4,0,0,7);c.fill();
+      if(n.direction===1||n.direction===2){c.globalAlpha=n.ambient?(s.flags.relayPower?.65:.8):n.phase===2?.83:1;c.filter=n.ambient?'grayscale(1) brightness(.12)':'grayscale(1)';drawGait(c,this.profileRig,n.column+1,n.walk,n.x,n.y,n.direction===2,n.moving);c.restore();return;}
       const frame=n.moving?Math.floor(n.walk)%2:0;
       const b=this.residentBounds[n.direction*6+n.column*2+frame],height=61,width=b.w/b.h*height*.92;
       if(n.ambient){c.globalAlpha=s.flags.relayPower?.65:.8;c.filter='brightness(0)';c.drawImage(this.residentWalk,b.x,b.y,b.w,b.h,n.x-width/2,n.y-height+5,width,height);c.restore();return;}
@@ -852,9 +856,9 @@ export class Scene {
           c.ellipse(s.x, s.y + 5, 11, 4, 0, 0, 7);
           c.fill();
           const f=this.moving?Math.floor(this.walk)%4:1,p=PLAYER_POSES[this.direction][f];
-          c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
+          if(this.direction===1||this.direction===2)drawGait(c,this.profileRig,0,this.walk,s.x,s.y,this.direction===2,this.moving);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
           if (s.bag.includes("flashlight")) {
-            const grip=handGrip(this.direction,f);
+            const grip=this.torchGrip();
             c.save();c.translate(s.x+grip.x,s.y+grip.y);c.rotate(s.facing);
             c.fillStyle='#303030';c.beginPath();c.roundRect(0,-1.5,9,3,1.5);c.fill();
             c.fillStyle=s.flashlight?'#999':'#454545';c.beginPath();c.ellipse(9,0,1,2,0,0,Math.PI*2);c.fill();

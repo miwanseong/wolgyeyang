@@ -1,4 +1,5 @@
-import {canMove,findPath,sight} from './world.js?v=9226cb9e0ebf';
+import {advanceGait,actorStride} from './gait.js?v=4c269a40fa1c';
+import {canMove,findPath,sight} from './world.js?v=4c269a40fa1c';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
@@ -11,7 +12,7 @@ export class Residents{
  update(map,s,dt,allowed=true){
   const phase=residentPhase(s),definitions=RESIDENTS.filter(n=>(phase===3?'relayYard':n.map)===map.id);
   if(this.map!==map.id||this.phase!==phase){this.map=map.id;this.phase=phase;this.actors=definitions.map(n=>{const route=phase===3?n.outside:n.route;return{...n,npc:true,phase,route,x:route[0][0]*32,y:route[0][1]*32,target:1,wait:1,path:[],repath:0,walk:0,direction:0,moving:false};});}
-  if(!allowed)return this.actors;
+  if(!allowed){for(const n of this.actors)n.moving=false;return this.actors;}
   for(const n of this.actors){
    n.moving=false;n.wait=Math.max(0,n.wait-dt);
    if(n.wait)continue;
@@ -21,9 +22,9 @@ export class Residents{
    if(d<5&&n.path.length)n.path.shift();
    if(Math.hypot(target.x-n.x,target.y-n.y)<7){n.target=(n.target+1)%n.route.length;n.wait=phase===2?4:2;n.repath=0;continue;}
    if(d>0){const step=Math.min(d,dt*(phase===2?15:32)),x=n.x+dx/d*step,y=n.y+dy/d*step;
-    if((Math.hypot(x-s.x,y-s.y)>26||Math.hypot(x-s.x,y-s.y)>Math.hypot(n.x-s.x,n.y-s.y))&&canMove(map,x,y)){n.x=x;n.y=y;n.walk+=dt*5;n.moving=true;n.direction=Math.abs(dx)>Math.abs(dy)?dx>0?2:1:dy<0?3:0;}
+    if((Math.hypot(x-s.x,y-s.y)>26||Math.hypot(x-s.x,y-s.y)>Math.hypot(n.x-s.x,n.y-s.y))&&canMove(map,x,y)){n.x=x;n.y=y;n.walk=advanceGait(n.walk,step,actorStride(n.column+1));n.moving=true;n.direction=Math.abs(dx)>Math.abs(dy)?dx>0?2:1:dy<0?3:0;}
    }
-   if(phase>=1&&Math.hypot(n.x-s.x,n.y-s.y)<160){const x=s.x-n.x,y=s.y-n.y;n.direction=Math.abs(x)>Math.abs(y)?x>0?2:1:y<0?3:0;}
+   if(phase>=1&&!n.moving&&Math.hypot(n.x-s.x,n.y-s.y)<160){const x=s.x-n.x,y=s.y-n.y;n.direction=Math.abs(x)>Math.abs(y)?x>0?2:1:y<0?3:0;}
   }
   return this.actors;
  }

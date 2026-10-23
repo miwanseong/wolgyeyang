@@ -1,19 +1,20 @@
-import {Inventory} from './inventory.js?v=9226cb9e0ebf';
-import {ReasoningPanel} from './reasoning.js?v=9226cb9e0ebf';
-import {inPuddle,witnessesEntry} from './facility.js?v=9226cb9e0ebf';
-import {sanity,strain,Hallucinations} from './mental.js?v=9226cb9e0ebf';
-import {Atmosphere} from './atmosphere.js?v=9226cb9e0ebf';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=9226cb9e0ebf';
-import {Crowd} from './crowd.js?v=9226cb9e0ebf';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=9226cb9e0ebf';
-import { PuzzlePanel } from './puzzles.js?v=9226cb9e0ebf';
-import { CaptureAnimation, checkpoints } from './capture.js?v=9226cb9e0ebf';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=9226cb9e0ebf";
-import { Scene, facingDirection } from "./scene.js?v=9226cb9e0ebf";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=9226cb9e0ebf";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=9226cb9e0ebf";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=9226cb9e0ebf";
-import { AudioDirector, TRACKS } from "./audio.js?v=9226cb9e0ebf";
+import {footContacts} from './gait.js?v=4c269a40fa1c';
+import {Inventory} from './inventory.js?v=4c269a40fa1c';
+import {ReasoningPanel} from './reasoning.js?v=4c269a40fa1c';
+import {inPuddle,witnessesEntry} from './facility.js?v=4c269a40fa1c';
+import {sanity,strain,Hallucinations} from './mental.js?v=4c269a40fa1c';
+import {Atmosphere} from './atmosphere.js?v=4c269a40fa1c';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=4c269a40fa1c';
+import {Crowd} from './crowd.js?v=4c269a40fa1c';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=4c269a40fa1c';
+import { PuzzlePanel } from './puzzles.js?v=4c269a40fa1c';
+import { CaptureAnimation, checkpoints } from './capture.js?v=4c269a40fa1c';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=4c269a40fa1c";
+import { Scene, facingDirection } from "./scene.js?v=4c269a40fa1c";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=4c269a40fa1c";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=4c269a40fa1c";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=4c269a40fa1c";
+import { AudioDirector, TRACKS } from "./audio.js?v=4c269a40fa1c";
 import {
   initial,
   ITEMS,
@@ -25,7 +26,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=9226cb9e0ebf";
+} from "./state.js?v=4c269a40fa1c";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -154,7 +155,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=9226cb9e0ebf')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=4c269a40fa1c')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -891,7 +892,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=9226cb9e0ebf", memory: "assets/event-memory.png?v=9226cb9e0ebf"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=4c269a40fa1c", memory: "assets/event-memory.png?v=4c269a40fa1c"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1049,15 +1050,9 @@ function render(t) {
   if(idle?.kind==='disperse'&&scene.echo?.idle){scene.echo=null;toast('움직이자, 뒤의 숨소리가 끊겼다.');}
   if(!stillness.active&&scene.echo?.idle)scene.echo=null;
   if((dialog||phone)&&!traveling)locomotion(state,0,0,false,dt,worldFor(state));
-  scene.moved(dx, dy, dt, state.running);
+  const beforeWalk=scene.walk;scene.moved(dx, dy, dt, state.running);
   if(!scene.moving&&!dialog&&!phone&&!state.hidden)scene.direction=facingDirection(Math.cos(state.facing),Math.sin(state.facing));
-  if (scene.moving) {
-    stepClock += dt;
-    if (stepClock > (state.running ? 0.25 : 0.43)) {
-      stepClock = 0;
-      sound.step(inPuddle(state)?'water':worldFor(state).floor, state.running);
-    }
-  } else stepClock = 0.2;
+  if(scene.moving&&footContacts(beforeWalk,scene.walk))sound.step(inPuddle(state)?'water':worldFor(state).floor,state.running);
   if (enemy.active) {
     heartClock += dt;
     if (heartClock > 1.1) {
