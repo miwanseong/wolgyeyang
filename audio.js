@@ -18,6 +18,9 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  checkSuccess: "fx_check_success.wav",
+  checkFailure: "fx_check_failure.wav",
+  photo: "fx_photo.wav",
   dice: "fx_dice_roll.wav",
   giggle: "fx_female_giggle.wav",
   puzzleSlide: "fx_puzzle_slide.wav",

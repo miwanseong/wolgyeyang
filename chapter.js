@@ -1,6 +1,6 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=b4a96b0d9035";
-import { MAPS, sight, worldFor } from "./world.js?v=b4a96b0d9035";
-import { take, note } from "./state.js?v=b4a96b0d9035";
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=33fa1af3e093";
+import { MAPS, sight, worldFor } from "./world.js?v=33fa1af3e093";
+import { take, note } from "./state.js?v=33fa1af3e093";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -82,7 +82,7 @@ export const records={
  "lastVoice": [
   "relayLastVoice",
   "복원된 23시 44분",
-  "서윤: 「언니. 아직 안 열렸어. 아까 취소하면 안 돼. 다시 불러 줘.」\n서하: 「내가 확인했다고 해 버렸어. 지금 다시 부르면…」\n서윤: 「그럼 지금 문 앞에 와 줘.」\n통화 지속 41초. 종료 조작: 수신자 서하.\n\n나는 처음에는 표시를 잘못 믿었다. 그 다음에는 문이 안 열렸다는 말을 들었다. 다시 요청하면 방금 한 거짓 확인이 드러날까 봐 끊었다.\n송출층 북쪽 연결문은 안쪽에서 빗장을 열 수 있다. 기록동의 삭제 이력과 원본 시각을 다시 대조할 수 있다."
+  "서윤: 「언니. 아직 안 열렸어. 아까 취소하면 안 돼. 다시 불러 줘.」\n서하: 「내가 확인했다고 해 버렸어. 지금 다시 부르면…」\n서윤: 「그럼 지금 문 앞에 와 줘.」\n통화 지속 41초. 종료 조작: 수신자 서하.\n\n나는 처음에는 표시를 잘못 믿었다. 그 다음에는 문이 안 열렸다는 말을 들었다. 다시 요청하면 방금 한 거짓 확인이 드러날까 봐 끊었다."
  ],
  "names": [
   "relayNames",
@@ -94,20 +94,20 @@ function result(title,text,extra={}){return {title,text,...extra};}
 export function relayAction(s,o,choice=null){
  if(!s.flags.chapter2||!MAPS[s.map]?.objects.includes(o)||!o.chapterAction||Math.hypot(s.x-o.x,s.y-o.y)>=70||!sight(worldFor(s),s,o))return null;
  const action=o.chapterAction;
- if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다. 설비동으로 내려가 냉각 밸브 → 기존 입력 분리 → 비상 회선 투입을 확인하자.');
+ if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다.');
  if(records[action]){
   const [flag,title,text]=records[action];const first=!s.flags[flag];s.flags[flag]=true;note(s,o.id,text);
   if(action==='register')take(s,'relayBadge');
   return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'drawer',haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
  }
  if(action==='compare'){
-  if(s.bag.includes('relayCopy'))return result(o.name,'대조를 마친 사본은 소지품과 기록 앱에 남아 있다. 다음은 접수동 당직실의 계단 아래, 냉각 설비다.');
+  if(s.bag.includes('relayCopy'))return result(o.name,'대조를 마친 사본은 소지품과 기록 앱에 남아 있다.');
   if(!s.flags.relayIncoming||!s.flags.relayCancel||!s.flags.relayOverride)return result(o.name,'서류와 데크 세 곳을 먼저 조사해야 한다.\n서쪽 최초 접수지 / 동쪽 취소 통화 데크 / 동쪽 원격 회신 단말.');
   if(!s.flags.relaySlide)return result(o.name,'대조 장치의 밀판이 어긋나 있다.',{puzzle:'slide'});
   if(choice===null)return result(o.name,'세 기록은 한 번의 통화가 아니다. 실제로 일어난 순서대로 대조한다.\n기록 앱에 각 시각과 발신 내용이 남아 있다.',{choices:[['접수 → 취소 → 잠금 유지 회신','chronological'],['접수 → 잠금 유지 회신 → 취소','wrong'],['취소 → 접수 → 잠금 유지 회신','wrong']]});
   if(choice!=='chronological')return result(o.name,'시각이 맞지 않는다. 23:41, 23:43, 23:47의 순서와 각 발신 내용을 다시 확인하자. 기록은 사라지지 않았다.');
   take(s,'relayCopy');s.flags.relayCompared=true;note(s,'relay-comparison','23:41 접수 → 23:43 취소 → 23:47 잠금 유지. 취소가 개방을 뜻하지 않았다. 해린의 삭제 이력을 붙인 사본을 확보했다.');
-  return result('대조 사본 출력','출력된 종이의 빈 줄에서 서윤의 손글씨가 떠오른다.\n「답을 보내 줘. 아직 기다리고 있어.」\n\n접수동으로 돌아가 당직실 계단을 내려간다. 송출기를 살리려면 냉각 밸브를 열고 회선을 절체해야 한다.',{sound:'item',haunt:'아직 기다리고 있어'});
+  return result('대조 사본 출력','출력된 종이의 빈 줄에서 서윤의 손글씨가 떠오른다.\n「답을 보내 줘. 아직 기다리고 있어.」',{sound:'item',haunt:'아직 기다리고 있어'});
  }
  if(action==='wheel'){
   if(s.flags.relayCooling||s.bag.includes('relayWheel'))return result(o.name,'핸들이 있던 받침만 남았다. 설치 위치는 이 방 동쪽의 냉각 순환 밸브다.');
@@ -115,31 +115,31 @@ export function relayAction(s,o,choice=null){
   take(s,'relayWheel');return result(o.name,'정비대에서 사각 홈의 수동 핸들을 챙겼다.\n같은 방 동쪽 배관의 빈 축에 맞는다.',{sound:'item'});
  }
  if(action==='cooling'){
-  if(s.flags.relayCooling)return result(o.name,'핸들이 고정되어 있고 순환 밸브가 열려 있다. 다음은 동쪽 절체실의 기존 입력 분리 스위치다.');
+  if(s.flags.relayCooling)return result(o.name,'핸들이 고정되어 있고 순환 밸브가 열려 있다.');
   if(!s.bag.includes('relayWheel'))return result(o.name,'손으로 돌릴 수 없는 사각 축이 드러나 있다. 이 방 서쪽 정비대에서 분리 보관한 핸들을 찾아야 한다.');
   if(!s.flags.relayPipes)return result(o.name,'점검판의 배관이 분리되어 있다. 회전 관을 연결해야 한다.',{puzzle:'pipes'});
   s.bag=s.bag.filter(k=>k!=='relayWheel');s.flags.relayCooling=true;
   note(s,'relay-cooling','수동 핸들을 냉각 밸브 축에 연결하고 개방했다. 기존 입력을 분리한 다음 비상 회선을 투입한다.');
-  return result(o.name,'사각 홈을 맞추고 핸들을 돌렸다. 배관 안쪽으로 물이 흐른다.\n맞은편 절체실로 가 기존 입력부터 분리하자.',{sound:'door'});
+  return result(o.name,'사각 홈을 맞추고 핸들을 돌렸다. 배관 안쪽으로 물이 흐른다.',{sound:'door'});
  }
  if(action==='isolate'){
   if(!s.flags.relayCooling)return result(o.name,'운전 안내: 먼저 서쪽 순환실의 냉각 밸브를 열 것. 순환 확인 없이 절체할 수 없다.');
-  s.flags.relayIsolated=true;return result(o.name,'기존 입력을 분리했다. 과거의 확인음이 한 번 울린 뒤 끊겼다.\n옆의 비상 회선 제어반으로 이동한다.',{sound:'thud'});
+  s.flags.relayIsolated=true;return result(o.name,'기존 입력을 분리했다. 과거의 확인음이 한 번 울린 뒤 끊겼다.',{sound:'thud'});
  }
  if(action==='transfer'){
   if(!s.flags.relayCooling||!s.flags.relayIsolated)return result(o.name,'투입 차단. 냉각 밸브 개방과 기존 입력 분리를 먼저 확인해야 한다.\n퓨즈를 넣거나 다른 물건을 꽂는 장치가 아니다.');
   if(s.flags.relayPower)return result(o.name,'비상 회선이 유지되고 있다. 이 방 북쪽 계단으로 송출층에 갈 수 있다.');
-  s.flags.relayPower=true;return result(o.name,'비상 회선을 투입했다. 위층 장비 팬이 돌아간다.\n계단 안쪽에서 바닥을 짚는 소리가 들렸다.\n송출층에 올라가기 전에 장비 보관장과 방화문 위치를 확인하자.',{sound:'apparition',haunt:'대답하지 마',hunt:20});
+  s.flags.relayPower=true;return result(o.name,'비상 회선을 투입했다. 위층 장비 팬이 돌아간다.\n계단 안쪽에서 바닥을 짚는 소리가 들렸다.',{sound:'apparition',haunt:'대답하지 마',hunt:20});
  }
  if(action==='leaveRelay'){
-  if(!s.bag.includes('relayExport'))return result(o.name,'문은 열리지만 나는 손을 뗐다. 아직 내 결백을 확인하지 못했다. 송출층의 대조 콘솔에서 처리 이력과 23:44 통화를 확인하고 증거 매체로 내보내자.');
+  if(!s.bag.includes('relayExport'))return result(o.name,'지금은 돌아갈 수 없어. 아직 그 전화가 끝나지 않았어.');
   s.flags.relayComplete=true;s.ending=s.flags.relayRedacted?'silence':hasOriginals(s)?'signal':'fragment';
   note(s,'relay-ending',CINEMATICS[s.ending].label);return {cinematic:s.ending};
  }
  if(action==='transmit'){
-  if(s.bag.includes('relayExport'))return result(o.name,'대조 기록과 23:44 통화를 증거 매체로 내보냈다. 접수동 남쪽 외부 문으로 나가자.');
+  if(s.bag.includes('relayExport'))return result(o.name,'대조 기록과 23:44 통화를 증거 매체로 내보냈다.');
   if(!s.flags.relayPower||!s.bag.includes('relayCopy')||!s.flags.relayLastVoice)return result(o.name,'대조 사본, 비상 회선, 마지막 회신 청취가 모두 필요하다. 서쪽 청취실에서 서윤의 목소리를 끝까지 듣자.');
-  if(!s.flags.relayErasure)return result(o.name,'대조 사본에 지워진 문장의 출처가 없다. 기록동 동쪽 청취실의 「해린의 수정 이력 서랍」을 확인해야 한다.\n송출층 북쪽 연결문으로 접수동까지 바로 돌아갈 수 있다.');
+  if(!s.flags.relayErasure)return result(o.name,'대조 사본에 지워진 문장의 출처가 없다. 기록동 동쪽 청취실의 「해린의 수정 이력 서랍」을 확인해야 한다.');
   if(!s.flags.relayProofTimeline){
    if(choice==='proof-time'){s.flags.relayProofTimeline=true;note(s,'relay-proof-time','신고 취소가 문을 연 것이 아니다. 취소 이후에도 정우가 잠금을 유지했다.');}
    else return result('최종 대조 1 · 취소와 개방','기록에 없는 내용을 덧붙이지 않는다. 접수 취소 뒤 방화문은 어떻게 되었는가?',{choices:[['취소와 함께 문이 열렸다','wrong-proof'],['23:47에 잠금 유지 회신이 남았다','proof-time']]});
@@ -153,7 +153,7 @@ export function relayAction(s,o,choice=null){
   if(!['send','redact'].includes(choice))return null;
   s.flags.relayRedacted=choice==='redact';s.flags.relayExported=true;take(s,'relayExport');
   note(s,'relay-export',s.flags.relayRedacted?'정우의 조작은 남기고 내 취소와 재통화는 제외했다. 원본은 내 봉투에 남아 있다.':'취소와 재통화, 수동 잠금 유지의 조작 이력을 모두 보존했다. 원본과 복원 경위를 구분해 증거 매체로 내보냈다.');
-  return result('증거 매체 분리','기록이 담긴 매체를 분리해 봉투에 넣었다. 반복 재생되던 확인음이 멎는다.\n접수동 남쪽 외부 출입문으로 나가자.',{sound:'item',exported:true});
+  return result('증거 매체 분리','기록이 담긴 매체를 분리해 봉투에 넣었다. 반복 재생되던 확인음이 멎는다.',{sound:'item',exported:true});
  }
  return null;
 }

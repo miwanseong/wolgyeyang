@@ -1,4 +1,4 @@
-import { canMove, sight, findPath } from "./world.js?v=b4a96b0d9035";
+import { canMove, sight, findPath } from "./world.js?v=33fa1af3e093";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -104,6 +104,14 @@ export class Pursuer {
   update(map, s, dt) {
     if (!this.active) return null;
     this.age+=dt;
+    if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
+      const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
+      const dx=s.x-this.x,dy=s.y-this.y,d=Math.hypot(dx,dy);
+      if(d>38){this.repath-=dt;if(this.repath<=0){this.path=findPath(map,this,s);this.repath=.45;}const p=this.path[0]||s,px=p.x-this.x,py=p.y-this.y,n=Math.hypot(px,py);if(n<5)this.path.shift();else{const step=Math.min(n,dt*100);if(canMove(map,this.x+px/n*step,this.y))this.x+=px/n*step;if(canMove(map,this.x,this.y+py/n*step))this.y+=py/n*step;}}
+      else{h.opening=Math.min(1,h.opening+dt/1.3);if(h.opening>=1)return 'caught';}
+      return null;
+    }
+
     this.grace = Math.max(0, this.grace - dt);
     this.stunned = Math.max(0, this.stunned - dt);
     if (this.stunned) {this.motion="search";return null;}

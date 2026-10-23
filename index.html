@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#111110" />
     <title>잔류 — 마지막 입주자</title>
-    <link rel="stylesheet" href="style.css?v=b4a96b0d9035" />
+    <link rel="stylesheet" href="style.css?v=33fa1af3e093" />
   </head>
   <body>
     <div class="grain"></div>
@@ -53,6 +53,7 @@
           <p id="objective">관리실에서 보관함을 찾으세요.</p>
         </div>
         <div class="stage">
+          <div id="weather" aria-hidden="true" hidden></div><canvas id="photo-map" width="200" height="144" hidden></canvas>
           <div id="travel" class="travel" hidden></div>
           <div id="threat" class="threat" role="status" hidden></div>
           <canvas
@@ -120,7 +121,7 @@
         <div class="dialog-content">
           <img
             id="portrait"
-            src="assets/seoha.png?v=b4a96b0d9035"
+            src="assets/seoha.png?v=33fa1af3e093"
             alt="붉은 눈과 섬세한 속눈썹을 가진 주인공 서하의 초상"
             hidden
           />
@@ -139,7 +140,7 @@
         휴대폰 내려놓기 <kbd>Esc</kbd>
       </button>
       <div class="hand">
-        <img class="hand-back" src="assets/hand.png?v=b4a96b0d9035" alt="" />
+        <img class="hand-back" src="assets/hand.png?v=33fa1af3e093" alt="" />
         <div class="phone">
           <div class="island"></div>
           <div class="phone-status"><span>23:41</span><span>••• ▰</span></div>
@@ -257,8 +258,9 @@
       <canvas id="capture-animation" width="1280" height="800" aria-label="정우가 서하를 덮쳐 목을 조르고, 몸부림이 멎으며 시야가 어두워진다."></canvas>
       <div id="death-result" hidden><small>잔류 · 사망</small><h2 id="death-title">숨이 멎었다.</h2><p id="death-checkpoint"></p><div id="death-slots" aria-label="불러올 저장 선택"></div><button id="death-retry" disabled>다시 시작</button><button id="death-new" hidden>저장을 불러오지 않고 처음부터</button></div>
     </section>
+    <section id="roll-panel" role="dialog" aria-modal="true" aria-labelledby="roll-title" hidden><div class="roll-card"><small>INVESTIGATION / 1D6</small><h2 id="roll-title"></h2><div id="roll-face" aria-hidden="true">◇</div><p id="roll-score"></p><strong id="roll-result" role="status"></strong><button id="roll-button">주사위 굴리기</button></div></section>
     <section id="puzzle-modal" role="dialog" aria-modal="true" aria-labelledby="puzzle-title" hidden></section>
     <div id="toast" role="status" hidden></div>
-    <script type="module" src="app.js?v=b4a96b0d9035"></script>
+    <script type="module" src="app.js?v=33fa1af3e093"></script>
   </body>
 </html>

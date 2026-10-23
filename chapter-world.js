@@ -19,8 +19,11 @@ export function addRelayChapter(M,map,prop,door){
  function wall(m,id,index,x,y,name,description,extra={}){return detail(m,id,index,x,y,name,description,{mount:true,solid:false,facing:'north',...extra,...(extra.decor!==undefined?{details:undefined}:{})});}
  function furniture(m,id,kind,x,y,name,description,extra={}){return put(m,id,kind,x,y,name,{description,...extra});}
  function action(m,id,kind,x,y,name,chapterAction,description,extra={}){return furniture(m,id,kind,x,y,name,description,{chapterAction,...extra});}
- function hide(m,x,y){furniture(m,m+'-hide','cabinet',x,y,'비어 있는 장비 보관장','선반을 비워 둔 장비 보관장. 불을 끄고 몸을 숨길 수 있다.',{hide:true,w:24,back:30,front:12});}
+ function hide(m,x,y){const vent=m==='relayPlant'||m==='relaySignal';furniture(m,m+'-hide',vent?'cabinet':'desk',x,y,vent?'정비용 환풍구':'가림판이 있는 작업 책상',vent?'나사 두 개가 풀린 점검 덮개. 안쪽 통로는 몸 하나가 겨우 들어간다. 누가 보는 앞에서 들어가면 덮개를 열고 따라올 것이다.':'책상 아래 가림판 뒤로 몸을 낮출 수 있다. 시선을 끊고 들어가야 한다.',{hide:true,hideKind:vent?'vent':'desk',w:vent?24:38,back:vent?20:26,front:12});}
  function shelf(m,id,x,y,col=0){furniture(m,id,'shelf',x,y,'번호별 기록 서가','사건 번호별로 정리된 문서. 통로를 비워 두고 벽을 따라 배치했다.',{regional:7,w:28,back:28,front:10});}
+ furniture('relayEntry','relay-inspection-lens','desk',36,18,'당직실 검사 도구함','검사용 확대경과 열쇠 점검표.',{equipment:'lens',w:24,back:20,front:10});
+ furniture('relayPlant','relay-circuit-tester','desk',42,17,'절연 공구 트레이','도현의 비접촉 회로 시험기. 측정 도구를 빌릴 수 있다.',{equipment:'tester',w:24,back:20,front:10});
+ for(const [i,label] of ['A','B','C'].entries())furniture('relayPlant','relay-test-'+label,'panel',33+i*2,21,'시험 접점 '+label,'복귀용 저전압 시험 접점.',{testContact:label,w:10,back:12,front:8});
  // Reception: two enclosed offices open onto a wide, furnished waiting corridor.
  leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');
  leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');
@@ -148,7 +151,7 @@ export function addRelayChapter(M,map,prop,door){
  for(const [x,index]of [[12,0],[16,2]])furniture('relayEntry','relay-counter-'+index,'counter',x,12,'안내 카운터 연결 구간','한 줄로 이어진 방문객 응대 면. 인계 서랍은 중앙에 있다.',{counter:index,partOf:'relay-register',w:31,back:31,front:14});
  const receptionChair=M.relayEntry.objects.find(o=>o.id==='relay-entry-chair');Object.assign(receptionChair,{x:14*32,y:9*32,description:'카운터 뒤 직원 작업석의 회전 의자.'});
  Object.assign(M.relayYard.objects.find(o=>o.id==='relay-yard-bench'),{parkingBench:true,description:'야외 금속 슬랫 벤치. 좌석 오른쪽에는 뚜껑을 닫은 물병, 중앙에는 작업 장갑이 놓여 있다. 실제로 온 동행자들의 휴게 흔적이다.'});
- furniture('relayYard','relay-yard-barrier','barrier',7,17,'차량 진입 차단기와 인터폰','방문 차량의 진입을 관리하는 차단기. 오른쪽 보행 통로는 별도로 열려 있다.',{parkingBarrier:true,w:40,back:28,front:12});
+ furniture('relayYard','relay-yard-barrier','barrier',7,17,'차량 진입 차단기와 인터폰','방문 차량의 진입을 관리하는 차단기. 오른쪽 보행 통로는 별도로 열려 있다.',{parkingBarrier:true,w:40,back:28,front:12,solid:false});
  for(const [m,id,patch]of [
  ['relayEntry','relay-register',{facility:undefined,counter:1,x:14*32,y:12*32,w:31,back:31,front:14,name:'연속 안내 카운터 · 인계 서랍'}],
  ['relayEntry','relay-duty-sofa',{kind:'bed',name:'당직자용 단일 침대',description:'접수 당직자가 교대 때 사용하는 좁은 침대. 침구와 머리맡이 벽 쪽에 정돈되어 있다.',facility:1,x:29*32,y:19*32,w:25,back:58,front:14}],

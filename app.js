@@ -1,14 +1,15 @@
-import {CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=b4a96b0d9035';
-import {Crowd} from './crowd.js?v=b4a96b0d9035';
-import {Residents,residentDialogue,residentExpression} from './residents.js?v=b4a96b0d9035';
-import { PuzzlePanel } from './puzzles.js?v=b4a96b0d9035';
-import { CaptureAnimation, checkpoints } from './capture.js?v=b4a96b0d9035';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=b4a96b0d9035";
-import { Scene, facingDirection } from "./scene.js?v=b4a96b0d9035";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=b4a96b0d9035";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=b4a96b0d9035";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=b4a96b0d9035";
-import { AudioDirector, TRACKS } from "./audio.js?v=b4a96b0d9035";
+import {Atmosphere} from './atmosphere.js?v=33fa1af3e093';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=33fa1af3e093';
+import {Crowd} from './crowd.js?v=33fa1af3e093';
+import {RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=33fa1af3e093';
+import { PuzzlePanel } from './puzzles.js?v=33fa1af3e093';
+import { CaptureAnimation, checkpoints } from './capture.js?v=33fa1af3e093';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=33fa1af3e093";
+import { Scene, facingDirection } from "./scene.js?v=33fa1af3e093";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES } from "./world.js?v=33fa1af3e093";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=33fa1af3e093";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=33fa1af3e093";
+import { AudioDirector, TRACKS } from "./audio.js?v=33fa1af3e093";
 import {
   initial,
   ITEMS,
@@ -20,7 +21,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=b4a96b0d9035";
+} from "./state.js?v=33fa1af3e093";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -147,7 +148,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=b4a96b0d9035')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=33fa1af3e093')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -191,32 +192,28 @@ function talkResident(o){
  const dx=state.x-o.x,dy=state.y-o.y;o.direction=Math.abs(dx)>Math.abs(dy)?(dx>0?2:1):(dy<0?3:0);
  const text=residentDialogue(state,o);state.flags['talked_'+o.id]=true;
  addNote('person_'+o.id+'_'+o.phase,o.name+' · '+text);
- say(o.name,text+'\n\n지금 확인할 곳: '+objective(),[['이야기를 듣는다',closeDialog],[CHECKS[o.id].label+' · 판정',()=>openCheck(o.id,o.name)],['돌아가기',closeDialog]]);
+ const questions=RESIDENT_QUESTIONS[o.id].map(([label,line],i)=>[label,()=>{state.flags['question_'+o.id+'_'+i]=true;addNote('question_'+o.id+'_'+i,o.name+' · '+line);say(o.name,line,[['다른 이야기를 묻는다',()=>talkResident(o)],['대화를 마친다',closeDialog]]);}]);
+ say(o.name,text,[...questions,[CHECKS[o.id].label+' · 판정',()=>openCheck(o.id,o.name)],['대화를 마친다',closeDialog]]);
 }
 function openCheck(key,speaker='서하'){
- const c=checkPreview(state,key);if(!c)return;
- const saved=state.investigation?.rolls[key];
- if(saved){say(speaker,checkText(state,key,saved));return;}
- const execute=spend=>{
-  const r=resolveCheck(state,key,spend);if(!r)return;
-  sound.effect('dice');if(!r.success)scene.haunt('내가 놓친 건 뭐였지');addNote('check_'+key,checkText(state,key,r));
-  const reveal=()=>{say(speaker,checkText(state,key,r));$('check-die').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][r.die-1];$('check-die').hidden=false;};
-  if(scene.reduced){reveal();return;}
-  say(speaker,'조사 판정 · 주사위를 굴린다…',[]);$('check-die').hidden=false;
-  const epoch=++checkEpoch;let frame=0;checkTicker=setInterval(()=>{$('check-die').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][frame++%6];},70);
-  checkTimer=setTimeout(()=>{clearInterval(checkTicker);if(checkEpoch===epoch&&dialog)reveal();},840);
- };
- const actions=[['그대로 굴린다',()=>execute(false)]];
- if(c.focus>0)actions.push(['집중 1 사용 · +2',()=>execute(true)]);
- actions.push(['돌아가기',closeDialog]);
- say(speaker,`${c.label}\n1d6 + ${c.skill} ${c.stat} + 증거 ${c.bonus} / 난도 ${c.dc}\n집중 ${c.focus}/3 · 실패하면 긴장 +1: 이후 독촉이 5초 빨라진다. 주요 단서와 퍼즐은 막히지 않는다.\n판정은 한 번만 굴리고 저장 기록에 남는다.`,actions);
+ const c=checkPreview(state,key);if(!c)return;closeDialog();eventActive=true;keys.clear();
+ const panel=$('roll-panel');panel.hidden=false;
+ const title=$('roll-title'),die=$('roll-face'),score=$('roll-score'),result=$('roll-result'),button=$('roll-button');
+ title.textContent=c.label;die.textContent='◇';score.textContent=`1d6 + ${c.skill} ${c.stat} + 증거 ${c.bonus} + 장비 ${c.gear} / 난도 ${c.dc}`;
+ result.textContent=c.equipment;button.disabled=false;button.textContent='주사위 굴리기';
+ const finish=r=>{die.textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][r.die-1];score.textContent=`${r.die} + ${c.stat} + ${r.bonus} + ${r.gear??r.spent*2} = ${r.total} / 난도 ${c.dc}`;result.textContent=r.success?'성공':'실패';panel.dataset.result=r.success?'success':'failure';button.disabled=false;button.textContent='조사로 돌아가기';button.onclick=()=>{panel.hidden=true;eventActive=false;canvas.focus();say(speaker,r.success?c.success:c.failure);};button.focus();};
+ const saved=state.investigation?.rolls[key];if(saved){finish(saved);return;}
+ panel.dataset.result='pending';button.onclick=()=>{panel.dataset.result='rolling';button.disabled=true;const r=resolveCheck(state,key);if(!r)return;sound.effect('dice');addNote('check_'+key,checkText(state,key,r));let f=0;
+ const timer=setInterval(()=>{die.textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][f++%6];},65);
+ setTimeout(()=>{clearInterval(timer);sound.effect(r.success?'checkSuccess':'checkFailure',.6);finish(r);},scene.reduced?0:900);};button.focus();
 }
 function startChapterTwo(){
  if(!enterChapterTwo(state))return;
  closeDialog();enemy.reset();pursuerTrail=null;huntDelay=0;huntCooldown=45;stillness.reset();
  scene.begin(state,worldFor(state));revealRoom('제2장 · 외부 진입 마당');
- say('제2장 · 산북 시설중계소',state.notes.find(n=>n.id==='chapter2-arrival').text+'\n\n동쪽 현관이 안내·접수동이다. 해린은 안내실, 미정은 당직 휴게실, 도현은 지하 설비실에서 기다린다. 안내실 인계대의 출입증부터 찾자. 표지와 바닥 방향 표시를 따라갈 수 있다.\n\nTab: 휴대폰 · 기록/소지품/지도 · 저장 슬롯은 이전 챕터와 함께 사용할 수 있다.');
+ say('제2장 · 산북 시설중계소','녹음기를 손목에 걸었다. 이번에는 누가 무슨 말을 했는지, 내 귀로 확인할 것이다.\n휴대폰에 내 조사 수첩을 열어 두었다. 장비를 바꿔 들면 살펴볼 수 있는 것도 달라질 것이다.');
 }
+const atmosphere=new Atmosphere(()=>sound);
 function objective() {
   if(state.flags.chapter2&&!state.hidden&&!enemy.active)return relayObjective(state);
   if (state.ending) return "기억의 끝";
@@ -272,15 +269,19 @@ function transition(to, spawn, portal = null) {
   }, 850);
 }
 function hide() {
+  const spot=nearest;
   if (state.hidden) {
-    state.hidden = false;
-    toast("문을 조금 열고 밖으로 나왔다.");
+    if(state.hideSpot?.witnessed&&state.hideSpot.opening>0){caught();return;}
+    state.hidden = false;state.hideSpot=null;
+    toast("조심스럽게 밖으로 나왔다.");
   } else {
+    if(state.flags.chapter2&&!spot?.hide)return;
+    state.hideSpot=state.flags.chapter2?{id:spot.id,x:spot.x,y:spot.y,kind:spot.hideKind,witnessed:enemy.active&&Math.hypot(enemy.x-state.x,enemy.y-state.y)<300&&sight(worldFor(state),enemy,state),opening:0}:null;
     state.hidden = true;
     state.flashlight = false;
     keys.clear();
     sound.effect("door");
-    toast("손전등을 끄고 숨었다 · E로 나오기");
+    toast(state.flags.chapter2?(spot.hideKind==='vent'?'환풍구 덮개를 당겨 닫았다.':'책상 아래 가림판 뒤로 몸을 낮췄다.'):'손전등을 끄고 숨었다 · E로 나오기');
   }
   updateSound();
 }
@@ -309,7 +310,15 @@ function interact() {
     transition(o.to, o.spawn, o);
     return;
   }
+  if(o.testContact){
+    const expected=!state.flags.relayTestB?'B':!state.flags.relayTestA?'A':'C';
+    if(o.testContact===expected){state.flags['relayTest'+expected]=true;sound.effect('puzzleTurn');if(expected==='C'){state.flags.relayTesterUnlocked=true;sound.effect('save');toast('접점 세 개가 복귀했다. 공구 트레이의 잠금이 풀렸다.');}else toast('시험 접점이 복귀했다.');}
+    else{state.flags.relayTestA=false;state.flags.relayTestB=false;state.flags.relayTestC=false;sound.effect('puzzleSlide');toast('복귀 표시가 꺼졌다. 순서를 다시 확인하자.');}return;
+  }
+  if(o.equipment==='tester'&&!state.flags.relayTesterUnlocked){say(o.name,'공구 트레이에 잠금이 걸려 있다. 옆 표찰에는 「복귀: B → A → C」라고 새겨져 있다.');return;}
+  if(o.equipment){const r=investigationState(state);if(!r.gear.includes(o.equipment)){r.gear.push(o.equipment);sound.effect('item');addNote('equipment_'+o.equipment,EQUIPMENT[o.equipment].description);}say(o.name,EQUIPMENT[o.equipment].description+'\n휴대폰 소지품에서 손에 들 장비를 고를 수 있다.');return;}
   if (o.hide) {
+    if(state.flags.chapter2&&!enemy.active){state.flags['seen_'+o.id]=true;say(o.name,o.description,[['위치를 기억한다',closeDialog],['안쪽을 확인한다',()=>{closeDialog();nearest=o;hide();}]]);return;}
     hide();
     return;
   }
@@ -744,14 +753,15 @@ function app(name) {
       : "목표: " +
         objective() +
         "\n\n기록과 물건을 조사하면 단서가 이곳에 남는다.";
-  if(name==='notes'&&state.flags.chapter2){const r=investigationState(state);content.textContent='조사 능력 · 통찰2 / 관찰1 / 기술0\n집중 '+r.focus+'/3 · 긴장 '+r.stress+'/4\n\n'+content.textContent;}
+  if(name==='bag'&&state.flags.chapter2){const r=investigationState(state),sheet=document.createElement('p');sheet.textContent=CHARACTER.name+' · '+CHARACTER.background+'\n'+CHARACTER.traits+'\n통찰 2 / 관찰 1 / 기술 0 · 긴장 '+r.stress+'/4\n손에 드는 조사 장비는 하나. 판정 전 교체할 수 있다.';content.prepend(sheet);for(const id of r.gear){const b=document.createElement('button');b.textContent=(r.equipped===id?'착용 중 · ':'착용 · ')+EQUIPMENT[id].name+' ('+EQUIPMENT[id].skill+' +1)';b.textContent+='\n'+EQUIPMENT[id].description;b.onclick=()=>{equip(state,id);sound.effect('flashlightOn');app('bag');};content.append(b);}}
   if (name === "map")
     content.textContent =
       (state.flags.chapter2?"산북 시설중계소 · 구역 안내\n\n외부 마당 ↔ 접수동 서쪽 현관\n해린: 안내실 / 미정: 당직 휴게실 / 도현: 지하 정비실\n접수동: 남쪽 대기실 / 서쪽 접수실 / 동쪽 당직실\n서쪽 접수실 북문 ↔ 기록동: 서쪽 접수 원본 / 동쪽 대조 청취실\n동쪽 당직실 계단 ↓ 설비동: 서쪽 냉각 순환 / 동쪽 전원 절체\n설비동 동쪽 계단 ↑ 송출층: 서쪽 최종 청취 / 동쪽 송출 콘솔\n\n현재: ":"월계아파트 · 층별 안내\n\n2F 서쪽 기록실 / 동쪽 방송실\n       ↕ 동쪽 계단\n1F 서쪽 관리실 / 중앙 현관 / 동쪽 101호\n       ↕ 동쪽 계단\nB1 서쪽 공용 창고 / 동쪽 수변전실\n\n현재: ") +
       worldFor(state).name +
       "\n\n" +
       objective() +
-      "\n\n위험 시 청소함에 숨는다. 달리기는 소음을 만든다.";
+      (state.flags.chapter2?"\n\n책상 아래와 환풍구를 미리 확인하자. 보고 있는 앞에서 숨으면 들킨다.":"\n\n위험 시 청소함에 숨는다. 달리기는 소음을 만든다.");
+  if(name==='map'&&state.flags.chapter2){const b=document.createElement('button');b.textContent=state.flags['photo_'+state.map]?'촬영한 도면 다시 보기':'휴대폰으로 현 구역 안내도 촬영';b.onclick=()=>{state.flags['photo_'+state.map]=true;sound.effect('photo');toast('안내도를 촬영했다. 우측 상단에서 확인할 수 있다.');app('map');};content.append(b);}
   if (name === "settings") {
     content.textContent =
       "음향 · 공포 BGM / 용도별 효과음\n현재 BGM: " +
@@ -860,7 +870,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=b4a96b0d9035", memory: "assets/event-memory.png?v=b4a96b0d9035"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=33fa1af3e093", memory: "assets/event-memory.png?v=33fa1af3e093"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1005,7 +1015,7 @@ function render(t) {
       huntDelay = state.flags.chapter2 ? 55 : 14;
   }
   const urge=progressHaunt.update(state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!state.hidden&&!enemy.active&&!pursuerTrail&&!state.ending&&document.hasFocus());
-  if(urge?.kind==='warning'){sound.effect('giggle',.55);scene.haunt('언제까지 모른 척할 거야');toast('웃음이 끊겼다. '+objective());}
+  if(urge?.kind==='warning'){sound.effect('giggle',.55);scene.haunt('언제까지 모른 척할 거야');toast('웃음이 끊겼다.');}
   if(urge?.kind==='insist'){
     if(canHunt()&&enemy.spawn(worldFor(state),state)){sound.effect('apparition');scene.apparition();scene.haunt('대답할 때까지 기다릴게');}
     else{
@@ -1057,7 +1067,7 @@ function render(t) {
   $("interaction").querySelector("span").textContent = state.hidden
     ? "숨은 곳에서 나온다"
     : (nearest?.id === "exit" && state.flags.shutterOpen ? "열린 현관 · 밖으로" : nearest?.name) || "";
-  $("objective").textContent = objective();
+  $("objective").textContent = objective();$("objective").hidden=!!state.flags.chapter2;
   if ($("room-name").textContent !== map.name) {
     $("room-name").textContent = map.name;
     document.querySelector('.game-top .eyebrow').textContent=state.flags.chapter2?'원본 대조 · 2026.11.04 02:13 / 산북중계소':'철거 예정 06:00 / 현재 23:41';
@@ -1091,7 +1101,10 @@ function render(t) {
     : "";
   $("threat").hidden = !enemy.active&&!pursuerTrail;
   updateSound();
+  if(state.hideSpot?.opening>0&&state.hideSpot.opening<.1&&!state.flags.hideOpeningHeard){sound.effect('scrape');state.flags.hideOpeningHeard=true;}
+  if(!state.hidden)state.flags.hideOpeningHeard=false;
   scene.draw(state, t, dt, nearest, dialog, enemy);
+  atmosphere.update(state,worldFor(state),enemy,t,dt,started&&!eventActive);
 }
 $("dialog-text").onclick = finishTyping;
 $("new-game").disabled = true;
@@ -1127,6 +1140,8 @@ function flashlight() {
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
   if (eventActive) {
+    if(!$('roll-panel').hidden){if(k==='tab'){e.preventDefault();$('roll-button').focus();}return;}
+
     if(!$("puzzle-modal").hidden){puzzlePanel.key(e);if(!["enter"," ","tab"].includes(k))e.preventDefault();return;}
     if(!$("death-screen").hidden){
       if(k==='tab'){e.preventDefault();if(captureFinished){const bs=[...$('death-result').querySelectorAll('button:not(:disabled):not([hidden])')],i=bs.indexOf(document.activeElement);bs[(i+(e.shiftKey?-1:1)+bs.length)%bs.length]?.focus();}}

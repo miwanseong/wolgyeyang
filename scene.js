@@ -1,5 +1,5 @@
-import {facilityArt} from './facility-art.js?v=b4a96b0d9035';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=b4a96b0d9035";
+import {facilityArt} from './facility-art.js?v=33fa1af3e093';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=33fa1af3e093";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -168,32 +168,36 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=b4a96b0d9035",
-        "assets/seoha-walk.png?v=b4a96b0d9035",
-        "assets/props-painted.png?v=b4a96b0d9035",
-        "assets/floors-painted.png?v=b4a96b0d9035",
-        "assets/jeongwoo-motions.png?v=b4a96b0d9035",
-        "assets/seoha-diagonal.png?v=b4a96b0d9035",
-        "assets/shoe-cabinet.png?v=b4a96b0d9035",
-        "assets/chair-turn.png?v=b4a96b0d9035",
-        "assets/room-modules.png?v=b4a96b0d9035",
-        "assets/dining-table.png?v=b4a96b0d9035",
-        "assets/regional-props.png?v=b4a96b0d9035",
-        "assets/wall-side.png?v=b4a96b0d9035",
-        "assets/architecture.png?v=b4a96b0d9035",
-        "assets/technical-kit.png?v=b4a96b0d9035",
-        "assets/technical-doors.png?v=b4a96b0d9035",
-        "assets/kitchen-kit.png?v=b4a96b0d9035",
-        "assets/decor-kit.png?v=b4a96b0d9035",
-        "assets/supply-kit.png?v=b4a96b0d9035",
-        "assets/room-details.png?v=b4a96b0d9035",
-        "assets/seoyun-echo.png?v=b4a96b0d9035",
-        "assets/relay-floors.png?v=b4a96b0d9035",
-        "assets/haunted-portraits.png?v=b4a96b0d9035",
-        "assets/reception-parking.png?v=b4a96b0d9035",
-        "assets/resident-walk.png?v=b4a96b0d9035",
+        "assets/props-support.png?v=33fa1af3e093",
+        "assets/seoha-walk.png?v=33fa1af3e093",
+        "assets/props-painted.png?v=33fa1af3e093",
+        "assets/floors-painted.png?v=33fa1af3e093",
+        "assets/jeongwoo-motions.png?v=33fa1af3e093",
+        "assets/seoha-diagonal.png?v=33fa1af3e093",
+        "assets/shoe-cabinet.png?v=33fa1af3e093",
+        "assets/chair-turn.png?v=33fa1af3e093",
+        "assets/room-modules.png?v=33fa1af3e093",
+        "assets/dining-table.png?v=33fa1af3e093",
+        "assets/regional-props.png?v=33fa1af3e093",
+        "assets/wall-side.png?v=33fa1af3e093",
+        "assets/architecture.png?v=33fa1af3e093",
+        "assets/technical-kit.png?v=33fa1af3e093",
+        "assets/technical-doors.png?v=33fa1af3e093",
+        "assets/kitchen-kit.png?v=33fa1af3e093",
+        "assets/decor-kit.png?v=33fa1af3e093",
+        "assets/supply-kit.png?v=33fa1af3e093",
+        "assets/room-details.png?v=33fa1af3e093",
+        "assets/seoyun-echo.png?v=33fa1af3e093",
+        "assets/relay-floors.png?v=33fa1af3e093",
+        "assets/haunted-portraits.png?v=33fa1af3e093",
+        "assets/reception-parking.png?v=33fa1af3e093",
+        "assets/resident-walk.png?v=33fa1af3e093",
+        "assets/relay-furniture.png?v=33fa1af3e093",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, relayFurniture]) => {
+      this.residentBounds=[];
+      const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
+      for(let row=0;row<4;row++)for(let col=0;col<6;col++){let left=sw,right=0,top=sh,bottom=0;for(let y=0;y<sh;y++)for(let x=0;x<sw;x++)if(pixels[((row*sh+y)*measure.width+col*sw+x)*4+3]>160){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}this.residentBounds.push({x:col*sw+left,y:row*sh+top,w:right-left+1,h:bottom-top+1});}
       Object.assign(this, {
         props,
         actor,
@@ -201,7 +205,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,
+        residentWalk,relayFurniture,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -297,12 +301,21 @@ export class Scene {
       c.save();c.fillStyle='#0008';c.beginPath();c.moveTo(o.x-9,o.y-36);c.lineTo(o.x+38,o.y-13);c.lineTo(o.x+52,o.y+29);c.lineTo(o.x+4,o.y+16);c.closePath();c.fill();
       c.fillStyle='#17191a';c.fillRect(o.x-13,o.y-78,21,88);c.fillStyle='#3b3e3e';c.beginPath();c.moveTo(o.x-13,o.y-78);c.lineTo(o.x-5,o.y-86);c.lineTo(o.x+13,o.y-78);c.lineTo(o.x+8,o.y-72);c.fill();c.fillStyle='#252828';c.fillRect(o.x+7,o.y-72,6,79);c.fillStyle='#85858055';c.fillRect(o.x+7,o.y-72,1,76);c.restore();return;
     }
+    if(o.testContact){c.fillStyle='#363e40';c.fillRect(o.x-12,o.y-25,24,33);c.strokeStyle='#959994';c.strokeRect(o.x-12,o.y-25,24,33);c.fillStyle=s.flags['relayTest'+o.testContact]?'#c7bf9e':'#151a1d';c.fillRect(o.x-5,o.y-19,10,6);c.fillStyle='#babdb8';c.font='9px monospace';c.fillText(o.testContact,o.x-3,o.y+2);return;}
+    if(o.hideKind){
+      const opening=s.hideSpot?.id===o.id?s.hideSpot.opening:0;
+      if(o.hideKind==='desk'){
+        c.drawImage(this.receptionParking,535,0,480,480,o.x-47,o.y-53,94,66);
+        c.fillStyle='#141719';c.fillRect(o.x-29,o.y-12,58,22);c.save();c.translate(o.x-29,o.y-12);c.transform(1,0,opening*.6,1,0,0);c.fillStyle='#4c4d4b';c.fillRect(0,-1,58*(1-opening*.8),24);c.strokeStyle='#8a8983';c.strokeRect(0,-1,58*(1-opening*.8),24);c.restore();
+      }else{c.fillStyle='#181c1e';c.fillRect(o.x-27,o.y-34,54,46);c.strokeStyle='#777';c.strokeRect(o.x-27,o.y-34,54,46);c.save();c.translate(o.x-25,o.y-32);c.rotate(-opening*1.1);c.fillStyle='#444b4e';c.fillRect(0,0,50,42);c.strokeStyle='#a2a6a5';for(let y=6;y<38;y+=6){c.beginPath();c.moveTo(4,y);c.lineTo(46,y);c.stroke();}c.restore();}
+      return;
+    }
     if(o.facility!==undefined){
-      const sizes=[[100,91],[82,114],[80,77],[76,104],[44,74],[92,87],[62,104],[62,104],[100,94]],[w,h]=sizes[o.facility];
-      c.fillStyle='#0006';c.beginPath();c.ellipse(o.x,o.y+9,w*.42,5,0,0,7);c.fill();c.drawImage(this.facilityTiles[o.facility],o.x-w/2,o.y+13-h,w,h);return;
+      const indices=[7,0,1,2,3,4,5,6,7],i=indices[o.facility],sizes=[[100,91],[70,110],[80,77],[76,104],[44,74],[92,87],[62,104],[62,104],[100,94]],[w,h]=sizes[o.facility],cw=this.relayFurniture.width/3,ch=this.relayFurniture.height/3;
+      c.fillStyle='#0006';c.beginPath();c.ellipse(o.x,o.y+9,w*.42,5,0,0,7);c.fill();c.drawImage(this.relayFurniture,i%3*cw,Math.floor(i/3)*ch,cw,ch,o.x-w/2,o.y+13-h,w,h);return;
     }
     if(o.yardVisual==='sign'){
-      c.fillStyle='#454948';c.fillRect(o.x-15,o.y-65,3,72);c.fillRect(o.x+12,o.y-65,3,72);c.fillStyle='#242a2a';c.fillRect(o.x-32,o.y-70,64,40);c.strokeStyle='#858e88';c.strokeRect(o.x-32,o.y-70,64,40);c.fillStyle='#bdc4ba';c.font='8px sans-serif';c.textAlign='center';c.fillText(o.id.includes('bus')?'← 산길 · 정류장':'안내·접수동 →',o.x,o.y-51);c.textAlign='start';return;
+      const cw=this.relayFurniture.width/3,ch=this.relayFurniture.height/3;c.drawImage(this.relayFurniture,2*cw,2*ch,cw,ch,o.x-35,o.y-75,70,88);c.fillStyle='#333';c.font='7px sans-serif';c.textAlign='center';c.fillText(o.id.includes('bus')?'← 산길':'안내·접수동 →',o.x,o.y-38);c.textAlign='start';return;
     }
     if(o.yardVisual==='car'){
       c.save();if(o.variant===1)c.filter='brightness(.75)';else if(o.variant===2)c.filter='brightness(1.13)';
@@ -701,7 +714,7 @@ export class Scene {
       ) {
         const v = map.grid[y][x];
         if (map.outdoor) {
-          if(v===1){c.fillStyle=(x+y)%2?'#343a39':'#303735';c.fillRect(x*32,y*32,32,32);c.strokeStyle='#727d7430';c.strokeRect(x*32,y*32,32,32);if((x*13+y*7)%11===0){c.fillStyle='#bec8bb25';c.fillRect(x*32+5,y*32+12,20,1);}}
+          if(v===1){c.drawImage(this.relayFloors,((x*7+y*11)%4)*64,128,64,64,x*32,y*32,32,32);}
           else if(v===2){c.fillStyle='#121917';c.fillRect(x*32,y*32,32,32);c.fillStyle='#606f6355';for(let k=0;k<5;k++)c.fillRect(x*32+k*7,y*32,1,32);c.fillStyle='#8c97885a';c.fillRect(x*32,y*32+8,32,2);if(x===36&&y>=7&&y<=22){c.fillStyle='#333635';c.fillRect(x*32,y*32,32,32);c.fillStyle='#7c807b';c.fillRect(x*32,y*32,3,32);}}
           continue;
         }
@@ -827,11 +840,10 @@ export class Scene {
     for(const n of this.npcs){drawables.push({y:n.y,draw:()=>{
       c.save();c.fillStyle='#0007';c.beginPath();c.ellipse(n.x,n.y+3,12,4,0,0,7);c.fill();
       const frame=n.moving?Math.floor(n.walk)%2:0;
-      if(n.ambient){const sw=this.residentWalk.width/6,sh=this.residentWalk.height/4;c.globalAlpha=s.flags.relayPower ? .65 : .8;c.filter='brightness(0)';c.drawImage(this.residentWalk,(n.column*2+frame)*sw,n.direction*sh,sw,sh,n.x-35,n.y-62,70,70);c.restore();return;}
-      const sw=this.residentWalk.width/6,sh=this.residentWalk.height/4;
-
-      c.translate(n.x,n.y);if(n.phase===2&&!this.reduced)c.transform(1,0,Math.sin(t*.002+n.column)*.07,1,0,0);
-      c.globalAlpha=n.phase===2 ? .83 : 1;c.filter='grayscale(1)';c.drawImage(this.residentWalk,(n.column*2+frame)*sw,n.direction*sh,sw,sh,-35,-62,70,70);c.restore();
+      const b=this.residentBounds[n.direction*6+n.column*2+frame],height=61,width=b.w/b.h*height*.92;
+      if(n.ambient){c.globalAlpha=s.flags.relayPower?.65:.8;c.filter='brightness(0)';c.drawImage(this.residentWalk,b.x,b.y,b.w,b.h,n.x-width/2,n.y-height+5,width,height);c.restore();return;}
+      c.translate(n.x,n.y);if(n.phase===2&&!this.reduced)c.transform(1,0,Math.sin(t*.002+n.column)*.04,1,0,0);
+      c.globalAlpha=n.phase===2?.83:1;c.filter='grayscale(1)';c.drawImage(this.residentWalk,b.x,b.y,b.w,b.h,-width/2,5-height,width,height);c.restore();
     }});}
     if (!s.hidden)
       drawables.push({
