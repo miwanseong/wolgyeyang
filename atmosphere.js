@@ -1,4 +1,4 @@
-import {rememberedHides} from './haunting.js?v=77cf709867cd';
+import {rememberedHides} from './haunting.js?v=79bfc232d1ce';
 // Photograph-derived floor plan and procedural weather. No story objectives leak here.
 export class Atmosphere{
  constructor(sound){this.sound=sound;this.lastStorm=0;this.flash=0;this.rain=null;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;}
@@ -10,7 +10,7 @@ export class Atmosphere{
  this.flash=Math.max(0,this.flash-dt*.6);weather.style.backgroundColor=`rgba(205,215,225,${this.flash})`;
  if(out&&active&&!this.rain)this.rain=this.noise(3,.025);
  if((!out||!active||!this.sound().enabled)&&this.rain){this.rain.source.stop();this.rain=null;}
- const known=rememberedHides(map,s);mini.hidden=s.flags.chapter2?!(s.flags.relayMap||s.flags['photo_'+s.map]):!known.length;if(mini.hidden)return;
+ const known=rememberedHides(map,s);mini.hidden=!s.flags.chapter2||!(s.flags.relayMap||s.flags['photo_'+s.map]);if(mini.hidden)return;
  const c=mini.getContext('2d'),w=mini.width,h=mini.height;c.fillStyle='#15191c';c.fillRect(0,0,w,h);
  const jam=enemy.active||enemy.mode==='chase';mini.setAttribute('aria-label',jam?'도면 사진 · 신호 간섭':'구역 도면 · 청록 마름모: 기억한 은신처 '+known.map(o=>o.name).join(', '));
  const z=Math.min((w-16)/map.w,(h-32)/map.h),ox=(w-map.w*z)/2,oy=(h-18-map.h*z)/2;

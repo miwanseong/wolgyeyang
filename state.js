@@ -1,8 +1,8 @@
-import {bodyState,validBody} from './body.js?v=77cf709867cd';
-import {validInvestigation} from './investigation.js?v=77cf709867cd';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=77cf709867cd';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=77cf709867cd";
-import { canSurrender } from "./story.js?v=77cf709867cd";
+import {bodyState,validBody} from './body.js?v=79bfc232d1ce';
+import {validInvestigation} from './investigation.js?v=79bfc232d1ce';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=79bfc232d1ce';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=79bfc232d1ce";
+import { canSurrender } from "./story.js?v=79bfc232d1ce";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -23,6 +23,8 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+  knotThread:"매듭실",
+  knotThreadSecond:"매듭실 · 남은 한 타래",
   auditMemo: "숨김 전 수신 목록 탄소 사본",
   pumpLog: "사고 당일 펌프 정지 운전표",
   notice: "서윤의 유품 보관 통지서",
@@ -38,7 +40,7 @@ export const ITEMS = {
   relayExport: "원본 대조 로그와 23:44 통화를 담은 증거 매체",
 };
 export function take(s, key) {
-  if (!s.bag.includes(key)) s.bag.push(key);
+  if (!s.bag.includes(key)){if(bodyState(s).arms===1)s.flashlight=false;s.bag.push(key);}
 }
 export function note(s, id, text) {
   if (!s.notes.some((n) => n.id === id)) s.notes.push({ id, text });
@@ -100,7 +102,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:12, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&!bodyState(s).arm, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:12, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

@@ -19,6 +19,7 @@ export const TRACKS = {
 };
 export const EFFECTS = {
   scream:"user_female_scream.mp3",whisper:"user_ghost_whisper.wav",lighter:"user_lighter.mp3",screamAlt:"user_female_scream_alt.mp3",crowdNormal:"crowd_murmur.wav",
+  mirrorLaugh:"fx_mirror_laugh.wav",
   bloodDrip: "fx_blood_drips.wav",
   omenKnock: "fx_three_knocks.wav",
   hallucination: "fx_hallucination.wav",
@@ -45,7 +46,7 @@ export const EFFECTS = {
   thud: "audiosfx_thud.mp3",
   glass: "sfx_glass_breaking.mp3",
 };
-export const EFFECT_MIX={scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:8,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
+export const EFFECT_MIX={scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;

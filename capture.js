@@ -1,5 +1,5 @@
-import {HOLLOW_POSES} from './hollow-art.js?v=77cf709867cd';
-import { restore } from './state.js?v=77cf709867cd';
+import {HOLLOW_POSES} from './hollow-art.js?v=79bfc232d1ce';
+import { restore } from './state.js?v=79bfc232d1ce';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -23,14 +23,16 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=77cf709867cd';
-    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=77cf709867cd';this.ready=Promise.all([this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{})]);
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=79bfc232d1ce';
+    this.watcher=new Image();this.watcher.src='assets/mirror-watcher.png?v=79bfc232d1ce';
+    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=79bfc232d1ce';this.ready=Promise.all([this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
   }
   reset(kind="jeongwoo"){this.time=0;this.kind=kind;}
   draw(dt,reduced=false){
     this.time+=dt;const p=capturePose(this.time),c=this.ctx,w=this.canvas.width,h=this.canvas.height;
     c.fillStyle='#080809';c.fillRect(0,0,w,h);
-    if(this.kind==='hollow'&&this.hollow.naturalWidth){const pose=HOLLOW_POSES[reduced?5:4+Math.min(3,Math.floor(this.time/.7))],scale=Math.min(w/pose.w,h/pose.h)*(reduced?1:.9+Math.min(this.time,3)*.06);c.drawImage(this.hollow,pose.x,pose.y,pose.w,pose.h,(w-pose.w*scale)/2,(h-pose.h*scale)/2,pose.w*scale,pose.h*scale);}
+    if(this.kind==='redlight'&&this.watcher.naturalWidth){const sw=this.watcher.width/3,sh=440;c.drawImage(this.watcher,sw*2,0,sw,sh,(w-h)/2,0,h,h);}
+    else if(this.kind==='hollow'&&this.hollow.naturalWidth){const pose=HOLLOW_POSES[reduced?5:4+Math.min(3,Math.floor(this.time/.7))],scale=Math.min(w/pose.w,h/pose.h)*(reduced?1:.9+Math.min(this.time,3)*.06);c.drawImage(this.hollow,pose.x,pose.y,pose.w,pose.h,(w-pose.w*scale)/2,(h-pose.h*scale)/2,pose.w*scale,pose.h*scale);}
     else if(this.image.naturalWidth){
       const sw=this.image.width/4,sh=this.image.height/3;
       const scale=Math.min(w/sw,h/sh)*(.92+Math.min(this.time,3)*.018);

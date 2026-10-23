@@ -1,7 +1,7 @@
-import {bodyState} from './body.js?v=77cf709867cd';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=77cf709867cd";
-import { MAPS, sight, worldFor } from "./world.js?v=77cf709867cd";
-import { take, note } from "./state.js?v=77cf709867cd";
+import {bodyState} from './body.js?v=79bfc232d1ce';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=79bfc232d1ce";
+import { MAPS, sight, worldFor } from "./world.js?v=79bfc232d1ce";
+import { take, note } from "./state.js?v=79bfc232d1ce";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -23,7 +23,7 @@ export function enterChapterTwo(s){
  if(s.ending!=='return'||!s.flags.denial||s.flags.chapter2)return false;
  s.flags.originalKept=hasOriginals(s);s.flags.chapter2=true;s.ending=null;
  s.map='relayYard';s.x=28*32;s.y=16*32;s.stamina=100;s.hidden=false;s.running=false;
- take(s,'flashlight');s.flashlight=!bodyState(s).arm;
+ take(s,'flashlight');s.flashlight=bodyState(s).arms<2;
  note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라 해린에게 원본 대조를 요청했다. 해린은 설비 담당 도현과 사고 당시 야간 경비였던 미정을 불렀다. 세 사람의 야간 동행 서명이 현관에 남아 있다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
  return true;
 }

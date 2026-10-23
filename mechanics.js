@@ -1,5 +1,6 @@
-import {bodyState} from './body.js?v=77cf709867cd';
-import { canMove, sight, findPath, clearSegment } from "./world.js?v=77cf709867cd";
+import {redLightUpdate} from './encounters.js?v=79bfc232d1ce';
+import {bodyState} from './body.js?v=79bfc232d1ce';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=79bfc232d1ce";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -14,7 +15,7 @@ export class StillnessHaunt {
     if(moved>.1){this.still=0;this.warned=false;return null;}
     if(this.cooldown)return null;
     this.still+=dt;
-    if(this.still>=42){
+    if(this.still>=100){
       const candidates=[];
       for(let i=0;i<16;i++){
         const angle=s.facing+Math.PI+(i%2?-1:1)*Math.ceil(i/2)*Math.PI/8;
@@ -22,10 +23,10 @@ export class StillnessHaunt {
         if(canMove(map,p.x,p.y)&&sight(map,s,p))candidates.push(p);
       }
       if(!candidates.length)return null;
-      this.still=0;this.warned=false;this.cooldown=100;this.active=6.4;this.origin={x:s.x,y:s.y};
+      this.still=0;this.warned=false;this.cooldown=240;this.active=6.4;this.origin={x:s.x,y:s.y};
       return {kind:'appear',...candidates[0]};
     }
-    if(this.still>=30&&!this.warned){this.warned=true;return {kind:'warning'};}
+    if(this.still>=85&&!this.warned){this.warned=true;return {kind:'warning'};}
     return null;
   }
 }
@@ -38,7 +39,7 @@ export function locomotion(s, dx, dy, sprint, dt, map) {
     dx /= n;
     dy /= n;
     s.facing = Math.atan2(dy, dx);
-    const speed = bodyState(s).leg ? 78 : wantsRun ? 190 : 102;
+    const speed = bodyState(s).legs===2 ? 42 : bodyState(s).leg ? 78 : wantsRun ? 190 : 102;
     if (canMove(map, s.x + dx * speed * dt, s.y)) s.x += dx * speed * dt;
     if (canMove(map, s.x, s.y + dy * speed * dt)) s.y += dy * speed * dt;
   }
@@ -58,7 +59,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
-    this.kind="jeongwoo";this.hollowTime=0;
+    this.kind="jeongwoo";this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
     this.x = 0;
     this.y = 0;
     this.path = [];
@@ -120,13 +121,33 @@ export class Pursuer {
       const step=Math.min(d,distance),point={x:this.x+dx/d*step,y:this.y+dy/d*step};
       if(!clearSegment(map,this,point)){this.path=[];this.repath=0;break;}
       this.facing=Math.atan2(dy,dx);this.x=point.x;this.y=point.y;distance-=step;moved+=step;
-      if(step>=d-.001)this.path.shift();
+      if(step>=d-.001){this.path.shift();break;}
     }
     return moved;
+  }
+  pressureDoor(map,s,dt){
+    if(!this.target)return false;
+    if(this.doorWait){
+      const d=map.objects.find(o=>o.id===this.doorWait.id);
+      if(!d||doorOpen(map,d)){this.doorWait=null;return false;}
+      this.motion='search';this.doorWait.time+=dt;
+      if(this.doorWait.time>=this.doorWait.delay){s.flags['open_'+d.id]=true;map.openDoors?.add(d.id);this.doorEvent={id:d.id,opened:true};this.doorWait=null;this.repath=0;}
+      return true;
+    }
+    if(findPath(map,this,this.target).length)return false;
+    const closed=map.objects.filter(o=>o.internalDoor&&!doorOpen(map,o));if(!closed.length)return false;
+    const open={...map,openDoors:new Set(map.objects.filter(o=>o.internalDoor).map(o=>o.id))},route=findPath(open,this,this.target);if(!route.length)return false;
+    let from=this,approach=this,door=null;
+    outer:for(const p of route){const distance=Math.hypot(p.x-from.x,p.y-from.y),steps=Math.max(1,Math.ceil(distance/4)),start={x:from.x,y:from.y};for(let i=1;i<=steps;i++){const q={x:start.x+(p.x-start.x)*i/steps,y:start.y+(p.y-start.y)*i/steps};if(!clearSegment(map,approach,q)){door=closed.find(o=>Math.abs(q.x-o.x)<o.w+17&&Math.abs(q.y-o.y)<o.h+17);break outer;}approach=q;}from=p;}
+    if(!door)return false;
+    if(Math.hypot(this.x-approach.x,this.y-approach.y)>4)this.navigate(map,approach,dt,this.kind==='hollow'?100:95);
+    else {this.doorWait={id:door.id,time:0,delay:door.doorType==='fire'?5.5:3.5};this.doorEvent={id:door.id,opened:false};}
+    return true;
   }
   update(map, s, dt) {
     if (!this.active) return null;
     this.age+=dt;
+    if(this.kind==='redlight'){if(this.punish&&this.pressureDoor(map,s,dt))return null;return redLightUpdate(this,map,s,dt,clearSegment);}
     if(this.kind==='hollow'){this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
       const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
@@ -157,15 +178,16 @@ export class Pursuer {
         return "escaped";
       }
     }
+    if(this.pressureDoor(map,s,dt))return null;
     this.windup=Math.max(0,this.windup-dt);this.rush=Math.max(0,this.rush-dt);
     if(this.motion==='windup'&&!this.windup)this.rush=.65;
-    if(this.mode==='chase'&&!s.hidden){
+    if(this.kind==='jeongwoo'&&this.mode==='chase'&&!s.hidden){
       this.rushClock+=dt;
       if(this.rushClock>4.5&&!this.grace&&d<170&&clearSegment(map,this,s)&&!this.rush&&!this.windup){this.windup=.65;this.rushClock=0;}
     }else{this.rushClock=4.5;this.windup=0;this.rush=0;}
     this.motion=this.age<1.2&&this.grace>0?'rise':this.windup>0?'windup':this.rush>0?'lunge':this.mode==='chase'?'crawl':'search';
     if(this.target){
-      const speed=this.kind==='hollow'?(bodyState(s).leg?92:118):this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
+      const speed=this.kind==='hollow'?(bodyState(s).legs===2?48:bodyState(s).leg?92:118):this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
       this.navigate(map,this.target,dt,speed);
     }
     if (!this.grace && !s.hidden && Math.hypot(s.x - this.x, s.y - this.y) < 20 && clearSegment(map,this,s))
@@ -186,8 +208,8 @@ export class ProgressHaunt{
   this.cooldown=Math.max(0,this.cooldown-dt);if(this.cooldown)return null;
   this.elapsed+=dt;
   const pressure=s.flags.chapter2?(s.investigation?.stress||0)*5:0;
-  if(this.elapsed>=110-pressure){this.elapsed=0;this.warned=false;this.cooldown=150;return {kind:'insist'};}
-  if(this.elapsed>=90-pressure&&!this.warned){this.warned=true;return {kind:'warning'};}
+  if(this.elapsed>=240-pressure){this.elapsed=0;this.warned=false;this.cooldown=300;return {kind:'insist'};}
+  if(this.elapsed>=215-pressure&&!this.warned){this.warned=true;return {kind:'warning'};}
   return null;
  }
 }

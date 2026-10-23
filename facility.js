@@ -1,6 +1,7 @@
-import {sight} from './world.js?v=77cf709867cd';
+import {sight} from './world.js?v=79bfc232d1ce';
 // Installed luminaires, not a light permanently attached to the player.
 export const LAMPS={
+ unit104:[[14.5,14,70,'fault']],
  relayEntry:[[14,10,190,'steady'],[35,11,155,'steady'],[38,19,140,'steady'],[12,26,180,'steady'],[32,26,185,'steady']],
  relayArchive:[[12,12,150,'steady'],[38,12,150,'fault'],[16,26,130,'steady'],[39,27,130,'steady']],
  relayPlant:[[12,12,100,'fault'],[35,12,105,'fault'],[46,26,105,'steady'],[14,32,80,'fault']],

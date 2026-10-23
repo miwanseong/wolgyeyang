@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=77cf709867cd";
-import { addRelayChapter } from "./chapter-world.js?v=77cf709867cd";
+import { STORY } from "./story.js?v=79bfc232d1ce";
+import { addRelayChapter } from "./chapter-world.js?v=79bfc232d1ce";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -459,6 +459,24 @@ for(const [m,id,index,x,y,name,description,mount]of [
 Object.assign(M.upper.objects.find(o=>o.id==='broadcast-chair'),{x:31.5*32,y:14.4*32});
 M.upper.objects.push(prop('archive-reading-table','side-table',12.5,12.5,'독서 자리의 작은 탁자',{decor:5,w:15,h:14,description:'기록을 펼쳐 보던 독서 자리. 수첩에는 23시 41분의 녹음 번호가 여러 번 적혔다.'}),prop('archive-reading-chair','armchair',14.5,12.5,'기록실 독서 의자',{decor:6,w:18,back:22,front:12,description:'작은 탁자와 스탠드 사이에 놓인 의자. 방석에 누군가 앉았던 자국이 서서히 돌아온다.'}),prop('archive-reading-lamp','detail',16,12.5,'독서 자리의 스탠드',{details:8,w:12,back:16,front:10,description:'전원선을 빼도 갓 안쪽의 작은 그림자가 움직인다.'}));
 addRelayChapter(M,map,prop,door);
+// Optional first-chapter route: a bent vestibule separates the bedroom and evidence alcove.
+M.unit104=map('unit104','1F · 봉인된 104호',32,28,'wood',[[11,19,9,6],[5,12,15,7],[5,5,10,7],[20,7,7,12],[17,14,4,4]]);
+M.unit104.rooms=[{x:11,y:19,w:9,h:6,name:'104호 · 좁은 현관'},{x:5,y:12,w:15,h:7,name:'104호 · 거실'},{x:5,y:5,w:10,h:7,name:'104호 · 침실'},{x:20,y:7,w:7,h:12,name:'104호 · 봉인 기록방'}];
+for(let x=5;x<15;x++)M.unit104.grid[12][x]=2;
+M.unit104.objects.push(
+ door('104-exit',15,25,'현관 · 중앙 복도로','lobby',[34,13]),
+ prop('104-bedroom-door','door',10,12,'침실 미닫이문',{internalDoor:true,cells:[[10,12]],defaultOpen:false,facing:'north',w:20,h:12,solid:true}),
+ prop('104-bed','bed',8,8,'비워진 침대',{w:28,back:40,front:25,description:'매트리스에 사람 한 명의 자국만 남았다. 이불은 침대 끝에 접혀 있다.'}),
+ prop('104-curtain','curtain',10,4.5,'닫힌 커튼',{mount:true,solid:false,facing:'north',fixture:'curtain',decor:1,description:'바깥빛이 들어오지 않는다. 옆집에서 녹음한 소리만 벽을 타고 전해진다.'}),
+ prop('104-sofa','bench',8,16,'벽에 붙인 긴 의자',{w:36,back:22,front:10,description:'벽을 향해 밀어 놓은 의자. 그 아래에는 누군가 떨어뜨린 봉인 표찰이 있다.'}),
+ prop('104-table','desk',15,15,'수선용 작업 책상',{w:28,back:24,front:12,hiddenClue:'thread',description:'작은 실패와 접힌 수선 일지. 매듭실 두 타래가 유리 접시 안에 들어 있다.'}),
+ prop('104-lamp','detail',14.5,15,'수선 책상의 건전지 스탠드',{details:8,solid:false,partOf:'104-table',description:'남은 건전지로 실패가 놓인 자리만 희미하게 밝힌다.'}),
+ prop('104-note','shelf',23,9,'봉인 회수 장부',{w:25,back:25,front:12,hiddenClue:'ledger',description:'104호는 사고 뒤 회수한 물품을 모아 둔 임시 보관실이었다.'}),
+ prop('104-frame','frame',24,6.5,'도려낸 사진',{mount:true,solid:false,facing:'north',decor:0,description:'여섯 사람이 찍힌 사진. 서하의 다리와 팔이 있어야 할 자리만 유리 위에서 지워졌다.'}),
+ prop('104-hide','cabinet',24,17,'비어 있는 붙박이장',{hide:true,w:24,back:22,front:10,description:'걸린 옷이 없다. 몸을 숨길 만큼 깊다.'})
+);
+const hiddenDoor=M.lobby.objects.find(o=>o.id==='sealed-unit-2');hiddenDoor.hidden104=true;hiddenDoor.description='봉인 표찰의 회수 번호가 접수증 뒷면과 같다. 접착 테이프 아래에는 전자 봉인 해제 접점이 있다.';
+
 M.lobby.objects.find(o=>o.id==='arrival-letter').description='발신인 미정. 서윤의 유품과 사고 접수 기록은 관리실 전자 보관함에 있다. 06:00 철거 반출 예정. 미정의 메모: 「나도 열쇠를 건넸다는 말로 기다린 시간을 덮었어. 원본을 보지도 않은 채 또 내 탓만 빼고 말할 수는 없어. 예비 열쇠는 101호 현관 신발장에 있다.」';
 M.management.objects.find(o=>o.id==='manager-files').description='2024년 사고 보고서. 정우는 추가 빗장의 흔적을 철거하러 폐쇄된 지하에 들어갔다가 노출 배선에 감전되어 사망했다. 소방 점검표의 원본과 원격 제어 로그는 철거 목록에 없었다. 근무가 끝난 뒤에도 순찰하는 형상이 그를 닮았다.';
 M.apartment.objects.find(o=>o.id==='kitchen').description=STORY.receipt;
@@ -578,10 +596,11 @@ class NavigationHeap{
 }
 function navigationFor(map){
  const doors=map.objects.filter(o=>o.internalDoor).map(o=>o.id+':'+doorOpen(map,o)).join('|');
- let nav=navigationCache.get(map.grid);
- if(!nav||nav.objects!==map.objects||nav.doors!==doors){
+ let cache=navigationCache.get(map.grid);if(!cache){cache=new Map();navigationCache.set(map.grid,cache);}
+ let nav=cache.get(doors);
+ if(!nav||nav.objects!==map.objects){
   const width=map.grid[0].length*4,height=map.grid.length*4;
-  nav={width,height,objects:map.objects,doors,walkable:new Uint8Array(width*height)};navigationCache.set(map.grid,nav);
+  nav={width,height,objects:map.objects,doors,walkable:new Uint8Array(width*height)};if(cache.size>=16)cache.delete(cache.keys().next().value);cache.set(doors,nav);
  }
  return nav;
 }
