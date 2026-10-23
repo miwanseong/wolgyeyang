@@ -1,6 +1,6 @@
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=eaf575030a38";
-import { MAPS, sight, worldFor } from "./world.js?v=eaf575030a38";
-import { take, note } from "./state.js?v=eaf575030a38";
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=9226cb9e0ebf";
+import { MAPS, sight, worldFor } from "./world.js?v=9226cb9e0ebf";
+import { take, note } from "./state.js?v=9226cb9e0ebf";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -23,7 +23,7 @@ export function enterChapterTwo(s){
  s.flags.originalKept=hasOriginals(s);s.flags.chapter2=true;s.ending=null;
  s.map='relayYard';s.x=28*32;s.y=16*32;s.stamina=100;s.hidden=false;s.running=false;
  take(s,'flashlight');s.flashlight=true;
- note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라 해린에게 원본 대조를 요청했다. 해린은 설비 담당 도현과 건물 관리인 미정을 불렀다. 세 사람의 야간 동행 서명이 현관에 남아 있다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
+ note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라 해린에게 원본 대조를 요청했다. 해린은 설비 담당 도현과 사고 당시 야간 경비였던 미정을 불렀다. 세 사람의 야간 동행 서명이 현관에 남아 있다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
  return true;
 }
 export function relayObjective(s){
@@ -47,12 +47,12 @@ export const records={
  "register": [
   "relayRegistered",
   "해린의 야간 인계대",
-  "사고 당시 이곳은 여러 공동주택의 시설 출동과 원격 문 제어를 맡은 위탁관리 중계소였다. 119 출동을 취소할 권한은 없었다.\n해린의 인계서: 「관리 화면에서 취소 처리한 행은 숨겨진다. 조작 이력은 별도 원본에 계속 쌓인다. 내가 지운 줄이 거기에도 없는 것은 아니다. 기록동 출입증을 서랍에 둔다.」"
+  "사고 당시 이곳은 여러 공동주택의 시설 출동과 원격 문 제어를 맡은 위탁관리 중계소였다. 119 출동을 취소할 권한은 없었다.\n해린의 처리 보고: 「23:43 취소 뒤 추가 수신은 없었다. 중복 표시를 정리하고 목록을 인계했다.」\n원본 조작 이력은 별도 보관한다. 기록동 출입증은 인계 서랍에 있다."
  ],
  "dutyNote": [
   "relayDuty",
   "미정의 예비 열쇠 인수 기록",
-  "「정우가 문 밖에 덧댄 빗장 때문에 내 열쇠는 소용이 없었다. 원래 잠금장치만 돌았다. 전원을 내리면 풀릴 거라고 생각했는데 그것도 아니었다.\n정우를 기다리지 말고 바로 119에 연락했어야 했다. 내가 열쇠를 줬다는 말로 그 시간을 덮지 말아 줘.」\n추가 전동 빗장은 피난문에 달아서는 안 되는 장치였다."
+  "정우의 열쇠 인수 요약: 「열쇠가 돌아갔으므로 현장 문도 열렸다.」\n미정의 직접 기록: 「문 밖에 덧대어져 있던 장치 때문에 내 열쇠는 소용이 없었다. 원래 잠금장치만 돌았다. 전원을 내리면 풀릴 거라고 생각했는데 그것도 아니었다.\n정우를 기다리지 말고 바로 119에 연락했어야 했다. 내가 열쇠를 줬다는 말로 그 시간을 덮지 말아 줘.」\n추가 전동 빗장은 피난문에 달아서는 안 되는 장치였다."
  ],
  "incoming": [
   "relayIncoming",
@@ -77,7 +77,7 @@ export const records={
  "pressure": [
   "relayPressure",
   "도현의 최초 진술과 수정본",
-  "최초 진술: 「시험 시간이라고 붙여 놨지만, 사람이 문을 두드리는 것 같았다.」\n수정본: 「배관 시험 소리로 생각했다.」\n정우가 근거 없이 소란 피운 책임을 묻겠다고 하자 도현은 처음 문장을 고쳤다. 들은 소리를 확신할 수 없었다는 말과, 확인하러 가지 않았다는 사실은 다른 것이었다."
+  "최초 진술: 「시험 시간이라고 붙여 놨지만, 사람이 문을 두드리는 것 같았다.」\n수정본: 「월계아파트 B1 배수펌프 운전 중의 규칙적인 진동이었다.」\n정우가 근거 없이 소란 피운 책임을 묻겠다고 하자 도현은 처음 문장을 고쳤다. 들은 소리를 확신할 수 없었다는 말과, 확인하러 가지 않았다는 사실은 다른 것이었다."
  ],
  "lastVoice": [
   "relayLastVoice",
@@ -107,7 +107,7 @@ export function relayAction(s,o,choice=null){
   if(!s.flags.relaySlide)return result(o.name,'대조 장치의 밀판이 어긋나 있다.',{puzzle:'slide'});
   if(choice===null)return result(o.name,'세 기록은 한 번의 통화가 아니다. 실제로 일어난 순서대로 대조한다.\n기록 앱에 각 시각과 발신 내용이 남아 있다.',{choices:[['접수 → 취소 → 잠금 유지 회신','chronological'],['접수 → 잠금 유지 회신 → 취소','wrong'],['취소 → 접수 → 잠금 유지 회신','wrong']]});
   if(choice!=='chronological')return result(o.name,'시각이 맞지 않는다. 23:41, 23:43, 23:47의 순서와 각 발신 내용을 다시 확인하자. 기록은 사라지지 않았다.',{mistake:true});
-  take(s,'relayCopy');s.flags.relayCompared=true;note(s,'relay-comparison','23:41 접수 → 23:43 취소 → 23:47 잠금 유지. 취소가 개방을 뜻하지 않았다. 해린의 삭제 이력을 붙인 사본을 확보했다.');
+  take(s,'relayCopy');s.flags.relayCompared=true;note(s,'relay-comparison','23:41 접수 → 23:43 취소 → 23:47 잠금 유지. 취소가 개방을 뜻하지 않았다. 세 기록의 원본 시각을 대조한 사본을 확보했다. 표시 수정의 출처는 별도로 확인해야 한다.');
   return result('대조 사본 출력','출력된 종이의 빈 줄에서 서윤의 손글씨가 떠오른다.\n「답을 보내 줘. 아직 기다리고 있어.」',{sound:'item',haunt:'아직 기다리고 있어'});
  }
  if(action==='wheel'){

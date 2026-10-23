@@ -1,11 +1,11 @@
-import {validInvestigation} from './investigation.js?v=eaf575030a38';
-import { validPuzzles } from './puzzles.js?v=eaf575030a38';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=eaf575030a38";
-import { canSurrender } from "./story.js?v=eaf575030a38";
+import {validInvestigation} from './investigation.js?v=9226cb9e0ebf';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=9226cb9e0ebf';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=9226cb9e0ebf";
+import { canSurrender } from "./story.js?v=9226cb9e0ebf";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 11,
+  layout: 12,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -20,6 +20,8 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+  auditMemo: "숨김 전 수신 목록 탄소 사본",
+  pumpLog: "사고 당일 펌프 정지 운전표",
   notice: "서윤의 유품 보관 통지서",
   receipt: "방화문 개방 요청 접수증",
   flashlight: "손전등 · F로 켜기/끄기",
@@ -28,7 +30,7 @@ export const ITEMS = {
   tape: "녹음테이프",
   evidence: "철거 전 입주 기록",
   relayBadge: "산북중계소 기록동 출입증",
-  relayCopy: "시각과 삭제 이력을 대조한 회신 사본",
+  relayCopy: "접수·취소·잠금 유지 시각 대조 사본",
   relayWheel: "냉각 밸브의 수동 핸들",
   relayExport: "원본 대조 로그와 23:44 통화를 담은 증거 매체",
 };
@@ -44,6 +46,7 @@ export function restore(raw) {
     throw Error("지원하지 않는 기억");
   if(!validPuzzles(s.puzzles))throw Error("유효하지 않은 퍼즐 기록");
   if(!validInvestigation(s.investigation))throw Error("유효하지 않은 조사 판정 기록");
+  reconcilePuzzles(s);
   const oldLayout=s.layout;
   if (s.version === 1) {
     s = {
@@ -80,7 +83,7 @@ export function restore(raw) {
     throw Error("유효하지 않은 저장 데이터");
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===11)throw Error("가구 내부의 저장 위치");
+    if(s.layout===12)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -90,7 +93,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:11, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:12, flashlight:s.flashlight&&s.bag.includes("flashlight"), hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

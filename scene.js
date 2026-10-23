@@ -1,6 +1,7 @@
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=eaf575030a38';
-import {facilityArt} from './facility-art.js?v=eaf575030a38';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=eaf575030a38";
+import {PLAYER_POSES,playerHand} from './player-art.js?v=9226cb9e0ebf';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=9226cb9e0ebf';
+import {facilityArt} from './facility-art.js?v=9226cb9e0ebf';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=9226cb9e0ebf";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -48,21 +49,8 @@ export function facingDirection(dx, dy) {
   if (Math.abs(dx) > .35 && Math.abs(dy) > .35) return dy > 0 ? (dx > 0 ? 4 : 5) : (dx < 0 ? 6 : 7);
   return Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 1 : 2) : dy < 0 ? 3 : 0;
 }
-// Grip centers measured in the transparent 4x4 source atlases (cell coordinates).
-// The diagonal sheet shifts the whole pose between cells, so a fixed offset cannot work.
-export const HAND_GRIPS = [
- [[.404,.589],[.357,.628],[.347,.593],[.355,.628]],
- [[.431,.574],[.396,.584],[.365,.568],[.358,.590]],
- [[.714,.565],[.658,.575],[.595,.543],[.627,.577]],
- [[.400,.549],[.352,.562],[.352,.558],[.352,.563]],
- [[.513,.639],[.412,.651],[.359,.641],[.246,.652]],
- [[.786,.609],[.710,.604],[.631,.603],[.553,.611]],
- [[.420,.581],[.422,.589],[.278,.581],[.223,.583]],
- [[.797,.559],[.742,.550],[.635,.550],[.584,.541]],
-];
-export function handGrip(direction,frame){
- const [x,y]=HAND_GRIPS[direction][frame];return {x:-35+x*70,y:-62+y*70};
-}
+// Knuckle anchors measured in all32 adult walking poses, including both diagonal front views.
+export function handGrip(direction,frame){return playerHand(direction,frame);}
 export const PROP_SIZES = {shoe:66, chair:45, player:38, box:48, panel:63, desk:96, locker:76, bed:112, shelf:100, bench:94, cabinet:82, crates:66, rack:88, radiator:66};
 export function ghostFrame(enemy,t){
  const motion=enemy.motion||'search';
@@ -169,33 +157,34 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=eaf575030a38",
-        "assets/seoha-walk.png?v=eaf575030a38",
-        "assets/props-painted.png?v=eaf575030a38",
-        "assets/floors-painted.png?v=eaf575030a38",
-        "assets/jeongwoo-motions.png?v=eaf575030a38",
-        "assets/seoha-diagonal.png?v=eaf575030a38",
-        "assets/shoe-cabinet.png?v=eaf575030a38",
-        "assets/chair-turn.png?v=eaf575030a38",
-        "assets/room-modules.png?v=eaf575030a38",
-        "assets/dining-table.png?v=eaf575030a38",
-        "assets/regional-props.png?v=eaf575030a38",
-        "assets/wall-side.png?v=eaf575030a38",
-        "assets/architecture.png?v=eaf575030a38",
-        "assets/technical-kit.png?v=eaf575030a38",
-        "assets/technical-doors.png?v=eaf575030a38",
-        "assets/kitchen-kit.png?v=eaf575030a38",
-        "assets/decor-kit.png?v=eaf575030a38",
-        "assets/supply-kit.png?v=eaf575030a38",
-        "assets/room-details.png?v=eaf575030a38",
-        "assets/seoyun-echo.png?v=eaf575030a38",
-        "assets/relay-floors.png?v=eaf575030a38",
-        "assets/haunted-portraits.png?v=eaf575030a38",
-        "assets/reception-parking.png?v=eaf575030a38",
-        "assets/resident-walk.png?v=eaf575030a38",
-        "assets/relay-furniture.png?v=eaf575030a38",
+        "assets/props-support.png?v=9226cb9e0ebf",
+        "assets/seoha-walk.png?v=9226cb9e0ebf",
+        "assets/props-painted.png?v=9226cb9e0ebf",
+        "assets/floors-painted.png?v=9226cb9e0ebf",
+        "assets/jeongwoo-motions.png?v=9226cb9e0ebf",
+        "assets/seoha-diagonal.png?v=9226cb9e0ebf",
+        "assets/shoe-cabinet.png?v=9226cb9e0ebf",
+        "assets/chair-turn.png?v=9226cb9e0ebf",
+        "assets/room-modules.png?v=9226cb9e0ebf",
+        "assets/dining-table.png?v=9226cb9e0ebf",
+        "assets/regional-props.png?v=9226cb9e0ebf",
+        "assets/wall-side.png?v=9226cb9e0ebf",
+        "assets/architecture.png?v=9226cb9e0ebf",
+        "assets/technical-kit.png?v=9226cb9e0ebf",
+        "assets/technical-doors.png?v=9226cb9e0ebf",
+        "assets/kitchen-kit.png?v=9226cb9e0ebf",
+        "assets/decor-kit.png?v=9226cb9e0ebf",
+        "assets/supply-kit.png?v=9226cb9e0ebf",
+        "assets/room-details.png?v=9226cb9e0ebf",
+        "assets/seoyun-echo.png?v=9226cb9e0ebf",
+        "assets/relay-floors.png?v=9226cb9e0ebf",
+        "assets/haunted-portraits.png?v=9226cb9e0ebf",
+        "assets/reception-parking.png?v=9226cb9e0ebf",
+        "assets/resident-walk.png?v=9226cb9e0ebf",
+        "assets/seoha-adult-walk.png?v=9226cb9e0ebf",
+        "assets/relay-furniture.png?v=9226cb9e0ebf",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, relayFurniture]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, relayFurniture]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -208,7 +197,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,relayFurniture,
+        residentWalk,playerWalk,relayFurniture,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -281,10 +270,10 @@ export class Scene {
     const distance=Math.hypot(s.x-o.x,s.y-o.y),inFront=s.y>o.y+10;
     if(!inFront||distance>175)return;
     const delayed=this.reflections.find(p=>p.t>=t-260)||s,dx=Math.max(-pane.w*.3,Math.min(pane.w*.3,(o.x-delayed.x)*.22));
-    const c=this.ctx,sw=this.actor.width/4,sh=this.actor.height/4,scale=1-Math.min(.28,(distance-40)/500);
+    const c=this.ctx,p=PLAYER_POSES[0][1],scale=1-Math.min(.28,(distance-40)/500);
     c.save();c.beginPath();c.rect(pane.x,pane.y,pane.w,pane.h);c.clip();c.globalAlpha=opacity*Math.max(.15,1-distance/230);
-    const h=Math.min(54,pane.h*1.1)*scale,w=h;c.translate(pane.x+pane.w/2+dx,pane.y+pane.h*.7);c.scale(-1,1);
-    c.drawImage(this.actor,sw,0,sw,sh,-w/2,-h*.72,w,h);c.restore();
+    const h=Math.min(54,pane.h*1.1)*scale,w=h*p.w/p.h*.92;c.translate(pane.x+pane.w/2+dx,pane.y+pane.h*.7);c.scale(-1,1);
+    c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,-w/2,-h*.72,w,h);c.restore();
   }
   prop(o, s, t, dt) {
     const c = this.ctx,
@@ -862,21 +851,8 @@ export class Scene {
           c.beginPath();
           c.ellipse(s.x, s.y + 5, 11, 4, 0, 0, 7);
           c.fill();
-          const f = this.moving ? Math.floor(this.walk) % 4 : 1,
-            atlas = this.direction >= 4 ? this.diagonal : this.actor,
-            sw = atlas.width / 4,
-            sh = atlas.height / 4;
-          c.drawImage(
-            atlas,
-            f * sw,
-            (this.direction % 4) * sh,
-            sw,
-            sh,
-            s.x - 35,
-            s.y - 62,
-            70,
-            70,
-          );
+          const f=this.moving?Math.floor(this.walk)%4:1,p=PLAYER_POSES[this.direction][f];
+          c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
           if (s.bag.includes("flashlight")) {
             const grip=handGrip(this.direction,f);
             c.save();c.translate(s.x+grip.x,s.y+grip.y);c.rotate(s.facing);

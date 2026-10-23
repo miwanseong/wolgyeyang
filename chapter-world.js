@@ -179,4 +179,26 @@ export function addRelayChapter(M,map,prop,door){
   M[id].rooms.push({x:4,y:id==='relaySignal'?26:id==='relayEntry'?23:24,w:42,h:5,name:'방화문이 이어지는 연결 복도'});
   wall(id,id+'-extinguisher',11,id==='relayEntry'?22:6,id==='relaySignal'?25.5:id==='relayEntry'?22.5:23.5,'연결 복도 소화기함','압력계와 안전핀이 그대로다.',{technical:11,details:undefined});
  }
+ // New routes have a purpose: records transport, pump service, and a quiet booth anteroom.
+ function carve(m,x,y,w,h){for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)M[m].grid[yy][xx]=1;}
+ carve('relayArchive',21,16,9,3);
+ for(const y of [16,18])M.relayArchive.grid[y][25]=2;
+ put('relayArchive','relay-transport-door','door',25.5,17.5,'원본 운반 연결문',{internalDoor:true,cells:[[25,17]],facing:'west',doorType:'service',solid:true,defaultOpen:false});
+ M.relayArchive.rooms.push({x:21,y:16,w:9,h:3,name:'원본 운반 연결 통로'});
+ carve('relayPlant',22,20,4,3);carve('relayPlant',24,23,2,2);
+ for(const y of [20,22])M.relayPlant.grid[y][22]=2;
+ put('relayPlant','relay-pump-service-door','door',22.5,21.5,'펌프실 정비 우회문',{internalDoor:true,cells:[[22,21]],facing:'west',doorType:'service',solid:true,defaultOpen:false});
+ M.relayPlant.rooms.push({x:22,y:20,w:4,h:5,name:'꺾인 펌프 정비 우회로'});
+ for(let x=5;x<=21;x++)M.relaySignal.grid[19][x]=2;
+ leaf('relaySignal','relay-quiet-inner-door',11,19,'청취 부스 안쪽 방음문');
+ Object.assign(M.relaySignal.objects.find(o=>o.id==='relay-mic-reel'),{x:18*32,y:22*32});
+ M.relaySignal.rooms.push({x:5,y:20,w:17,h:5,name:'청취 부스 전실'});
+ for(const id of ['relayArchive','relayPlant','relaySignal']){const grid=M[id].grid;for(let y=1;y<grid.length-1;y++)for(let x=1;x<grid[y].length-1;x++)if(grid[y][x]===0&&[[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>grid[y+dy][x+dx]===1))grid[y][x]=2;}
+ Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-counter-2'),{partOf:undefined,covertDrawer:true,name:'안내 데스크 · 해린의 개인 인계 서랍'});
+ Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-reception-cabinet'),{lostbox:true,name:'접수실 분실물 인수함',description:'인계 서류장 아래 칸의 분실물 함. 인수표와 함께 점검용 시계를 보관했다.'});
+ furniture('relaySignal','relay-headset-drawer','desk',8,22,'청취 장비 보관대','서랍에 여분 청취 헤드셋이 있다.',{equipment:'headset',technical:6,w:25,back:22,front:10});
+ detail('relayPlant','relay-work-vest',0,18,31,'정비용 조끼 걸이','안주머니가 있는 방음 작업 조끼.',{equipment:'vest'});
+ detail('relayPlant','relay-pump-operation',5,16,15,'월계아파트 배수펌프 원격 운전 원장','2023.11.04 / B1 배수펌프23:40–23:50 정지. 중계소 자체 냉각펌프가 아니라 사고 현장의 원격 원장이다.',{pumpLog:true});
+ furniture('relayArchive','relay-evidence-desk','desk',53,25,'복원 검토용 증거 탁자','사고 직후의 진술과 현재 확보한 증거를 펼쳐 대조하는 검토 자리.',{deductionStation:true,w:27,back:24,front:12});
+
 }

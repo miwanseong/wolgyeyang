@@ -1,4 +1,4 @@
-import {canMove,findPath} from './world.js?v=eaf575030a38';
+import {canMove,findPath} from './world.js?v=9226cb9e0ebf';
 export const CROWD_ROUTES={
  relayYard:[[[24,18],[30,18]],[[25,25],[31,25]],[[8,14],[17,14]]],
  relayEntry:[[[10,25],[20,25]],[[26,26],[36,26]],[[18.7,13],[19,15]]],

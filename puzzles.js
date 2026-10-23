@@ -1,3 +1,5 @@
+export const PUZZLE_FLAGS={slide:'relaySlide',logic:'relayLogic',pipes:'relayPipes',sync:'relaySync'};
+export function reconcilePuzzles(s){if(s.puzzles?.slide&&slideSolved(s.puzzles.slide))s.flags.relaySlide=true;if(s.puzzles?.pipes&&pipesSolved(s.puzzles.pipes))s.flags.relayPipes=true;if(s.puzzles?.sync&&syncSolved(s.puzzles.sync))s.flags.relaySync=true;}
 export function syncSolved(p){return p?.offset===3&&p?.inverted===true;}
 export function syncWave(index){return [6,12,19,26].reduce((a,v,i)=>a+(i%2?-.7:1)*Math.exp(-Math.pow((index-v)/.85,2)),0);}
 export const SLIDE_START=[1,3,6,5,0,2,4,7,8];
@@ -30,6 +32,7 @@ export function validPuzzles(p){
 export class PuzzlePanel{
  constructor(root,{sound,wrong,close}){Object.assign(this,{root,sound,wrong,close});}
  open(state,kind,onSolved){
+  reconcilePuzzles(state);if(state.flags[PUZZLE_FLAGS[kind]]){this.close();onSolved();return false;}
   this.state=state;this.kind=kind;this.onSolved=onSolved;this.done=false;
   state.puzzles??={};if(kind==='slide')state.puzzles.slide??=[...SLIDE_START];if(kind==='pipes')state.puzzles.pipes??=[...PIPE_START];if(kind==='sync')state.puzzles.sync??={offset:0,inverted:false};
   this.root.hidden=false;this.render();
