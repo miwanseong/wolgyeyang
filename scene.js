@@ -1,8 +1,9 @@
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=2c522cd53d9d';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=2c522cd53d9d';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=2c522cd53d9d';
-import {facilityArt} from './facility-art.js?v=2c522cd53d9d';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=2c522cd53d9d";
+import {drawFloorOmen,omenOpacity} from './haunting.js?v=f48a4f17ba23';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=f48a4f17ba23';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=f48a4f17ba23';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=f48a4f17ba23';
+import {facilityArt} from './facility-art.js?v=f48a4f17ba23';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor } from "./world.js?v=f48a4f17ba23";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -158,36 +159,37 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=2c522cd53d9d",
-        "assets/seoha-walk.png?v=2c522cd53d9d",
-        "assets/props-painted.png?v=2c522cd53d9d",
-        "assets/floors-painted.png?v=2c522cd53d9d",
-        "assets/jeongwoo-motions.png?v=2c522cd53d9d",
-        "assets/seoha-diagonal.png?v=2c522cd53d9d",
-        "assets/shoe-cabinet.png?v=2c522cd53d9d",
-        "assets/chair-turn.png?v=2c522cd53d9d",
-        "assets/room-modules.png?v=2c522cd53d9d",
-        "assets/dining-table.png?v=2c522cd53d9d",
-        "assets/regional-props.png?v=2c522cd53d9d",
-        "assets/wall-side.png?v=2c522cd53d9d",
-        "assets/architecture.png?v=2c522cd53d9d",
-        "assets/technical-kit.png?v=2c522cd53d9d",
-        "assets/technical-doors.png?v=2c522cd53d9d",
-        "assets/kitchen-kit.png?v=2c522cd53d9d",
-        "assets/decor-kit.png?v=2c522cd53d9d",
-        "assets/supply-kit.png?v=2c522cd53d9d",
-        "assets/room-details.png?v=2c522cd53d9d",
-        "assets/seoyun-echo.png?v=2c522cd53d9d",
-        "assets/relay-floors.png?v=2c522cd53d9d",
-        "assets/haunted-portraits.png?v=2c522cd53d9d",
-        "assets/reception-parking.png?v=2c522cd53d9d",
-        "assets/resident-walk.png?v=2c522cd53d9d",
-        "assets/seoha-adult-walk.png?v=2c522cd53d9d",
-        "assets/player-side-walk.png?v=2c522cd53d9d",
-        "assets/resident-side-walk.png?v=2c522cd53d9d",
-        "assets/relay-furniture.png?v=2c522cd53d9d",
+        "assets/props-support.png?v=f48a4f17ba23",
+        "assets/seoha-walk.png?v=f48a4f17ba23",
+        "assets/props-painted.png?v=f48a4f17ba23",
+        "assets/floors-painted.png?v=f48a4f17ba23",
+        "assets/jeongwoo-motions.png?v=f48a4f17ba23",
+        "assets/seoha-diagonal.png?v=f48a4f17ba23",
+        "assets/shoe-cabinet.png?v=f48a4f17ba23",
+        "assets/chair-turn.png?v=f48a4f17ba23",
+        "assets/room-modules.png?v=f48a4f17ba23",
+        "assets/dining-table.png?v=f48a4f17ba23",
+        "assets/regional-props.png?v=f48a4f17ba23",
+        "assets/wall-side.png?v=f48a4f17ba23",
+        "assets/architecture.png?v=f48a4f17ba23",
+        "assets/technical-kit.png?v=f48a4f17ba23",
+        "assets/technical-doors.png?v=f48a4f17ba23",
+        "assets/kitchen-kit.png?v=f48a4f17ba23",
+        "assets/decor-kit.png?v=f48a4f17ba23",
+        "assets/supply-kit.png?v=f48a4f17ba23",
+        "assets/room-details.png?v=f48a4f17ba23",
+        "assets/seoyun-echo.png?v=f48a4f17ba23",
+        "assets/relay-floors.png?v=f48a4f17ba23",
+        "assets/haunted-portraits.png?v=f48a4f17ba23",
+        "assets/reception-parking.png?v=f48a4f17ba23",
+        "assets/resident-walk.png?v=f48a4f17ba23",
+        "assets/seoha-adult-walk.png?v=f48a4f17ba23",
+        "assets/player-side-walk.png?v=f48a4f17ba23",
+        "assets/resident-side-walk.png?v=f48a4f17ba23",
+        "assets/relay-furniture.png?v=f48a4f17ba23",
+        "assets/room-omens.png?v=f48a4f17ba23",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -200,7 +202,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,
+        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,omenAtlas,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -234,7 +236,7 @@ export class Scene {
     });
   }
   begin(s, map) {
-    this.echo=null;this.dread=null;
+    this.echo=null;this.dread=null;this.omen=null;
     this.map = map;
     this.camera.reset(s);
     this.fade = this.reduced ? 0 : 1;
@@ -833,12 +835,16 @@ export class Scene {
         c.fillStyle="#09090955";c.fillRect(o.x-width/2,o.y+18,width,2);
       }
     }
+    drawFloorOmen(c,this.omen,this.reduced,this.omenAtlas);
     c.restore();
     for (const o of map.objects.filter(o=>o.kind==="stairs")) this.prop(o,s,t,dt);
     const drawables = map.objects.filter(o=>o.kind!=="stairs").map((o) => ({
       y: o.y,
       draw: () => this.prop(o, s, t, dt),
     }));
+    if(this.omen?.kind==='shadow'){
+      const e=this.omen,p=e.points[0];drawables.push({y:p.y,draw:()=>{const pose=PLAYER_POSES[0][1];c.save();c.globalAlpha=omenOpacity(e)*.8;c.filter='brightness(0)';c.drawImage(this.playerWalk,pose.x,pose.y,pose.w,pose.h,p.x-pose.width/2,p.y-56,pose.width,61);c.restore();}});
+    }
     for(const n of this.npcs){drawables.push({y:n.y,draw:()=>{
       c.save();c.fillStyle='#0007';c.beginPath();c.ellipse(n.x,n.y+3,12,4,0,0,7);c.fill();
       if(n.moving&&(n.direction===1||n.direction===2)){c.globalAlpha=n.ambient?(s.flags.relayPower?.65:.8):n.phase===2?.83:1;c.filter=n.ambient?'grayscale(1) brightness(.12)':'grayscale(1)';drawSide(c,this.residentSideWalk,n.column+1,n.walk,n.x,n.y,n.direction===2,n.moving);c.restore();return;}

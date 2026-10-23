@@ -18,6 +18,8 @@ export const TRACKS = {
   reliefAlt: "bgm_relief_alt.mp3",
 };
 export const EFFECTS = {
+  bloodDrip: "fx_blood_drips.wav",
+  omenKnock: "fx_three_knocks.wav",
   hallucination: "fx_hallucination.wav",
   checkSuccess: "fx_check_success.wav",
   checkFailure: "fx_check_failure.wav",

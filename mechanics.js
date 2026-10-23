@@ -1,4 +1,4 @@
-import { canMove, sight, findPath, clearSegment } from "./world.js?v=2c522cd53d9d";
+import { canMove, sight, findPath, clearSegment } from "./world.js?v=f48a4f17ba23";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}

@@ -1,7 +1,7 @@
-import {validInvestigation} from './investigation.js?v=2c522cd53d9d';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=2c522cd53d9d';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=2c522cd53d9d";
-import { canSurrender } from "./story.js?v=2c522cd53d9d";
+import {validInvestigation} from './investigation.js?v=f48a4f17ba23';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=f48a4f17ba23';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=f48a4f17ba23";
+import { canSurrender } from "./story.js?v=f48a4f17ba23";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
