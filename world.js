@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=79bfc232d1ce";
-import { addRelayChapter } from "./chapter-world.js?v=79bfc232d1ce";
+import { STORY } from "./story.js?v=6f29bf83c5cb";
+import { addRelayChapter } from "./chapter-world.js?v=6f29bf83c5cb";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -407,7 +407,7 @@ M.basement.objects.find(o=>o.id==='utility-hide').description='분전반 옆의 
 // Settle the sink/worktop/stove as different modules, rather than repeating a sink sprite.
 const kitchenKinds=[['kitchen-cabinet',0,'가스레인지와 환풍 후드','가스 밸브가 잠겨 있다. 버너 위에 맞춰 달린 환풍 후드의 스위치를 눌러도 팬이 돌지 않는다.'],['kitchen-counter-a',1,'주방 조리대','칼자국이 남은 빈 조리대. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'],['kitchen-sink',2,'주방 싱크대','수전 하나와 개수대 하나. 배수구 안에는 아무것도 없다.'],['kitchen-counter-b',1,'주방 서랍장','수저와 행주가 용도별로 나뉘어 있다.'],['kitchen-rack',3,'식기 건조대','컵 두 개가 엎어져 있다. 접수증은 건조대가 아니라 식탁의 컵 아래에 있었다.']];
 for(const [id,index,name,description]of kitchenKinds){const o=M.apartment.objects.find(o=>o.id===id);delete o.module;Object.assign(o,{kitchenTile:index,artRole:'kitchen-'+index,name,description,w:31,back:36,front:14});}
-Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{emergencyCandle:true,description:'정전 때 쓰던 비상초와 라이터가 조리대 위에 놓여 있다. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'});
+Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{routeAction:'lighter',description:'조리대 뒤쪽의 작은 금속 라이터. 서윤이 방수 봉투의 밀랍을 데울 때 쓰던 것이다. 옆 메모에는 「종이에 불을 대지 말 것」이라고 적혀 있다.'});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-tv'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-bench'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='kitchen'),{w:46,back:24,front:20});
@@ -418,7 +418,7 @@ for(let y=20;y<=24;y++)for(let x=25;x<=28;x++)M.apartment.grid[y][x]=1;
 for(let y=23;y<=24;y++)for(let x=22;x<=28;x++)M.apartment.grid[y][x]=1;
 M.apartment.rooms.push({x:25,y:20,w:4,h:5,name:'101호 · 안쪽 화장대'});
 M.apartment.objects.push(
- prop('vanity-mirror','mirror',27,19.5,'화장대의 거울',{decor:2,reach:130,facing:'north',mount:true,solid:false,fixture:'mirror',artRole:'reflective-mirror',description:'거울이 있다. 서하가 다가서면 유리 안의 얼굴도 고개를 든다.'}),
+ prop('vanity-mirror','mirror',27,19.5,'화장대의 거울',{decor:2,reach:130,facing:'north',mount:true,solid:false,fixture:'mirror',routeArt:0,artRole:'reflective-mirror',description:'거울이 있다. 서하가 다가서면 유리 안의 얼굴도 고개를 든다.'}),
  prop('vanity-table','vanity',27,21,'꽃병이 놓인 화장대',{decor:3,partOf:'vanity-mirror',w:27,back:24,front:12,description:'서윤이 쓰던 화장대. 꽃병과 서랍이 제자리에 있다. 거울 아래에는 「언니는 내 전화를 받았다」라고 긁혀 있다.'}),
  prop('vanity-curtain-left','curtain',25.5,19.5,'화장대 옆 암막 커튼',{decor:0,fixture:'curtain',facing:'north',mount:true,solid:false,description:'안쪽 벽의 창을 가린 암막 커튼. 천 뒤에서는 가느다란 바람만 샌다.'}),
  prop('vanity-curtain-right','curtain',28.5,19.5,'접힌 창가 커튼',{decor:1,fixture:'curtain',facing:'north',mount:true,solid:false,description:'커튼이 조금 열려 있다. 유리에 비치는 방 안의 불빛만 보인다.'}),
@@ -471,15 +471,38 @@ M.unit104.objects.push(
  prop('104-sofa','bench',8,16,'벽에 붙인 긴 의자',{w:36,back:22,front:10,description:'벽을 향해 밀어 놓은 의자. 그 아래에는 누군가 떨어뜨린 봉인 표찰이 있다.'}),
  prop('104-table','desk',15,15,'수선용 작업 책상',{w:28,back:24,front:12,hiddenClue:'thread',description:'작은 실패와 접힌 수선 일지. 매듭실 두 타래가 유리 접시 안에 들어 있다.'}),
  prop('104-lamp','detail',14.5,15,'수선 책상의 건전지 스탠드',{details:8,solid:false,partOf:'104-table',description:'남은 건전지로 실패가 놓인 자리만 희미하게 밝힌다.'}),
- prop('104-note','shelf',23,9,'봉인 회수 장부',{w:25,back:25,front:12,hiddenClue:'ledger',description:'104호는 사고 뒤 회수한 물품을 모아 둔 임시 보관실이었다.'}),
+ prop('104-note','cabinet',23,9,'서윤의 잠긴 봉투 보관함',{w:25,back:25,front:12,routeAction:'cabinet',routeArt:5,description:'서윤이 사진 원본을 보관하던 열쇠식 금속함. 인수표에는 2023년11월3일 반입이라고 적혀 있다. 사고 다음날인11월4일 이후의 통화 기록은 들어 있지 않다.'}),
  prop('104-frame','frame',24,6.5,'도려낸 사진',{mount:true,solid:false,facing:'north',decor:0,description:'여섯 사람이 찍힌 사진. 서하의 다리와 팔이 있어야 할 자리만 유리 위에서 지워졌다.'}),
  prop('104-hide','cabinet',24,17,'비어 있는 붙박이장',{hide:true,w:24,back:22,front:10,description:'걸린 옷이 없다. 몸을 숨길 만큼 깊다.'})
 );
-const hiddenDoor=M.lobby.objects.find(o=>o.id==='sealed-unit-2');hiddenDoor.hidden104=true;hiddenDoor.description='봉인 표찰의 회수 번호가 접수증 뒷면과 같다. 접착 테이프 아래에는 전자 봉인 해제 접점이 있다.';
+M.unit104.objects.push(prop('104-wax','side-table',23,15,'밀랍으로 봉한 작은 봉투',{decor:5,w:17,back:20,front:10,routeAction:'wax',description:'서윤의 서명이 이어지는 밀랍 봉인. 겉면에는 「104호 사진함 열쇠. 밀랍만 데워 떼고 종이는 태우지 말 것」이라고 적혀 있다.'}));
+const photoList=M.unit104.objects.find(o=>o.id==='104-frame');delete photoList.decor;Object.assign(photoList,{details:5,name:'서윤의 촬영 목록표',description:'11월3일 촬영 필름 S-1103. 피난문 추가 빗장 사진을104호 보관함에 넣었다는 정리 목록. 실제 원본과 촬영 일지를 대조해야 한다.'});
+const hiddenDoor=M.lobby.objects.find(o=>o.id==='sealed-unit-2');hiddenDoor.hidden104=true;hiddenDoor.description='일반 실린더 자물쇠가 달린104호 문. 철거 확인띠가 손잡이 위를 가로지른다. 전자 잠금 장치는 없다. 출입 열쇠의 보관 위치는 야간 근무표에 적혀 있다.';
 
 M.lobby.objects.find(o=>o.id==='arrival-letter').description='발신인 미정. 서윤의 유품과 사고 접수 기록은 관리실 전자 보관함에 있다. 06:00 철거 반출 예정. 미정의 메모: 「나도 열쇠를 건넸다는 말로 기다린 시간을 덮었어. 원본을 보지도 않은 채 또 내 탓만 빼고 말할 수는 없어. 예비 열쇠는 101호 현관 신발장에 있다.」';
 M.management.objects.find(o=>o.id==='manager-files').description='2024년 사고 보고서. 정우는 추가 빗장의 흔적을 철거하러 폐쇄된 지하에 들어갔다가 노출 배선에 감전되어 사망했다. 소방 점검표의 원본과 원격 제어 로그는 철거 목록에 없었다. 근무가 끝난 뒤에도 순찰하는 형상이 그를 닮았다.';
 M.apartment.objects.find(o=>o.id==='kitchen').description=STORY.receipt;
+// Repeated structural walls match the apartment block, while each home has distinct contents.
+for(const [unit,person]of [[102,'미정'],[103,'정우']]){
+ const id='unit'+unit,m=map(id,'1F · '+unit+'호 / '+person+'의 옛집',32,28,'wood',[[12,17,14,8],[4,5,10,12],[17,5,10,10],[21,15,3,3],[4,19,6,6],[10,20,3,3]]);M[id]=m;
+ for(let x=4;x<14;x++)m.grid[17][x]=2;for(let y=19;y<25;y++)m.grid[y][10]=2;
+ m.rooms=[{x:12,y:17,w:14,h:8,name:unit+'호 · 현관과 거실'},{x:4,y:5,w:10,h:12,name:unit+'호 · 침실'},{x:17,y:5,w:10,h:10,name:unit+'호 · 분리된 주방'},{x:4,y:19,w:6,h:6,name:unit+'호 · 욕실'}];
+ m.objects.push(door(id+'-exit',19,25,'중앙 복도로','lobby',[unit===102?16:22,13]),
+ prop(id+'-bed-door','door',12.5,17.5,'침실 문',{internalDoor:true,cells:[[12,17]],facing:'north',solid:true}),
+ prop(id+'-bath-door','door',10.5,21.5,'욕실 문',{internalDoor:true,cells:[[10,21]],facing:'east',solid:true}),
+ prop(id+'-bed','bed',8,9,'접힌 침구의 침대',{w:27,back:40,front:22,description:unit===102?'매트리스 옆에는 무릎 담요가 접혀 있다. 대피 뒤 침구는 다시 펴지지 않았다.':'침대 발치의 작업복과 순찰 일지. 여기는 관리인이 실제로 먹고 자던 숙소였다.'}),
+ prop(id+'-kitchen','counter',22,7,'가스레인지와 조리대',{kitchenTile:0,w:31,back:34,front:12,description:'주방은 침실과 분리돼 있다. 가스 밸브는 철거를 앞두고 차단됐다.'}),
+ prop(id+'-sink','sink',25,7,'주방 개수대',{kitchenTile:2,w:27,back:34,front:12,description:unit===102?'수전 하나와 개수대 하나. 수도가 잠겼고 가장자리에 마른 물때가 남았다.':'좁은 주방의 개수대. 상판과 배수구가 구분돼 있다.'}),
+ prop(id+'-bath','shower',6,23,'유리문 샤워 부스',{routeArt:2,w:21,back:30,front:10,description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'}),
+ prop(id+'-curtain','curtain',8,4.5,'창을 가린 커튼',{fixture:'curtain',decor:1,mount:true,solid:false,facing:'north',description:'철거 전 닫아 둔 커튼. 창틀 쪽에서 찬바람이 스민다.'}));
+ const entrance=M.lobby.objects.find(o=>o.id==='sealed-unit-'+(unit-102));Object.assign(entrance,{routeAction:'entry'+unit,description:unit+'호 퇴거 확인띠. 경찰 증거 봉인이 아니라 철거 전 출입 확인용이다. 공용 마스터키로 잠긴 문을 열 수 있다.'});
+}
+M.unit102.objects.push(prop('102-handover','desk',19,20,'미정이 정리한 인계 봉투',{w:27,back:24,front:12,routeAction:'rosterPiece',description:'서윤에게104호 자료실 열쇠를 넘겨 준 날의 쪽지. 야간 근무표에서 잘라 가져온 모서리가 봉투 속에 있다.'}),prop('102-armchair','armchair',15,22,'창을 바라보는 의자',{decor:6,w:17,back:20,front:10,description:'미정이 창을 바라보며 앉던 의자.'}));
+M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'공용 마스터키로 여는 비품 열쇠함.104호 임시 자료실 열쇠는 11월3일 서윤이 사용한 뒤 반납했다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호를 「서윤의 점검 사진 임시 정리실」로 배정한11월3일 사용 허가 쪽지가 있다.'}));
+Object.assign(M.management.objects.find(o=>o.id==='office-board'),{routeAction:'roster',routeArt:3});
+M.upper.objects.find(o=>o.id==='studio-notice').x=26.5*32;
+Object.assign(M.apartment.objects.find(o=>o.id==='bath-shower'),{routeArt:2,facing:'north',name:'유리문 샤워 부스',description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'});delete M.apartment.objects.find(o=>o.id==='bath-shower').technical;
+for(const o of M.upper.objects.filter(o=>o.kind==='acoustic')){delete o.architecture;Object.assign(o,{routeArt:4,name:'녹음 부스 환기·흡음 그릴',description:'수평 슬랫과 안쪽 흡음재가 보이는 환기 그릴. 종이나 핀이 붙은 게시판이 아니다.'});}
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.

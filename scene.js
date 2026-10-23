@@ -1,11 +1,11 @@
-import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=79bfc232d1ce';
-import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=79bfc232d1ce';
-import {drawFloorOmen,omenOpacity} from './haunting.js?v=79bfc232d1ce';
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=79bfc232d1ce';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=79bfc232d1ce';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=79bfc232d1ce';
-import {facilityArt} from './facility-art.js?v=79bfc232d1ce';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=79bfc232d1ce";
+import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=6f29bf83c5cb';
+import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=6f29bf83c5cb';
+import {drawFloorOmen,omenOpacity} from './haunting.js?v=6f29bf83c5cb';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=6f29bf83c5cb';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=6f29bf83c5cb';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=6f29bf83c5cb';
+import {facilityArt} from './facility-art.js?v=6f29bf83c5cb';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=6f29bf83c5cb";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -61,7 +61,7 @@ export function ghostFrame(enemy,t){
  if(motion==='rise')return {row:1,col:Math.min(3,Math.floor((enemy.age||0)/1.2*4))};
  if(motion==='windup')return {row:1,col:2};
  if(motion==='lunge')return {row:2,col:Math.min(3,Math.floor((.65-enemy.rush)/.65*4))};
- return {row:motion==='crawl'?0:3,col:Math.floor(t/(motion==='crawl'?115:270))%4};
+ return {row:motion==='crawl'?0:3,col:Math.floor(t/(motion==='crawl'?(enemy.intro?260:115):270))%4};
 }
 export const portalAnchor = wallAnchor;
 // Wall artwork occupies opaque cells only; floor tiles never become a canvas for a door.
@@ -161,42 +161,43 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=79bfc232d1ce",
-        "assets/seoha-walk.png?v=79bfc232d1ce",
-        "assets/props-painted.png?v=79bfc232d1ce",
-        "assets/floors-painted.png?v=79bfc232d1ce",
-        "assets/jeongwoo-motions.png?v=79bfc232d1ce",
-        "assets/seoha-diagonal.png?v=79bfc232d1ce",
-        "assets/shoe-cabinet.png?v=79bfc232d1ce",
-        "assets/chair-turn.png?v=79bfc232d1ce",
-        "assets/room-modules.png?v=79bfc232d1ce",
-        "assets/dining-table.png?v=79bfc232d1ce",
-        "assets/regional-props.png?v=79bfc232d1ce",
-        "assets/wall-side.png?v=79bfc232d1ce",
-        "assets/architecture.png?v=79bfc232d1ce",
-        "assets/technical-kit.png?v=79bfc232d1ce",
-        "assets/technical-doors.png?v=79bfc232d1ce",
-        "assets/kitchen-kit.png?v=79bfc232d1ce",
-        "assets/decor-kit.png?v=79bfc232d1ce",
-        "assets/supply-kit.png?v=79bfc232d1ce",
-        "assets/room-details.png?v=79bfc232d1ce",
-        "assets/seoyun-echo.png?v=79bfc232d1ce",
-        "assets/relay-floors.png?v=79bfc232d1ce",
-        "assets/haunted-portraits.png?v=79bfc232d1ce",
-        "assets/reception-parking.png?v=79bfc232d1ce",
-        "assets/resident-walk.png?v=79bfc232d1ce",
-        "assets/seoha-adult-walk.png?v=79bfc232d1ce",
-        "assets/player-side-walk.png?v=79bfc232d1ce",
-        "assets/resident-side-walk.png?v=79bfc232d1ce",
-        "assets/relay-furniture.png?v=79bfc232d1ce",
-        "assets/room-omens.png?v=79bfc232d1ce",
-        "assets/injury-walk.png?v=79bfc232d1ce",
-        "assets/severe-walk.png?v=79bfc232d1ce",
-        "assets/crawl-walk.png?v=79bfc232d1ce",
-        "assets/mirror-watcher.png?v=79bfc232d1ce",
-        "assets/hollow-hunter.png?v=79bfc232d1ce",
+        "assets/props-support.png?v=6f29bf83c5cb",
+        "assets/seoha-walk.png?v=6f29bf83c5cb",
+        "assets/props-painted.png?v=6f29bf83c5cb",
+        "assets/floors-painted.png?v=6f29bf83c5cb",
+        "assets/jeongwoo-motions.png?v=6f29bf83c5cb",
+        "assets/seoha-diagonal.png?v=6f29bf83c5cb",
+        "assets/shoe-cabinet.png?v=6f29bf83c5cb",
+        "assets/chair-turn.png?v=6f29bf83c5cb",
+        "assets/room-modules.png?v=6f29bf83c5cb",
+        "assets/dining-table.png?v=6f29bf83c5cb",
+        "assets/regional-props.png?v=6f29bf83c5cb",
+        "assets/wall-side.png?v=6f29bf83c5cb",
+        "assets/architecture.png?v=6f29bf83c5cb",
+        "assets/technical-kit.png?v=6f29bf83c5cb",
+        "assets/technical-doors.png?v=6f29bf83c5cb",
+        "assets/kitchen-kit.png?v=6f29bf83c5cb",
+        "assets/decor-kit.png?v=6f29bf83c5cb",
+        "assets/supply-kit.png?v=6f29bf83c5cb",
+        "assets/room-details.png?v=6f29bf83c5cb",
+        "assets/seoyun-echo.png?v=6f29bf83c5cb",
+        "assets/relay-floors.png?v=6f29bf83c5cb",
+        "assets/haunted-portraits.png?v=6f29bf83c5cb",
+        "assets/reception-parking.png?v=6f29bf83c5cb",
+        "assets/resident-walk.png?v=6f29bf83c5cb",
+        "assets/seoha-adult-walk.png?v=6f29bf83c5cb",
+        "assets/player-side-walk.png?v=6f29bf83c5cb",
+        "assets/resident-side-walk.png?v=6f29bf83c5cb",
+        "assets/relay-furniture.png?v=6f29bf83c5cb",
+        "assets/room-omens.png?v=6f29bf83c5cb",
+        "assets/injury-walk.png?v=6f29bf83c5cb",
+        "assets/severe-walk.png?v=6f29bf83c5cb",
+        "assets/crawl-walk.png?v=6f29bf83c5cb",
+        "assets/mirror-watcher.png?v=6f29bf83c5cb",
+        "assets/chapter1-fixtures.png?v=6f29bf83c5cb",
+        "assets/hollow-hunter.png?v=6f29bf83c5cb",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, hollowHunter]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, chapterFixtures, hollowHunter]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -209,7 +210,7 @@ export class Scene {
         floors,
         monster,
         hauntedPortraits,
-        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,omenAtlas,injuryWalk,severeWalk,crawlWalk,watcherArt,hollowHunter,
+        residentWalk,playerWalk,playerSideWalk,residentSideWalk,relayFurniture,omenAtlas,injuryWalk,severeWalk,crawlWalk,watcherArt,chapterFixtures,hollowHunter,
         diagonal,
         shoeCabinet,
         chairSheet, roomModules, diningTable,
@@ -313,7 +314,18 @@ export class Scene {
     c.drawImage(injured>=0?this.injuryWalk:this.playerWalk,p.x,p.y,p.w,p.h,-w/2,-h*.72,w,h);c.restore();
   }
   prop(o, s, t, dt) {
-    if(o.hidden104&&s.flags.hidden104Open)o={...o,sealed:false};
+    if(o.hidden104&&s.flags.hidden104Open||o.routeAction?.startsWith('entry')&&s.flags['entered_'+o.routeAction.slice(5)])o={...o,sealed:false};
+    if(o.routeAction==='wax'){
+      const c=this.ctx,tile=this.decorTiles[5];c.drawImage(tile,o.x-18,o.y-32,36,44);c.drawImage(this.chapterFixtures,1135,528,285,81,o.x-15,o.y-34,30,9);
+      if(this.waxHeat&&t<this.waxHeat.until){c.fillStyle='#dbb86b';c.beginPath();c.ellipse(o.x+2,o.y-38,1.3,3,0,0,7);c.fill();}return;
+    }
+    if(o.routeArt!==undefined){
+      const c=this.ctx,poses=[[134,0,266,512],[618,0,298,512],[1124,0,322,511],[22,536,465,434],[603,532,350,445],[1102,610,360,402]],p=poses[o.routeArt],widths=[36,36,58,70,54,48],w=widths[o.routeArt],h=w*p[3]/p[2],g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y-h+12,w,h};
+      c.save();if(o.routeArt===2)c.globalCompositeOperation='screen';c.drawImage(this.chapterFixtures,...p,g.x,g.y,g.w,g.h);c.restore();
+      if(o.routeAction==='roster'&&s.flags.rosterTaken){c.fillStyle='#504b43';c.fillRect(g.x+w*.37,g.y+h*.12,w*.52,h*.77);c.fillStyle='#999';c.fillRect(g.x+w*.39,g.y+h*.12,2,2);}
+      if(o.routeArt===5&&((o.routeAction==='cabinet'&&s.flags.hiddenBoxOpen)||(o.routeAction==='keybox'&&s.bag.includes('unit104Key')))){c.fillStyle='#101012';c.fillRect(g.x+w*.12,g.y+h*.15,w*.68,h*.63);c.fillStyle='#8b8579';c.fillRect(g.x+w*.2,g.y+h*.63,w*.45,h*.08);c.fillStyle='#333438';c.beginPath();c.moveTo(g.x+w*.1,g.y+h*.13);c.lineTo(g.x-w*.16,g.y+h*.22);c.lineTo(g.x-w*.16,g.y+h*.86);c.lineTo(g.x+w*.1,g.y+h*.8);c.closePath();c.fill();}
+      return;
+    }
     if(o.hiddenClue==='thread'){
       const c=this.ctx;c.drawImage(this.moduleTiles,256,288,128,144,o.x-32,o.y-56,64,72);
       c.fillStyle='#a8aaa630';c.strokeStyle='#a8aaa68c';c.lineWidth=.7;c.beginPath();c.ellipse(o.x+11,o.y-37,13,5,0,0,7);c.fill();c.stroke();
@@ -394,7 +406,7 @@ export class Scene {
     if(o.kitchenTile!==undefined){
       const tile=this.kitchenTiles[o.kitchenTile],w=o.kitchenTile===4?40:64,h=o.kitchenTile===4?82:o.kitchenTile===5?52:68;
       const g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y-h+14,w,h};c.drawImage(tile,g.x,g.y,g.w,g.h);
-      if(o.emergencyCandle){const x=o.x+8,y=o.y-31;c.fillStyle='#282729';c.beginPath();c.ellipse(x+2,y,5,1.6,0,0,7);c.fill();c.fillStyle='#bcb7a8';c.fillRect(x,y-9,4,9);c.fillStyle='#747066';c.fillRect(x,y-9,1,9);c.fillStyle='#37302d';c.fillRect(x+2,y-11,1,2);c.fillStyle='#55565b';c.fillRect(x-14,y-2,6,3);c.fillStyle='#a3a4a6';c.fillRect(x-14,y-2,2,3);if(s.flags.candle_kitchen){const flicker=this.reduced?0:Math.sin(t*.011)*.4;c.fillStyle='#c0a76f';c.beginPath();c.ellipse(x+2+flicker,y-13,1.7,4,0,0,7);c.fill();c.fillStyle='#eee1b4';c.fillRect(x+1,y-14,2,3);}}
+      if(o.routeAction==='lighter'&&!s.bag.includes('lighter')){const x=o.x+8,y=o.y-48;c.fillStyle='#333437';c.fillRect(x-4,y-3,8,4);c.fillStyle='#92948e';c.fillRect(x-4,y-3,3,4);}
       return;
     }
     if(o.hauntedPortrait){
@@ -626,6 +638,7 @@ export class Scene {
     m.fillStyle = this.map.chapter===2 ? `rgba(0,0,0,${this.map.id==='relayEntry'?.53:this.map.id==='relayPlant'?.91:.79})` : "rgba(0,0,0,.88)";
     m.fillRect(0, 0, w, h);
     m.globalCompositeOperation = "destination-out";
+    if(this.cinematicFocus){const p=this.cinematicFocus,xx=(p.x-camX)*z,yy=(p.y-camY-35)*z,g=m.createRadialGradient(xx,yy,0,xx,yy,155*z);g.addColorStop(0,'#ffffffb0');g.addColorStop(1,'#fff0');m.fillStyle=g;m.fillRect(xx-155*z,yy-155*z,310*z,310*z);}
     const ambient = m.createRadialGradient(
       px,
       py,
@@ -639,8 +652,7 @@ export class Scene {
     ambient.addColorStop(1, "#fff0");
     m.fillStyle = ambient;
     m.fillRect(0, 0, w, h);
-    const candle=this.map.id==='apartment'&&s.flags.candle_kitchen?this.map.objects.find(o=>o.emergencyCandle):null;
-    for(const [x,y,r,kind]of [...(LAMPS[this.map.id]||[]),...(candle?[[(candle.x+10)/32,(candle.y-44)/32,85,'steady']]:[])]){
+    for(const [x,y,r,kind]of (LAMPS[this.map.id]||[])){
       const xx=(x*32-camX)*z,yy=(y*32-camY)*z,g=m.createRadialGradient(xx,yy,2,xx,yy,r*z),strength=lampStrength(kind,t,this.reduced);g.addColorStop(0,`rgba(255,255,255,${strength*.9})`);g.addColorStop(.45,`rgba(255,255,255,${strength*.55})`);g.addColorStop(1,'#fff0');m.save();m.beginPath();for(let a=0;a<=Math.PI*2+.13;a+=.13){let d=8;for(;d<r;d+=8)if(opaque(this.map,Math.floor((x*32+Math.cos(a)*d)/32),Math.floor((y*32+Math.sin(a)*d)/32))||closedDoorAt(this.map,x*32+Math.cos(a)*d,y*32+Math.sin(a)*d))break;const ax=xx+Math.cos(a)*Math.min(d,r)*z,ay=yy+Math.sin(a)*Math.min(d,r)*z;if(a===0)m.moveTo(ax,ay);else m.lineTo(ax,ay);}m.closePath();m.clip();m.fillStyle=g;m.fillRect(xx-r*z,yy-r*z,r*z*2,r*z*2);m.restore();
     }
     if (s.flashlight && s.bag.includes("flashlight") && !s.hidden) {
@@ -721,7 +733,7 @@ export class Scene {
       h = this.canvas.height,
       map = this.map;
     this.reflections.push({x:s.x,y:s.y,t});this.reflections=this.reflections.filter(p=>p.t>t-700);
-    this.camera.update(s, dt, dialog ? this.focus : null, this.reduced);
+    this.camera.update(this.cinematicFocus||s,dt,dialog?this.focus:null,this.reduced);
     const z = this.camera.zoom,
       vw = w / z,
       vh = h / z;

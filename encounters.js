@@ -3,7 +3,7 @@ export function mirrorVisit(s){
  if(!s.flags.mirrorSeenOnce)s.flags.mirrorSeenOnce=true;else s.flags.mirrorSeenTwice=true;
  if(flash)s.flags.mirrorHaunt=true;return flash;
 }
-export function canUnseal104(s){return s.bag.includes('receipt')&&!!s.flags.power;}
+export function canUnseal104(s){return s.bag.includes('unit104Key');}
 export function redLightUpdate(enemy,map,s,dt,clear){
  enemy.hollowTime-=dt;if(enemy.hollowTime<=0){enemy.active=false;enemy.mode='gone';return 'escaped';}
  enemy.grace=Math.max(0,enemy.grace-dt);enemy.phaseTime=(enemy.phaseTime||0)+dt;

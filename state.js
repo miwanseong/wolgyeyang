@@ -1,8 +1,9 @@
-import {bodyState,validBody} from './body.js?v=79bfc232d1ce';
-import {validInvestigation} from './investigation.js?v=79bfc232d1ce';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=79bfc232d1ce';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=79bfc232d1ce";
-import { canSurrender } from "./story.js?v=79bfc232d1ce";
+import {canPreserve} from './chapter1-route.js?v=6f29bf83c5cb';
+import {bodyState,validBody} from './body.js?v=6f29bf83c5cb';
+import {validInvestigation} from './investigation.js?v=6f29bf83c5cb';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=6f29bf83c5cb';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=6f29bf83c5cb";
+import { canSurrender } from "./story.js?v=6f29bf83c5cb";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -23,6 +24,8 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+  restoredRoster:'복원한 야간 근무·인계표 원본',
+  serviceKey:'관리인 공용 마스터키',unit104Key:'104호 출입 열쇠',archiveKey:'서윤의 봉투 보관함 열쇠',lighter:'라이터',rosterScrap:'찢어진 근무표 조각',inspectionPhotos:'104호 점검 사진 원본과 촬영 일지',
   knotThread:"매듭실",
   knotThreadSecond:"매듭실 · 남은 한 타래",
   auditMemo: "숨김 전 수신 목록 탄소 사본",
@@ -82,7 +85,7 @@ export function restore(raw) {
     typeof s.flags !== "object" ||
     Array.isArray(s.flags) ||
     !Object.values(s.flags).every((v) => typeof v === "boolean") ||
-    ![null, "witness", "return", "surrender", "signal", "fragment", "silence"].includes(s.ending) ||
+    ![null, "witness", "return", "surrender", "signal", "fragment", "silence", "preserve"].includes(s.ending) ||
     !Number.isFinite(s.stamina) ||
     s.stamina < 0 ||
     s.stamina > 100 ||
@@ -90,6 +93,8 @@ export function restore(raw) {
     typeof s.flashlight !== "boolean"
   )
     throw Error("유효하지 않은 저장 데이터");
+  // Retire our obsolete generated104 remote-call note; the new route requires the physical photograph source.
+  if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
     if(s.layout===12)throw Error("가구 내부의 저장 위치");
@@ -131,7 +136,8 @@ export function finish(s, choice) {
   if (!s.flags.shutterOpen) return false;
   if(['witness','surrender'].includes(choice)&&!canSurrender(s))return false;
   if(choice==='return'&&(!s.flags.listened||!s.bag.includes('tape')))return false;
-  if (!["witness", "return", "surrender"].includes(choice)) return false;
+  if(choice==='preserve'&&!canPreserve(s))return false;
+  if (!["witness", "return", "surrender","preserve"].includes(choice)) return false;
   s.ending = choice==='witness'?'surrender':choice;
   if(choice==='return')s.flags.denial=true;
   else s.flags.chapter1Submitted=true;

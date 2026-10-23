@@ -1,6 +1,6 @@
-import {redLightUpdate} from './encounters.js?v=79bfc232d1ce';
-import {bodyState} from './body.js?v=79bfc232d1ce';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=79bfc232d1ce";
+import {redLightUpdate} from './encounters.js?v=6f29bf83c5cb';
+import {bodyState} from './body.js?v=6f29bf83c5cb';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=6f29bf83c5cb";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -59,7 +59,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
-    this.kind="jeongwoo";this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
+    this.kind="jeongwoo";this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
     this.x = 0;
     this.y = 0;
     this.path = [];
