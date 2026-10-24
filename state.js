@@ -1,13 +1,13 @@
-import {canPreserve} from './chapter1-route.js?v=6f29bf83c5cb';
-import {bodyState,validBody} from './body.js?v=6f29bf83c5cb';
-import {validInvestigation} from './investigation.js?v=6f29bf83c5cb';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=6f29bf83c5cb';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=6f29bf83c5cb";
-import { canSurrender } from "./story.js?v=6f29bf83c5cb";
+import {canPreserve} from './chapter1-route.js?v=f3e05f671a32';
+import {bodyState,validBody} from './body.js?v=f3e05f671a32';
+import {validInvestigation} from './investigation.js?v=f3e05f671a32';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=f3e05f671a32';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=f3e05f671a32";
+import { canSurrender } from "./story.js?v=f3e05f671a32";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 12,
+  layout: 13,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -97,7 +97,7 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===12)throw Error("가구 내부의 저장 위치");
+    if(s.layout===13)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -107,7 +107,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:12, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:13, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

@@ -13,3 +13,5 @@ export function injuryDirection(d){return d<4?d:d===4||d===5?0:3;}
 export function recoverLimb(s,part,item='knotThread'){const b=bodyState(s);if(!['leg','arm'].includes(part)||!b[part])return false;const index=s.bag.indexOf(item);if(index<0)return false;s.bag.splice(index,1);b[part+'s']--;b[part]=b[part+'s']>0;s.running=false;return true;}
 export function canHoldLight(s){return bodyState(s).arms<2;}
 export function lowerLightForPickup(s){if(bodyState(s).arms===1&&s.flashlight){s.flashlight=false;return true;}return false;}
+
+export function captureConsequence(s,kind,random=Math.random){return kind==='jeongwoo'?{fatal:true,kind}:{...loseLimb(s,random),kind};}

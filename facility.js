@@ -1,4 +1,4 @@
-import {sight} from './world.js?v=6f29bf83c5cb';
+import {sight} from './world.js?v=f3e05f671a32';
 // Installed luminaires, not a light permanently attached to the player.
 export const LAMPS={
  unit104:[[14.5,14,70,'fault']],

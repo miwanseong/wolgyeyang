@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=6f29bf83c5cb";
-import { addRelayChapter } from "./chapter-world.js?v=6f29bf83c5cb";
+import { STORY } from "./story.js?v=f3e05f671a32";
+import { addRelayChapter } from "./chapter-world.js?v=f3e05f671a32";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -495,14 +495,37 @@ for(const [unit,person]of [[102,'미정'],[103,'정우']]){
  prop(id+'-sink','sink',25,7,'주방 개수대',{kitchenTile:2,w:27,back:34,front:12,description:unit===102?'수전 하나와 개수대 하나. 수도가 잠겼고 가장자리에 마른 물때가 남았다.':'좁은 주방의 개수대. 상판과 배수구가 구분돼 있다.'}),
  prop(id+'-bath','shower',6,23,'유리문 샤워 부스',{routeArt:2,w:21,back:30,front:10,description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'}),
  prop(id+'-curtain','curtain',8,4.5,'창을 가린 커튼',{fixture:'curtain',decor:1,mount:true,solid:false,facing:'north',description:'철거 전 닫아 둔 커튼. 창틀 쪽에서 찬바람이 스민다.'}));
- const entrance=M.lobby.objects.find(o=>o.id==='sealed-unit-'+(unit-102));Object.assign(entrance,{routeAction:'entry'+unit,description:unit+'호 퇴거 확인띠. 경찰 증거 봉인이 아니라 철거 전 출입 확인용이다. 공용 마스터키로 잠긴 문을 열 수 있다.'});
+ const entrance=M.lobby.objects.find(o=>o.id==='sealed-unit-'+(unit-102));Object.assign(entrance,{routeAction:'entry'+unit,description:unit+'호 문 손잡이에 낡은 철거 확인띠가 붙어 있다. 자물쇠가 잠겼다.'});
 }
 M.unit102.objects.push(prop('102-handover','desk',19,20,'미정이 정리한 인계 봉투',{w:27,back:24,front:12,routeAction:'rosterPiece',description:'서윤에게104호 자료실 열쇠를 넘겨 준 날의 쪽지. 야간 근무표에서 잘라 가져온 모서리가 봉투 속에 있다.'}),prop('102-armchair','armchair',15,22,'창을 바라보는 의자',{decor:6,w:17,back:20,front:10,description:'미정이 창을 바라보며 앉던 의자.'}));
-M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'공용 마스터키로 여는 비품 열쇠함.104호 임시 자료실 열쇠는 11월3일 서윤이 사용한 뒤 반납했다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호를 「서윤의 점검 사진 임시 정리실」로 배정한11월3일 사용 허가 쪽지가 있다.'}));
+M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'열쇠 구멍이 있는 작은 비품 보관함. 손잡이를 당겨도 움직이지 않는다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호를 「서윤의 점검 사진 임시 정리실」로 배정한11월3일 사용 허가 쪽지가 있다.'}));
 Object.assign(M.management.objects.find(o=>o.id==='office-board'),{routeAction:'roster',routeArt:3});
 M.upper.objects.find(o=>o.id==='studio-notice').x=26.5*32;
 Object.assign(M.apartment.objects.find(o=>o.id==='bath-shower'),{routeArt:2,facing:'north',name:'유리문 샤워 부스',description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'});delete M.apartment.objects.find(o=>o.id==='bath-shower').technical;
 for(const o of M.upper.objects.filter(o=>o.kind==='acoustic')){delete o.architecture;Object.assign(o,{routeArt:4,name:'녹음 부스 환기·흡음 그릴',description:'수평 슬랫과 안쪽 흡음재가 보이는 환기 그릴. 종이나 핀이 붙은 게시판이 아니다.'});}
+// Routine paperwork describes routine building work; only explicitly labelled evidence carries the case.
+for(const [map,id,name,description]of [
+ ['management','files-north-a','퇴거 서류','호수별 퇴거 신청서와 열쇠 반납 확인서가 날짜순으로 묶여 있다. 관리비 정산 완료 도장이 찍혀 있다.'],
+ ['management','files-north-b','보증금 정산 장부','보증금 반환액과 미납 관리비를 대조한 장부. 마지막 페이지에 회계 담당자의 마감 도장이 남았다.'],
+ ['management','manager-cabinet-a','생활 민원 기록철','층간 소음과 분리수거 관련 접수 내역. 날짜 옆에 전화로 회신했다는 짧은 메모가 붙었다.'],
+ ['management','manager-cabinet-b','관리비 마감 장부','월별 관리비 수입과 청소·수선 지출을 맞춘 장부. 묶음 끈 위로 먼지가 쌓였다.'],
+ ['management','manager-work-left','우편물 정리대','배달되지 않은 우편물과 빈 회신 봉투가 호수별로 나뉘어 있다.'],
+ ['management','manager-work-right','접수용 메모지','빈 접수 양식과 접힌 메모지가 쌓여 있다. 사용한 종이는 별도 서류철로 옮겨졌다.'],
+ ['upper','archive-north-b','퇴거 정산 서류','퇴거자의 관리비 정산서와 열쇠 반환 확인서를 보관한 묶음. 표지에 보관 만료 연도가 적혀 있다.'],
+ ['upper','archive-north-c','수선비 지출 장부','도배와 창문 수리 비용을 정리한 월별 장부. 영수증이 해당 페이지에 끼워져 있다.'],
+ ['upper','archive-middle-b','지난해 퇴거 서류','지난해 처리한 퇴거 신고와 보증금 반환 확인서. 호수별 색인으로 나뉘어 있다.'],
+ ['apartment','home-study-left','공과금 고지서','납부 완료 도장이 찍힌 지난겨울 고지서와 빈 편지 봉투. 서랍 위에 가지런히 놓여 있다.'],
+ ['apartment','home-study-right','남겨 둔 메모지','사용하지 않은 편지지와 봉투가 책상 끝에 쌓여 있다.'],
+ ['apartment','home-books-a','오래된 책과 잡지','모서리가 닳은 소설책과 월간지가 책등을 맞춰 꽂혀 있다.'],
+])Object.assign(M[map].objects.find(o=>o.id===id),{name,description});
+M.management.objects.find(o=>o.id==='manager-files').name='정우의 사고 보고서';
+M.upper.objects.find(o=>o.id==='archive-a').name='직원 출근부';
+// Homes share structural walls, not the same furniture plan:102 is domestic,103 is a duty lodging.
+function placeUnit(map,id,x,y,extra={}){Object.assign(M[map].objects.find(o=>o.id===id),{x:x*32,y:y*32,...extra});}
+placeUnit('unit102','unit102-bed',7,9);placeUnit('unit102','unit102-kitchen',20.5,7);placeUnit('unit102','unit102-sink',22.5,7);
+M.unit102.objects.push(prop('102-tea-table','side-table',24,12,'주방 옆 다과상',{decor:5,w:16,back:20,front:10,description:'식사 뒤 차를 마시던 작은 탁자. 접이식 의자가 옆에 붙어 있다.'}),prop('102-kitchen-stool','stool',22.5,13,'다과상 옆 낮은 의자',{decor:7,w:12,back:12,front:8,description:'낮은 의자는 탁자 쪽을 향해 놓여 있다.'}),prop('102-bedroom-cabinet','cabinet',11.5,12,'침실 옷장',{w:23,back:24,front:12,hide:true,description:'대피하며 옷을 꺼낸 옷장. 남은 옷걸이 사이에 몸을 숨길 공간이 있다.'}));
+placeUnit('unit103','unit103-bed',11,10,{description:'순찰 사이에 쉬던 침대. 침구가 발치 쪽으로 밀려 있다.'});placeUnit('unit103','unit103-kitchen',24.5,7);placeUnit('unit103','unit103-sink',22.5,7);placeUnit('unit103','unit103-bath',7.5,23);placeUnit('unit103','103-keybox',6,7);placeUnit('unit103','103-duty-desk',22,20);
+M.unit103.objects.push(prop('103-duty-chair','chair',22,22,'순찰 책상 앞 회전 의자',{swivel:true,w:13,back:13,front:8,description:'서류를 보던 회전 의자. 책상 앞으로 당겨 놓았다.'}),prop('103-moving-tools','crates',15,19,'묶어 둔 작업용품 상자',{supply:0,w:24,back:26,front:12,description:'작업용품을 담고 테이프로 묶은 상자. 좁은 통로를 막지 않게 벽 쪽에 모아 두었다.'}),prop('103-coat-rack','detail',6,12,'작업복 외투 걸이',{details:0,w:12,back:20,front:8,description:'순찰할 때 입던 외투를 걸어 두는 자리. 침대와는 반대편 벽에 붙였다.'}));
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.

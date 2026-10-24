@@ -14,8 +14,10 @@ export class ArrivalScene{
  update(enemy,map,s,dt){
   if(!this.active)return false;this.time+=dt;enemy.age+=dt;enemy.grace=Math.max(enemy.grace,4);
   enemy.motion='crawl';enemy.mode='search';enemy.rush=0;enemy.windup=0;
-  if(this.time>1.3&&this.time<4.6&&Math.hypot(enemy.x-s.x,enemy.y-s.y)>150){const before={x:enemy.x,y:enemy.y};enemy.navigate(map,s,dt,28);this.travel+=Math.hypot(enemy.x-before.x,enemy.y-before.y);}
+  if(this.time>1.3&&this.time<4.6&&Math.hypot(enemy.x-s.x,enemy.y-s.y)>150){const before={x:enemy.x,y:enemy.y};enemy.navigate(enemy.kind==='redlight'&&enemy.arena?.grid?{...map,grid:enemy.arena.grid}:map,s,dt,28);this.travel+=Math.hypot(enemy.x-before.x,enemy.y-before.y);}
   if(this.time>=6){this.active=false;enemy.intro=false;enemy.grace=4;return false;}return true;
  }
  focus(enemy,s){if(this.time<1.2)return enemy;if(this.time>4.7){const f=Math.min(1,(this.time-4.7)/1.3);return{x:enemy.x+(s.x-enemy.x)*f,y:enemy.y+(s.y-enemy.y)*f};}return enemy;}
 }
+
+export function firstListening(s){if(s.flags.listened)return false;s.flags.listened=true;return true;}

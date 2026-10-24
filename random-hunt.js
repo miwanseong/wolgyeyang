@@ -1,3 +1,5 @@
+import {bindWatcher} from './encounters.js?v=f3e05f671a32';
+import {canMove,findPath} from './world.js?v=f3e05f671a32';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;}
@@ -13,6 +15,6 @@ export class RandomHunt{
   this.delay-=dt;if(this.delay>0)return false;
   this.delay=110+this.random()*80;
   if(!enemy.spawn(map,s)){this.delay=5;return false;}
-  const roll=this.random();enemy.kind=roll<.25?'hollow':roll<.65||!s.flags.power?'redlight':'jeongwoo';enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
+  const roll=this.random();enemy.kind=roll<.25?'hollow':roll<.65||!s.flags.power?'redlight':'jeongwoo';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
  }
 }

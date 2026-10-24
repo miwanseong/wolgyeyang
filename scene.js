@@ -1,11 +1,12 @@
-import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=6f29bf83c5cb';
-import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=6f29bf83c5cb';
-import {drawFloorOmen,omenOpacity} from './haunting.js?v=6f29bf83c5cb';
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=6f29bf83c5cb';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=6f29bf83c5cb';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=6f29bf83c5cb';
-import {facilityArt} from './facility-art.js?v=6f29bf83c5cb';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=6f29bf83c5cb";
+import {WATCHER_POSES,watcherPose} from './watcher-art.js?v=f3e05f671a32';
+import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=f3e05f671a32';
+import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=f3e05f671a32';
+import {drawFloorOmen,omenOpacity} from './haunting.js?v=f3e05f671a32';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=f3e05f671a32';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=f3e05f671a32';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=f3e05f671a32';
+import {facilityArt} from './facility-art.js?v=f3e05f671a32';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=f3e05f671a32";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -91,9 +92,11 @@ export function torchHitsSurface(map,s,o){
 export function doorGeometry(map,o){
  const facing=wallFacing(map,o),side=facing==='east'||facing==='west',span=o.aperture||32;
  const a=portalAnchor(map,o),face=wallFace(map,Math.floor(a.x/32),Math.floor(a.y/32),facing);
- if(!side&&!o.internalDoor)return {side:false,facing,span,width:span+8,height:face.h,dx:-(span+8)/2,dy:face.y-a.y};
- return {side,facing,span,width:side?30:span+8,height:side?span+40:72,dx:side?-15:-(span+8)/2,dy:side?-span-8:-56};
+ if(!side&&!o.internalDoor)return {side:false,facing,span,width:span+16,height:face.h,dx:-(span+16)/2,dy:face.y-a.y};
+ return {side,facing,span,width:side?34:span+16,height:side?span+40:72,dx:side?-17:-(span+16)/2,dy:side?-span-8:-56};
 }
+export function fitDoorArt(g,width,height){const scale=Math.min(g.width/width,g.height/height),w=width*scale,h=height*scale;return{x:g.dx+(g.width-w)/2,y:g.dy+g.height-h,w,h};}
+function drawDoorArt(c,tile,g){const p=fitDoorArt(g,tile.width,tile.height);c.drawImage(tile,p.x,p.y,p.w,p.h);}
 export function wallFacing(map,o){
  if(o.facing)return o.facing;
  if(!o.mount&&!['door','shutter','exit'].includes(o.kind))return 'north';
@@ -161,41 +164,41 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=6f29bf83c5cb",
-        "assets/seoha-walk.png?v=6f29bf83c5cb",
-        "assets/props-painted.png?v=6f29bf83c5cb",
-        "assets/floors-painted.png?v=6f29bf83c5cb",
-        "assets/jeongwoo-motions.png?v=6f29bf83c5cb",
-        "assets/seoha-diagonal.png?v=6f29bf83c5cb",
-        "assets/shoe-cabinet.png?v=6f29bf83c5cb",
-        "assets/chair-turn.png?v=6f29bf83c5cb",
-        "assets/room-modules.png?v=6f29bf83c5cb",
-        "assets/dining-table.png?v=6f29bf83c5cb",
-        "assets/regional-props.png?v=6f29bf83c5cb",
-        "assets/wall-side.png?v=6f29bf83c5cb",
-        "assets/architecture.png?v=6f29bf83c5cb",
-        "assets/technical-kit.png?v=6f29bf83c5cb",
-        "assets/technical-doors.png?v=6f29bf83c5cb",
-        "assets/kitchen-kit.png?v=6f29bf83c5cb",
-        "assets/decor-kit.png?v=6f29bf83c5cb",
-        "assets/supply-kit.png?v=6f29bf83c5cb",
-        "assets/room-details.png?v=6f29bf83c5cb",
-        "assets/seoyun-echo.png?v=6f29bf83c5cb",
-        "assets/relay-floors.png?v=6f29bf83c5cb",
-        "assets/haunted-portraits.png?v=6f29bf83c5cb",
-        "assets/reception-parking.png?v=6f29bf83c5cb",
-        "assets/resident-walk.png?v=6f29bf83c5cb",
-        "assets/seoha-adult-walk.png?v=6f29bf83c5cb",
-        "assets/player-side-walk.png?v=6f29bf83c5cb",
-        "assets/resident-side-walk.png?v=6f29bf83c5cb",
-        "assets/relay-furniture.png?v=6f29bf83c5cb",
-        "assets/room-omens.png?v=6f29bf83c5cb",
-        "assets/injury-walk.png?v=6f29bf83c5cb",
-        "assets/severe-walk.png?v=6f29bf83c5cb",
-        "assets/crawl-walk.png?v=6f29bf83c5cb",
-        "assets/mirror-watcher.png?v=6f29bf83c5cb",
-        "assets/chapter1-fixtures.png?v=6f29bf83c5cb",
-        "assets/hollow-hunter.png?v=6f29bf83c5cb",
+        "assets/props-support.png?v=f3e05f671a32",
+        "assets/seoha-walk.png?v=f3e05f671a32",
+        "assets/props-painted.png?v=f3e05f671a32",
+        "assets/floors-painted.png?v=f3e05f671a32",
+        "assets/jeongwoo-motions.png?v=f3e05f671a32",
+        "assets/seoha-diagonal.png?v=f3e05f671a32",
+        "assets/shoe-cabinet.png?v=f3e05f671a32",
+        "assets/chair-turn.png?v=f3e05f671a32",
+        "assets/room-modules.png?v=f3e05f671a32",
+        "assets/dining-table.png?v=f3e05f671a32",
+        "assets/regional-props.png?v=f3e05f671a32",
+        "assets/wall-side.png?v=f3e05f671a32",
+        "assets/architecture.png?v=f3e05f671a32",
+        "assets/technical-kit.png?v=f3e05f671a32",
+        "assets/technical-doors.png?v=f3e05f671a32",
+        "assets/kitchen-kit.png?v=f3e05f671a32",
+        "assets/decor-kit.png?v=f3e05f671a32",
+        "assets/supply-kit.png?v=f3e05f671a32",
+        "assets/room-details.png?v=f3e05f671a32",
+        "assets/seoyun-echo.png?v=f3e05f671a32",
+        "assets/relay-floors.png?v=f3e05f671a32",
+        "assets/haunted-portraits.png?v=f3e05f671a32",
+        "assets/reception-parking.png?v=f3e05f671a32",
+        "assets/resident-walk.png?v=f3e05f671a32",
+        "assets/seoha-adult-walk.png?v=f3e05f671a32",
+        "assets/player-side-walk.png?v=f3e05f671a32",
+        "assets/resident-side-walk.png?v=f3e05f671a32",
+        "assets/relay-furniture.png?v=f3e05f671a32",
+        "assets/room-omens.png?v=f3e05f671a32",
+        "assets/injury-walk.png?v=f3e05f671a32",
+        "assets/severe-walk.png?v=f3e05f671a32",
+        "assets/crawl-walk.png?v=f3e05f671a32",
+        "assets/watcher-sprites.png?v=f3e05f671a32",
+        "assets/chapter1-fixtures.png?v=f3e05f671a32",
+        "assets/hollow-hunter.png?v=f3e05f671a32",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, chapterFixtures, hollowHunter]) => {
       this.residentBounds=[];
@@ -223,6 +226,7 @@ export class Scene {
         const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(regionalProps,x,y,w,h,0,0,tile.width,tile.height);return tile;
       });
       const cacheFrames=(im,rects)=>rects.map(([x,y,w,h],index)=>{const tile=document.createElement('canvas');tile.dataset.asset=(im.src||'').split('/').pop().split('?')[0];tile.dataset.frame=String(index);tile.width=128;tile.height=Math.ceil(128*h/w);const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x,y,w,h,0,0,tile.width,tile.height);return tile});
+      this.residentialDoors=cacheFrames(props,[[1073,768,154,245],[1329,768,154,245]]);
       this.wallTiles=cacheFrames(wallSide,[[100,38,190,390],[545,38,225,390],[982,10,180,425],[1425,8,250,430],[105,465,215,405],[558,530,195,275],[995,460,180,414],[1416,458,205,420]]);
       this.architectureTiles=cacheFrames(architecture,[[45,30,380,392],[493,30,390,392],[970,42,280,390],[1405,16,235,438],[25,450,335,410],[455,550,420,192],[925,505,300,302],[1270,510,490,290]]);
       this.technicalTiles=cacheFrames(technicalKit,[[80,10,250,374],[397,10,250,374],[778,10,258,374],[1123,10,253,374],[45,405,280,307],[367,405,325,310],[710,470,440,220],[1162,398,235,318],[85,710,212,370],[404,732,255,348],[774,710,280,370],[1182,729,200,339]]);
@@ -271,11 +275,17 @@ export class Scene {
       c.save();c.globalAlpha*=alpha*(i?.8:1);c.drawImage(this.hollowHunter,p.x,p.y,p.w,p.h,x-w/2,y-h/2,w,h);c.restore();
     }
   }
+  residentialDoor(c,o,g,frame,dt){
+    const tile=g.side?this.wallTiles[6]:this.residentialDoors[0],p=fitDoorArt(g,tile.width,tile.height),key='door:'+o.id;
+    let amount=this.objectStates.get(key)??frame;amount+= (frame-amount)*(this.reduced?1:1-Math.exp(-dt*8));this.objectStates.set(key,amount);
+    c.drawImage(tile,p.x,p.y,p.w,p.h);
+    if(amount>.005){const x=p.x+p.w*.12,y=p.y+p.h*.09,w=p.w*.76,h=p.h*.82;c.fillStyle='#080809';c.fillRect(x,y,w,h);c.save();c.translate(x,y);c.transform(Math.cos(amount*1.2),Math.sin(amount*1.2)*.18,0,1,0,0);c.drawImage(tile,tile.width*.12,tile.height*.09,tile.width*.76,tile.height*.82,0,0,w,h);c.restore();}
+    if(o.sealed){c.save();c.strokeStyle='#b9b7b0';c.lineWidth=2.3;c.beginPath();c.moveTo(p.x+p.w*.12,p.y+p.h*.22);c.lineTo(p.x+p.w*.86,p.y+p.h*.67);c.moveTo(p.x+p.w*.86,p.y+p.h*.22);c.lineTo(p.x+p.w*.12,p.y+p.h*.67);c.stroke();c.restore();}
+  }
   drawWatcher(c,enemy,t){
     if(!this.watcherArt?.naturalWidth)return;
-    const col=enemy.punish||enemy.signal==='watch'?2:enemy.signal==='turn'?1:0,sw=this.watcherArt.width/3,sy=440,sh=this.watcherArt.height-440;
-    // Narrow portrait crops, anchored at the feet, never a floating billboard.
-    c.save();c.globalCompositeOperation='screen';c.translate(enemy.x,enemy.y);c.drawImage(this.watcherArt,col*sw+sw*.19,sy,sw*.62,sh,-23,-79,46,79);c.restore();
+    const p=WATCHER_POSES[watcherPose(enemy,t,this.reduced)],height=79,width=height*p[2]/p[3];
+    c.save();c.translate(enemy.x,enemy.y);if(enemy.signal==='turn'&&enemy.target?.x<enemy.x)c.scale(-1,1);c.drawImage(this.watcherArt,...p,-width/2,-height,width,height);c.restore();
   }
   drawSevere(c,s,t){
     const b=bodyState(s);if(b.legs<2&&b.arms<2)return false;
@@ -448,7 +458,7 @@ export class Scene {
       c.strokeStyle='#666';c.lineWidth=3;c.beginPath();c.moveTo(-40,dy);c.lineTo(-40,dy+height);c.moveTo(40,dy);c.lineTo(40,dy+height);c.stroke();c.restore();return;
     }
 
-    if(o.architecture!==undefined&&!o.sealed){
+    if(o.architecture!==undefined&&!o.sealed&&o.kind!=='door'){
       const tile=this.architectureTiles[o.architecture],size={4:[60,74],5:[48,22],6:[48,48],7:[96,48]}[o.architecture]||[64,64];
       const g=o.mount?mountedGeometry(this.map,o,...size):{x:o.x-size[0]/2,y:o.y+12-size[1],w:size[0],h:size[1]},y=g.y;
       c.save();if(o.kind==='studio-glass')c.globalAlpha=.45;c.drawImage(tile,g.x,g.y,g.w,g.h);c.restore();
@@ -533,18 +543,20 @@ export class Scene {
           c.fillStyle='#161616';c.fillRect(g.dx,g.dy,g.width,g.height);c.strokeStyle='#888';c.lineWidth=2;c.strokeRect(g.dx,g.dy,g.width,g.height);
           c.fillStyle=o.doorType==='fire'?'#792c2c':'#555';if(frame){c.fillRect(g.dx+3,g.dy+2,5,g.height-4);}else{c.fillRect(g.dx+3,-3,g.width-6,7);c.fillStyle='#aaa';c.fillRect(g.dx+g.width-10,-4,3,2);}
           if(o.sealed){c.strokeStyle='#bbb';c.lineWidth=2;c.beginPath();c.moveTo(g.dx+5,g.dy+3);c.lineTo(g.dx+g.width-5,g.dy+g.height-3);c.moveTo(g.dx+g.width-5,g.dy+3);c.lineTo(g.dx+5,g.dy+g.height-3);c.stroke();}
+        }else if(o.hidden104||o.routeAction?.startsWith('entry')||o.id.startsWith('sealed-unit-')||o.doorType==='residential'){
+          this.residentialDoor(c,o,g,frame,dt);
         }else if(o.sealed){
-          const tile=this.architectureTiles[g.side?3:2];c.drawImage(tile,g.dx,g.dy,g.width,g.height);
+          const tile=this.architectureTiles[g.side?3:2];drawDoorArt(c,tile,g);
         }else if(o.doorType==='fire'||o.doorType==='acoustic'||o.doorType==='service'){
           if(g.side){
-            const tile=this.technicalDoorTiles[(o.doorType==='acoustic'?3:0)+frame];c.drawImage(tile,g.dx,g.dy,g.width,g.height);
+            const tile=this.technicalDoorTiles[(o.doorType==='acoustic'?3:0)+frame];drawDoorArt(c,tile,g);
           }else{
             const tile=o.doorType==='service'?null:this.technicalTiles[(o.doorType==='acoustic'?2:0)+frame];
-            if(tile)c.drawImage(tile,g.dx,g.dy,g.width,g.height);
-            else{const tile=this.technicalDoorTiles[frame?5:2];c.drawImage(tile,g.dx,g.dy,g.width,g.height);}
+            if(tile)drawDoorArt(c,tile,g);
+            else{const tile=this.technicalDoorTiles[frame?5:2];drawDoorArt(c,tile,g);}
           }
-        }else if(g.side){const tile=this.wallTiles[6+frame];c.drawImage(tile,g.dx,g.dy,g.width,g.height);}
-        else{const i=22+frame,sw=this.props.width/6,sh=this.props.height/4;c.drawImage(this.props,i%6*sw,Math.floor(i/6)*sh,sw,sh,g.dx,g.dy,g.width,g.height);}
+        }else if(g.side){const tile=this.wallTiles[6+frame];drawDoorArt(c,tile,g);}
+        else drawDoorArt(c,this.residentialDoors[frame],g);
         if(o.doorType==='fire')c.restore();
         c.strokeStyle='#777';c.lineWidth=2;if(!g.side){c.beginPath();c.moveTo(-g.span/2,g.facing==='south'?g.dy:g.dy+g.height);c.lineTo(g.span/2,g.facing==='south'?g.dy:g.dy+g.height);c.stroke();}
         c.fillStyle='#aaa';c.font='6px monospace';c.textAlign='center';

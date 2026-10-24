@@ -1,6 +1,6 @@
-import {redLightUpdate} from './encounters.js?v=6f29bf83c5cb';
-import {bodyState} from './body.js?v=6f29bf83c5cb';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=6f29bf83c5cb";
+import {redLightUpdate} from './encounters.js?v=f3e05f671a32';
+import {bodyState} from './body.js?v=f3e05f671a32';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=f3e05f671a32";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -59,7 +59,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
-    this.kind="jeongwoo";this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
+    this.kind="jeongwoo";this.arena=null;this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
     this.x = 0;
     this.y = 0;
     this.path = [];
@@ -147,7 +147,7 @@ export class Pursuer {
   update(map, s, dt) {
     if (!this.active) return null;
     this.age+=dt;
-    if(this.kind==='redlight'){if(this.punish&&this.pressureDoor(map,s,dt))return null;return redLightUpdate(this,map,s,dt,clearSegment);}
+    if(this.kind==='redlight')return redLightUpdate(this,map,s,dt,clearSegment);
     if(this.kind==='hollow'){this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
       const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
