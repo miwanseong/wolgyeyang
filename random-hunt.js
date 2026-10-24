@@ -1,5 +1,5 @@
-import {bindWatcher} from './encounters.js?v=327fbe3abef3';
-import {canMove,findPath} from './world.js?v=327fbe3abef3';
+import {bindWatcher} from './encounters.js?v=bcd9fa8ade9d';
+import {canMove,findPath} from './world.js?v=bcd9fa8ade9d';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}

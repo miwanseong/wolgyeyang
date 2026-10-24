@@ -1,6 +1,6 @@
-import {WATCHER_POSES} from './watcher-art.js?v=327fbe3abef3';
-import {HOLLOW_POSES} from './hollow-art.js?v=327fbe3abef3';
-import { restore } from './state.js?v=327fbe3abef3';
+import {WATCHER_POSES} from './watcher-art.js?v=bcd9fa8ade9d';
+import {HOLLOW_POSES} from './hollow-art.js?v=bcd9fa8ade9d';
+import { restore } from './state.js?v=bcd9fa8ade9d';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -24,9 +24,9 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=327fbe3abef3';
-    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=327fbe3abef3';
-    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=327fbe3abef3';this.ready=Promise.all([this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=bcd9fa8ade9d';
+    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=bcd9fa8ade9d';
+    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=bcd9fa8ade9d';this.ready=Promise.all([this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
   }
   reset(kind="jeongwoo"){this.time=0;this.kind=kind;}
   draw(dt,reduced=false){

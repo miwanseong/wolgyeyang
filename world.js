@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=327fbe3abef3";
-import { addRelayChapter } from "./chapter-world.js?v=327fbe3abef3";
+import { STORY } from "./story.js?v=bcd9fa8ade9d";
+import { addRelayChapter } from "./chapter-world.js?v=bcd9fa8ade9d";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -89,7 +89,7 @@ M.lobby.objects = [
   prop("photo", "photo", 18.5, 20, "입주민 단체사진", {
     mount: true,
     solid: false,
-    description: "사진 속 얼굴은 여섯. 맨 뒤의 정우만 얼굴이 긁혀 있다.",
+    description: "오래된 입주민 설명회 단체 사진. 뒤편 명찰을 단 관리소장 정우의 얼굴이 긁혀 있다.",
   }),
 ];
 M.management.objects = [
@@ -329,7 +329,7 @@ for(let x=26;x<=40;x++)M.upper.grid[9][x]=2;
 for(let x=26;x<=37;x++)M.upper.glassCells.add(x+',9');
 for(const x of [38,39])M.upper.grid[9][x]=1;
 for(let i=0;i<4;i++)M.upper.objects.push(prop('studio-glass-'+i,'studio-glass',27.5+i*3,9,'녹음 부스의 방음 유리',{mount:true,solid:false,architecture:7,description:'믹싱 데스크와 마이크 부스를 분리하는 두꺼운 방음 유리. 두드리는 소리는 건너편으로 전달되지 않는다.'}));
-M.upper.objects.push(prop('studio-door','door',39,9.5,'녹음 부스 방음문',{internalDoor:true,facing:'north',w:36,h:13,solid:true,cells:[[38,9],[39,9]],description:'문을 닫으면 부스 안의 소리가 유리 너머로 새지 않는다.'}),prop('studio-mic','microphone',31,7,'서윤이 사용한 녹음 마이크',{architecture:4,w:12,h:12,description:'팝 필터 뒤에 서윤의 이름표가 걸려 있다. 그녀는 주민들의 증언을 이 부스에서 녹음했다.'}),prop('studio-onair','onair',35,9,'녹음 표시등',{architecture:5,mount:true,solid:false,description:'복구한 방송 회로에 연결된 녹음 표시등.'}));
+M.upper.objects.push(prop('studio-door','door',39,9.5,'녹음 부스 방음문',{internalDoor:true,facing:'north',w:36,h:13,solid:true,cells:[[38,9],[39,9]],description:'문을 닫으면 부스 안의 소리가 유리 너머로 새지 않는다.'}),prop('studio-mic','microphone',31,7,'주민 의견 녹음용 마이크',{architecture:4,w:12,h:12,description:'「주민 의견 수렴용」 비품표가 붙어 있다. 서윤이 서무 업무로 접수한 주민 민원 녹음도 이 부스에 보관됐다.'}),prop('studio-onair','onair',35,9,'녹음 표시등',{architecture:5,mount:true,solid:false,description:'복구한 방송 회로에 연결된 녹음 표시등.'}));
 for(const x of [28,32,36,39])M.upper.objects.push(prop('acoustic-'+x,'acoustic',x,4.5,'녹음 부스의 흡음 패널',{architecture:6,mount:true,solid:false,description:'목소리의 울림을 줄이는 흡음재. 벽 뒤의 긁는 소리까지 막지는 못한다.'}));
 M.upper.rooms=[{x:4,y:5,w:17,h:11,name:'기록 보관실'},{x:26,y:10,w:15,h:6,name:'방송 조정실'},{x:26,y:5,w:15,h:4,name:'방음 녹음 부스'}];
 M.upper.objects.push(prop('shutter-control','panel',35,14,'현관 셔터 비상 제어반',{w:15,h:15,description:'방송 비상 회로와 연결된 현관 방화 셔터의 수동 복귀 스위치.'}));
@@ -472,7 +472,7 @@ M.unit104.objects.push(
  prop('104-table','desk',15,15,'수선용 작업 책상',{w:28,back:24,front:12,hiddenClue:'thread',description:'작은 실패와 접힌 수선 일지. 매듭실 두 타래가 유리 접시 안에 들어 있다.'}),
  prop('104-lamp','detail',14.5,15,'수선 책상의 건전지 스탠드',{details:8,solid:false,partOf:'104-table',description:'남은 건전지로 실패가 놓인 자리만 희미하게 밝힌다.'}),
  prop('104-note','cabinet',23,9,'서윤의 잠긴 봉투 보관함',{w:25,back:25,front:12,routeAction:'cabinet',routeArt:5,description:'서윤이 사진 원본을 보관하던 열쇠식 금속함. 인수표에는 2023년11월3일 반입이라고 적혀 있다. 사고 다음날인11월4일 이후의 통화 기록은 들어 있지 않다.'}),
- prop('104-frame','frame',24,6.5,'도려낸 사진',{mount:true,solid:false,facing:'north',decor:0,description:'여섯 사람이 찍힌 사진. 서하의 다리와 팔이 있어야 할 자리만 유리 위에서 지워졌다.'}),
+ prop('104-frame','frame',24,6.5,'도려낸 사진',{mount:true,solid:false,facing:'north',decor:0,description:'주민 설명회에서 찍은 단체 사진. 서하의 다리와 팔이 있어야 할 자리만 유리 위에서 지워졌다.'}),
  prop('104-hide','cabinet',24,17,'비어 있는 붙박이장',{hide:true,w:24,back:22,front:10,description:'걸린 옷이 없다. 몸을 숨길 만큼 깊다.'})
 );
 M.unit104.objects.push(prop('104-wax','side-table',23,15,'밀랍으로 봉한 작은 봉투',{decor:5,w:17,back:20,front:10,routeAction:'wax',description:'서윤의 서명이 이어지는 밀랍 봉인. 겉면에는 「104호 사진함 열쇠. 밀랍만 데워 떼고 종이는 태우지 말 것」이라고 적혀 있다.'}));
@@ -498,7 +498,7 @@ for(const [unit,person]of [[102,'미정'],[103,'정우']]){
  const entrance=M.lobby.objects.find(o=>o.id==='sealed-unit-'+(unit-102));Object.assign(entrance,{routeAction:'entry'+unit,description:unit+'호 문 손잡이에 낡은 철거 확인띠가 붙어 있다. 자물쇠가 잠겼다.'});
 }
 M.unit102.objects.push(prop('102-handover','desk',19,20,'미정이 정리한 인계 봉투',{w:27,back:24,front:12,routeAction:'rosterPiece',description:'서윤에게104호 자료실 열쇠를 넘겨 준 날의 쪽지. 야간 근무표에서 잘라 가져온 모서리가 봉투 속에 있다.'}),prop('102-armchair','armchair',15,22,'창을 바라보는 의자',{decor:6,w:17,back:20,front:10,description:'미정이 창을 바라보며 앉던 의자.'}));
-M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'열쇠 구멍이 있는 작은 비품 보관함. 손잡이를 당겨도 움직이지 않는다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호를 「서윤의 점검 사진 임시 정리실」로 배정한11월3일 사용 허가 쪽지가 있다.'}));
+M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'열쇠 구멍이 있는 작은 비품 보관함. 손잡이를 당겨도 움직이지 않는다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호 임시 문서실 인수표. 이용자는 서윤(주간 서무 보조), 용도는 점검 사진과 주민대표 윤경숙의 민원 자료 정리, 사용일은11월3일이다.'}));
 Object.assign(M.management.objects.find(o=>o.id==='office-board'),{routeAction:'roster',routeArt:3});
 M.upper.objects.find(o=>o.id==='studio-notice').x=26.5*32;
 Object.assign(M.apartment.objects.find(o=>o.id==='bath-shower'),{routeArt:2,facing:'north',name:'유리문 샤워 부스',description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'});delete M.apartment.objects.find(o=>o.id==='bath-shower').technical;

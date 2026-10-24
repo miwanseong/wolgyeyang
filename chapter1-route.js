@@ -1,5 +1,6 @@
-export const ROSTER=[['11/03 18:00','서윤','104호 · 점검 사진 정리'],['11/04 22:30','미정','102호 · 예비 열쇠 인계'],['11/04 23:00','서하','관리실 · 야간 접수'],['11/04 23:00','정우','103호 대기 · 지하 순찰']];
-export const ROSTER_FOOT='104호 임시 자료실: 서윤이 점검 사진과 촬영 일지를 정리함. 출입 열쇠는 103호 관리인 숙소 열쇠함에 반납. 봉투 보관함 열쇠는 서윤의 밀랍 봉투 안.';
+// Only employees scheduled that night belong on this sheet. Resident access is recorded separately.
+export const ROSTER=[['11/04 22:00–06:00','서하','관리실 · 야간 전화 접수 보조'],['11/04 20:00–08:00','미정','경비 · 출입 확인 및 순찰'],['11/04 20:00–08:00','강태수','시설 당직 · 누수 및 전기 이상 접수']];
+export const ROSTER_FOOT='인계: 시설 당직 강태수는 22:50 누수 신고로 별동 이동. 경비 미정은 23:00부터 동문 순찰. 관리소장 정우는 비번·비상연락 대상. 공용실 열쇠 인수대장은 103호 비품함에 보관. 인계 서명: 강태수 / 미정.';
 export function routeGate(s,action){
  if(action==='unit104')return s.bag.includes('unit104Key');
  if(action==='wax')return s.bag.includes('lighter');
