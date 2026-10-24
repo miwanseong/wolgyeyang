@@ -40,8 +40,8 @@ export class PuzzlePanel{
  render(){
   if(this.kind==='sync'){this.renderSync();return;}
   const root=this.root;root.replaceChildren();const body=document.createElement('div');body.className='puzzle-body';root.append(body);
-  const heading=document.createElement('h2');heading.id='puzzle-title';heading.textContent={slide:'대조 도면 · 밀판 복원',logic:'정비대 잠금함 · 참인 표지는 하나',pipes:'냉각 순환판 · 배관 연결'}[this.kind];body.append(heading);
-  const instruction=document.createElement('p');instruction.textContent={slide:'빈칸 옆 조각을 눌러 이동한다. 도면 가장자리의 인쇄 번호 1–8을 왼쪽 위부터 맞추고, 오른쪽 아래를 비운다. 방향키로 빈칸을 움직일 수도 있다.',logic:'정비 지침: 세 표지 중 정확히 하나만 참이다. 나머지 둘은 거짓이다. 핸들이 들어 있는 함 하나를 고른다. 실제 인물의 진술이 아닌 보관함 검증 문제다.',pipes:'각 관을 눌러 시계 방향으로 회전한다. 왼쪽 위의 유입구(←)부터 왼쪽 아래 배출구(↓)까지 아홉 관을 모두 연결한다. 열린 끝이나 누수가 있으면 작동하지 않는다.'}[this.kind];body.append(instruction);
+  const heading=document.createElement('h2');heading.id='puzzle-title';heading.textContent={slide:'손상된 원본 색인 · 배열 복원',logic:'정비대 잠금함 · 참인 표지는 하나',pipes:'냉각 순환판 · 배관 연결'}[this.kind];body.append(heading);
+  const instruction=document.createElement('p');instruction.textContent={slide:'빈칸 옆 조각을 눌러 이동한다. 색인 매체 가장자리의 인쇄 번호 1–8을 왼쪽 위부터 맞추고, 오른쪽 아래를 비운다. 방향키로 빈칸을 움직일 수도 있다.',logic:'정비 지침: 세 표지 중 정확히 하나만 참이다. 나머지 둘은 거짓이다. 핸들이 들어 있는 함 하나를 고른다. 실제 인물의 진술이 아닌 보관함 검증 문제다.',pipes:'각 관을 눌러 시계 방향으로 회전한다. 왼쪽 위의 유입구(←)부터 왼쪽 아래 배출구(↓)까지 아홉 관을 모두 연결한다. 열린 끝이나 누수가 있으면 작동하지 않는다.'}[this.kind];body.append(instruction);
   const board=document.createElement('div');board.className='puzzle-board '+this.kind;body.append(board);
   if(this.kind==='logic'){
    for(const [box,text]of [['A','핸들은 B함에 있다.'],['B','핸들은 B함에 없다.'],['C','핸들은 A함에 없다.']]){const b=document.createElement('button');b.textContent=`${box}함 · ${text}`;b.onclick=()=>{if(trueLabels(box)===1)this.solve();else{this.sound('thud');this.wrong();status.textContent='검증 실패. 그 위치라면 참인 표지가 두 개다. 조건을 다시 대조하자.';}};board.append(b);}
@@ -80,7 +80,7 @@ export class PuzzlePanel{
  }
  solve(){
   if(this.done)return;this.done=true;this.state.flags[{slide:'relaySlide',logic:'relayLogic',pipes:'relayPipes',sync:'relaySync'}[this.kind]]=true;
-  this.sound('item');const body=this.root.firstElementChild;body.replaceChildren();const p=document.createElement('p');p.id='puzzle-title';p.textContent={slide:'도면이 맞물렸다. 대조 장치의 기록 순서 입력부가 열린다.',logic:'A함의 잠금이 풀렸다. 핸들을 꺼낼 수 있다.',pipes:'아홉 관이 연결됐다. 이제 사각 축에 핸들을 연결하고 밸브를 열 수 있다.',sync:'기준 펄스가 겹쳤다. 두 녹음의 재생 위치를 대조했고, 23:44 통화 구간이 분리됐다.'}[this.kind];body.append(p);const b=document.createElement('button');b.textContent='계속 조사한다';b.onclick=()=>{this.close();this.onSolved();};body.append(b);b.focus();
+  this.sound('item');const body=this.root.firstElementChild;body.replaceChildren();const p=document.createElement('p');p.id='puzzle-title';p.textContent={slide:'색인 매체가 맞물렸다. 단말이 원본 파일 번호를 읽을 수 있다.',logic:'A함의 잠금이 풀렸다. 핸들을 꺼낼 수 있다.',pipes:'아홉 관이 연결됐다. 이제 사각 축에 핸들을 연결하고 밸브를 열 수 있다.',sync:'기준 펄스가 겹쳤다. 두 녹음의 재생 위치를 대조했고, 23:44 통화 구간이 분리됐다.'}[this.kind];body.append(p);const b=document.createElement('button');b.textContent='계속 조사한다';b.onclick=()=>{this.close();this.onSolved();};body.append(b);b.focus();
  }
  key(e){
   if(this.kind==='sync'&&!this.done&&e.target.matches('input[type=range]')&&['ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();const p=this.state.puzzles.sync;p.offset=Math.max(-6,Math.min(6,p.offset+(e.key==='ArrowRight'?1:-1)));this.renderSync();return;}

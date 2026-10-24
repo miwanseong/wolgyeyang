@@ -58,7 +58,7 @@ export function addRelayChapter(M,map,prop,door){
  wall('relayArchive','relay-raw-label',5,12,5.5,'접수 원본 분류표','원본은 접수 시각대로 분류한다. 통화 내용과 처리 결과를 같은 것으로 취급하지 말 것.');
  action('relayArchive','relay-cancel','player',33,10,'23:43 · 취소 통화 데크','cancel','서하의 음성이 담긴 취소 통화. 전화가 끝나도 회선은 닫히지 않았다.',{technical:6,w:46,back:30,front:16});
  action('relayArchive','relay-override','monitor',44,10,'23:47 · 원격 회신 단말','override','정우의 원격 잠금 유지 확인. 「취소」와 「잠금 유지」는 별개의 처리였다.',{regional:1,w:24,back:30,front:12});
- action('relayArchive','relay-compare','desk',38,18,'세 기록을 대조하는 작업대','compare','접수 → 취소 → 원격 회신의 순서를 정리하면 원본 사본을 발급할 수 있다.',{w:38,back:28,front:14});
+ action('relayArchive','relay-compare','monitor',38,18,'원본 녹음 파일 색인 단말','compare','접수·취소·잠금 회신의 파일 번호를 조회하는 단말. 누락된 녹음의 저장 위치를 찾는다.',{regional:1,w:24,back:28,front:14});
  detail('relayArchive','relay-audit-printer',4,44,18,'대조 출력기','대조를 마친 기록만 복제한다. 지워진 줄도 여백에 함께 인쇄된다.');
  action('relayArchive','relay-erasure','detail',31,18,'해린의 수정 이력 서랍','erasure','수정 이력지에는 지운 문장이 그대로 남았다.',{details:6,w:22,back:22,front:12});
  wall('relayArchive','relay-archive-curtain',0,34,5.5,'청취실 두꺼운 커튼','커튼은 소리를 가리지 못한다.',{decor:0,fixture:'curtain'});

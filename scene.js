@@ -1,13 +1,14 @@
-import {isRelayGhost,relayPose} from './relay-ghosts.js?v=b88b9e57fac6';
-import {WATCHER_POSES,watcherPose} from './watcher-art.js?v=b88b9e57fac6';
-import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=b88b9e57fac6';
-import {INJURY_POSES,HOLLOW_POSES} from './hollow-art.js?v=b88b9e57fac6';
-import {drawFloorOmen,omenOpacity} from './haunting.js?v=b88b9e57fac6';
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=b88b9e57fac6';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=b88b9e57fac6';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=b88b9e57fac6';
-import {facilityArt} from './facility-art.js?v=b88b9e57fac6';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=b88b9e57fac6";
+import {drawDistortion} from './distortion.js?v=0116eea318de';
+import {isRelayGhost,relayPose} from './relay-ghosts.js?v=0116eea318de';
+import {WATCHER_POSES,watcherPose} from './watcher-art.js?v=0116eea318de';
+import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=0116eea318de';
+import {INJURY_POSES,HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=0116eea318de';
+import {drawFloorOmen,omenOpacity,OMEN_ART} from './haunting.js?v=0116eea318de';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=0116eea318de';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=0116eea318de';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=0116eea318de';
+import {facilityArt} from './facility-art.js?v=0116eea318de';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=0116eea318de";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -165,43 +166,43 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=b88b9e57fac6",
-        "assets/seoha-walk.png?v=b88b9e57fac6",
-        "assets/props-painted.png?v=b88b9e57fac6",
-        "assets/floors-painted.png?v=b88b9e57fac6",
-        "assets/jeongwoo-motions.png?v=b88b9e57fac6",
-        "assets/seoha-diagonal.png?v=b88b9e57fac6",
-        "assets/shoe-cabinet.png?v=b88b9e57fac6",
-        "assets/chair-turn.png?v=b88b9e57fac6",
-        "assets/room-modules.png?v=b88b9e57fac6",
-        "assets/dining-table.png?v=b88b9e57fac6",
-        "assets/regional-props.png?v=b88b9e57fac6",
-        "assets/wall-side.png?v=b88b9e57fac6",
-        "assets/architecture.png?v=b88b9e57fac6",
-        "assets/technical-kit.png?v=b88b9e57fac6",
-        "assets/technical-doors.png?v=b88b9e57fac6",
-        "assets/kitchen-kit.png?v=b88b9e57fac6",
-        "assets/decor-kit.png?v=b88b9e57fac6",
-        "assets/supply-kit.png?v=b88b9e57fac6",
-        "assets/room-details.png?v=b88b9e57fac6",
-        "assets/seoyun-echo.png?v=b88b9e57fac6",
-        "assets/relay-floors.png?v=b88b9e57fac6",
-        "assets/haunted-portraits.png?v=b88b9e57fac6",
-        "assets/reception-parking.png?v=b88b9e57fac6",
-        "assets/resident-walk.png?v=b88b9e57fac6",
-        "assets/seoha-adult-walk.png?v=b88b9e57fac6",
-        "assets/player-side-walk.png?v=b88b9e57fac6",
-        "assets/resident-side-walk.png?v=b88b9e57fac6",
-        "assets/relay-furniture.png?v=b88b9e57fac6",
-        "assets/room-omens.png?v=b88b9e57fac6",
-        "assets/injury-walk.png?v=b88b9e57fac6",
-        "assets/severe-walk.png?v=b88b9e57fac6",
-        "assets/crawl-walk.png?v=b88b9e57fac6",
-        "assets/watcher-sprites.png?v=b88b9e57fac6",
-        "assets/chapter1-fixtures.png?v=b88b9e57fac6",
-        "assets/hollow-hunter.png?v=b88b9e57fac6",
-        "assets/relay-ghosts.png?v=b88b9e57fac6",
-        "assets/lost-property.png?v=b88b9e57fac6",
+        "assets/props-support.png?v=0116eea318de",
+        "assets/seoha-walk.png?v=0116eea318de",
+        "assets/props-painted.png?v=0116eea318de",
+        "assets/floors-painted.png?v=0116eea318de",
+        "assets/jeongwoo-motions.png?v=0116eea318de",
+        "assets/seoha-diagonal.png?v=0116eea318de",
+        "assets/shoe-cabinet.png?v=0116eea318de",
+        "assets/chair-turn.png?v=0116eea318de",
+        "assets/room-modules.png?v=0116eea318de",
+        "assets/dining-table.png?v=0116eea318de",
+        "assets/regional-props.png?v=0116eea318de",
+        "assets/wall-side.png?v=0116eea318de",
+        "assets/architecture.png?v=0116eea318de",
+        "assets/technical-kit.png?v=0116eea318de",
+        "assets/technical-doors.png?v=0116eea318de",
+        "assets/kitchen-kit.png?v=0116eea318de",
+        "assets/decor-kit.png?v=0116eea318de",
+        "assets/supply-kit.png?v=0116eea318de",
+        "assets/room-details.png?v=0116eea318de",
+        "assets/seoyun-echo.png?v=0116eea318de",
+        "assets/relay-floors.png?v=0116eea318de",
+        "assets/haunted-portraits.png?v=0116eea318de",
+        "assets/reception-parking.png?v=0116eea318de",
+        "assets/resident-walk.png?v=0116eea318de",
+        "assets/seoha-adult-walk.png?v=0116eea318de",
+        "assets/player-side-walk.png?v=0116eea318de",
+        "assets/resident-side-walk.png?v=0116eea318de",
+        "assets/relay-furniture.png?v=0116eea318de",
+        "assets/room-omens.png?v=0116eea318de",
+        "assets/injury-walk.png?v=0116eea318de",
+        "assets/severe-walk.png?v=0116eea318de",
+        "assets/crawl-walk.png?v=0116eea318de",
+        "assets/watcher-sprites.png?v=0116eea318de",
+        "assets/chapter1-fixtures.png?v=0116eea318de",
+        "assets/hollow-hunter.png?v=0116eea318de",
+        "assets/relay-ghosts.png?v=0116eea318de",
+        "assets/lost-property.png?v=0116eea318de",
       ].map(load),
     ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, chapterFixtures, hollowHunter, relayGhosts, lostProperty]) => {
       this.residentBounds=[];
@@ -270,13 +271,7 @@ export class Scene {
     }
   }
   drawHollow(c,enemy,t,alpha=1){
-    const gaze=enemy.target?.x<enemy.x-12?0:enemy.target?.x>enemy.x+12?2:1;
-    for(let i=0;i<3;i++){
-      const blink=!this.reduced&&(t+i*793)%5400>5200;
-      const frame=enemy.motion==='lunge'?(this.reduced?5:4+Math.floor(t/150)%4):blink?3:gaze,p=HOLLOW_POSES[frame];
-      const h=i?16:30,w=h*p.w/p.h,x=enemy.x+(i===1?-18:i===2?17:0)+(this.reduced?0:Math.sin(t*.0013+i*2.5)*4),y=enemy.y-(i===1?65:i===2?29:46)+(this.reduced?0:Math.sin(t*.0019+i*1.7)*5);
-      c.save();c.globalAlpha*=alpha*(i?.8:1);c.drawImage(this.hollowHunter,p.x,p.y,p.w,p.h,x-w/2,y-h/2,w,h);c.restore();
-    }
+    drawEyeCluster(c,this.hollowHunter,enemy,t,this.reduced,alpha);
   }
   residentialDoor(c,o,g,frame,dt){
     const tile=g.side?this.wallTiles[6]:this.residentialDoors[0],p=fitDoorArt(g,tile.width,tile.height),key='door:'+o.id;
@@ -907,6 +902,7 @@ export class Scene {
         c.fillStyle="#09090955";c.fillRect(o.x-width/2,o.y+18,width,2);
       }
     }
+    drawDistortion(c,map,s,t,this.reduced,this.omenAtlas,OMEN_ART);
     drawFloorOmen(c,this.omen,this.reduced,this.omenAtlas);
     c.restore();
     for (const o of map.objects.filter(o=>o.kind==="stairs")) this.prop(o,s,t,dt);

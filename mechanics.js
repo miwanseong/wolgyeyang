@@ -1,7 +1,8 @@
-import {isRelayGhost,relayGhostUpdate} from './relay-ghosts.js?v=b88b9e57fac6';
-import {redLightUpdate} from './encounters.js?v=b88b9e57fac6';
-import {bodyState} from './body.js?v=b88b9e57fac6';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=b88b9e57fac6";
+import {hollowStage} from './hollow-art.js?v=0116eea318de';
+import {isRelayGhost,relayGhostUpdate} from './relay-ghosts.js?v=0116eea318de';
+import {redLightUpdate} from './encounters.js?v=0116eea318de';
+import {bodyState} from './body.js?v=0116eea318de';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=0116eea318de";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -60,7 +61,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
-    this.hiddenTime=0;this.kind="jeongwoo";this.arena=null;this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
+    this.hollowStage=0;this.hiddenTime=0;this.kind="jeongwoo";this.arena=null;this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
     this.x = 0;
     this.y = 0;
     this.path = [];
@@ -152,7 +153,7 @@ export class Pursuer {
     this.hiddenTime=s.hidden&&!s.hideSpot?.witnessed?(this.hiddenTime||0)+dt:0;
     if(this.hiddenTime>=6){this.active=false;this.mode='gone';return 'escaped';}
     if(this.kind==='redlight')return redLightUpdate(this,map,s,dt,clearSegment);
-    if(this.kind==='hollow'){this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
+    if(this.kind==='hollow'){this.hollowStage=hollowStage(s);this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){
       const h=s.hideSpot;this.mode='chase';this.motion='search';this.lost=0;
       const dx=s.x-this.x,dy=s.y-this.y,d=Math.hypot(dx,dy);
