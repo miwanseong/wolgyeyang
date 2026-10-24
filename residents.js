@@ -1,5 +1,5 @@
-import {advanceGait,actorStride} from './gait.js?v=f3e05f671a32';
-import {canMove,findPath,sight} from './world.js?v=f3e05f671a32';
+import {advanceGait,actorStride} from './gait.js?v=327fbe3abef3';
+import {canMove,findPath,sight} from './world.js?v=327fbe3abef3';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},

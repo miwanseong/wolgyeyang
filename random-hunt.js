@@ -1,8 +1,8 @@
-import {bindWatcher} from './encounters.js?v=f3e05f671a32';
-import {canMove,findPath} from './world.js?v=f3e05f671a32';
+import {bindWatcher} from './encounters.js?v=327fbe3abef3';
+import {canMove,findPath} from './world.js?v=327fbe3abef3';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
- reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;}
+ reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}
  spare(seconds=100){this.rest=Math.max(this.rest,seconds);this.delay=110+this.random()*80;}
  update(map,s,dt,enemy,allowed=true){
   if(this.state!==s)this.reset(s);
@@ -15,6 +15,6 @@ export class RandomHunt{
   this.delay-=dt;if(this.delay>0)return false;
   this.delay=110+this.random()*80;
   if(!enemy.spawn(map,s)){this.delay=5;return false;}
-  const roll=this.random();enemy.kind=roll<.25?'hollow':roll<.65||!s.flags.power?'redlight':'jeongwoo';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
+  const roll=this.random();enemy.kind=roll<(s.flags.power?.4:.5)?'hollow':roll<.8||!s.flags.power?'redlight':'jeongwoo';if(enemy.kind===this.lastKind)enemy.kind=enemy.kind==='hollow'?'redlight':'hollow';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';this.lastKind=enemy.kind;enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
  }
 }
