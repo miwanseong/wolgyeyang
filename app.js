@@ -1,30 +1,31 @@
-import {advanceDistortion} from './distortion.js?v=0116eea318de';
-import {hollowStage} from './hollow-art.js?v=0116eea318de';
-import {isRelayGhost} from './relay-ghosts.js?v=0116eea318de';
-import {collectRecovery,discoverThread} from './body.js?v=0116eea318de';
-import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=0116eea318de';
-import {MirrorView} from './mirror.js?v=0116eea318de';
-import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=0116eea318de';
-import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup} from './body.js?v=0116eea318de';
-import {RandomHunt} from './random-hunt.js?v=0116eea318de';
-import {RoomHaunts,rememberHide} from './haunting.js?v=0116eea318de';
-import {footContacts} from './gait.js?v=0116eea318de';
-import {Inventory} from './inventory.js?v=0116eea318de';
-import {ReasoningPanel} from './reasoning.js?v=0116eea318de';
-import {inPuddle,witnessesEntry} from './facility.js?v=0116eea318de';
-import {sanity,strain,Hallucinations} from './mental.js?v=0116eea318de';
-import {Atmosphere} from './atmosphere.js?v=0116eea318de';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=0116eea318de';
-import {Crowd} from './crowd.js?v=0116eea318de';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=0116eea318de';
-import { PuzzlePanel } from './puzzles.js?v=0116eea318de';
-import { CaptureAnimation, checkpoints } from './capture.js?v=0116eea318de';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=0116eea318de";
-import { Scene, facingDirection } from "./scene.js?v=0116eea318de";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=0116eea318de";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=0116eea318de";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=0116eea318de";
-import { AudioDirector, TRACKS } from "./audio.js?v=0116eea318de";
+import {npcCorruption,startNpcScream,FEAR_LINES} from './resident-corruption.js?v=354910042dff';
+import {advanceDistortion} from './distortion.js?v=354910042dff';
+import {hollowStage} from './hollow-art.js?v=354910042dff';
+import {isRelayGhost} from './relay-ghosts.js?v=354910042dff';
+import {collectRecovery,discoverThread} from './body.js?v=354910042dff';
+import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=354910042dff';
+import {MirrorView} from './mirror.js?v=354910042dff';
+import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=354910042dff';
+import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup} from './body.js?v=354910042dff';
+import {RandomHunt} from './random-hunt.js?v=354910042dff';
+import {RoomHaunts,rememberHide} from './haunting.js?v=354910042dff';
+import {footContacts} from './gait.js?v=354910042dff';
+import {Inventory} from './inventory.js?v=354910042dff';
+import {ReasoningPanel} from './reasoning.js?v=354910042dff';
+import {inPuddle,witnessesEntry} from './facility.js?v=354910042dff';
+import {sanity,strain,Hallucinations} from './mental.js?v=354910042dff';
+import {Atmosphere} from './atmosphere.js?v=354910042dff';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=354910042dff';
+import {Crowd} from './crowd.js?v=354910042dff';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=354910042dff';
+import { PuzzlePanel } from './puzzles.js?v=354910042dff';
+import { CaptureAnimation, checkpoints } from './capture.js?v=354910042dff';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=354910042dff";
+import { Scene, facingDirection } from "./scene.js?v=354910042dff";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=354910042dff";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=354910042dff";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=354910042dff";
+import { AudioDirector, TRACKS } from "./audio.js?v=354910042dff";
 import {
   initial,
   ITEMS,
@@ -36,7 +37,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=0116eea318de";
+} from "./state.js?v=354910042dff";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -181,7 +182,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=0116eea318de')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=354910042dff')":"url('assets/resident-portraits.png?v=354910042dff')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -970,7 +971,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=0116eea318de", memory: "assets/event-memory.png?v=0116eea318de"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=354910042dff", memory: "assets/event-memory.png?v=354910042dff"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1180,10 +1181,12 @@ function render(t) {
   scene.omen=roomHaunts.active;
   if(omen){sound.effect(omen.sound,omen.kind==='knock'?.6:.4);if(!scene.reduced&&omen.swivel&&omen.kind==='knock')scene.chairTurns.set(omen.fixture,t);if(!scene.reduced&&omen.kind==='shadow')scene.shake=.12;}
 
-  scene.npcs=[...residents.update(map,state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!enemy.active)];
+  scene.npcs=[...residents.update(map,state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!enemy.active,enemy)];
   const background=crowd.update(map,state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!enemy.active);
   scene.npcs.push(...background);
-  sound.crowdLevel(state.flags.chapter2&&!eventActive&&!state.hidden&&!enemy.active&&!pursuerTrail&&!stillness.active&&!progressHaunt.warned?Math.min(.5,background.filter(n=>Math.hypot(n.x-state.x,n.y-state.y)<320).length*.12)*((dialog||phone) ? .3 : 1):0,state.flags.relayPower);
+  if(startNpcScream(state,map,scene.npcs.filter(n=>n.npc&&sight(map,state,n)),enemy,!eventActive&&!dialog&&!phone&&!traveling&&!pursuerTrail)){sound.effect('screamAlt',.65);sound.crowdLevel(0);for(const n of scene.npcs.filter(n=>n.npc)){n.panic=3;n.wait=3;n.moving=false;n.direction=2;n.reactionLine=FEAR_LINES[n.id];}addNote('crowd-scream',map.outdoor?'건물 안쪽에서 여성의 비명이 났다. 밖에 있던 동행인들도 소리 난 쪽을 돌아봤다.':'군중 사이에서 여성의 비명이 터졌다. 다른 사람들도 소리 난 쪽을 돌아봤다.');}
+
+  sound.crowdLevel(state.flags.chapter2&&!eventActive&&!state.hidden&&!enemy.active&&!pursuerTrail&&!stillness.active&&!progressHaunt.warned&&!(state.flags.npcScreamHeard&&(state.relayExposure||0)-(state.npcScreamAt||0)<5)?Math.min(.5,background.filter(n=>Math.hypot(n.x-state.x,n.y-state.y)<320).length*.12)*((dialog||phone) ? .3 : 1):0,state.flags.relayPower);
   nearest = state.hidden ? null : nearestObject(map,state);
   const person=!state.hidden?residents.nearest(map,state):null;
   if(person&&(!nearest||Math.hypot(person.x-state.x,person.y-state.y)<Math.hypot(nearest.x-state.x,nearest.y-state.y)-8))nearest=person;

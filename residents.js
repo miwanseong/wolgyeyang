@@ -1,5 +1,6 @@
-import {advanceGait,actorStride} from './gait.js?v=0116eea318de';
-import {canMove,findPath,sight} from './world.js?v=0116eea318de';
+import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=354910042dff';
+import {advanceGait,actorStride} from './gait.js?v=354910042dff';
+import {canMove,findPath,sight} from './world.js?v=354910042dff';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
@@ -9,19 +10,20 @@ export function residentPhase(s){return s.flags.relayLastVoice?3:s.flags.relayPo
 export class Residents{
  constructor(){this.reset();}
  reset(){this.map=null;this.actors=[];}
- update(map,s,dt,allowed=true){
+ update(map,s,dt,allowed=true,threat=null){
   const phase=residentPhase(s),definitions=RESIDENTS.filter(n=>(phase===3?'relayYard':n.map)===map.id);
   if(this.map!==map.id||this.phase!==phase){this.map=map.id;this.phase=phase;this.actors=definitions.map(n=>{const route=phase===3?n.outside:n.route;return{...n,npc:true,phase,route,x:route[0][0]*32,y:route[0][1]*32,target:1,wait:1,path:[],repath:0,walk:0,direction:0,moving:false};});}
+  for(const n of this.actors){n.corruption=npcCorruption(s);n.panic=Math.max(0,(n.panic||0)-dt);if(threat?.active&&Math.hypot(threat.x-n.x,threat.y-n.y)<420&&sight(map,n,threat)){n.panic=3;n.direction=Math.abs(threat.x-n.x)>Math.abs(threat.y-n.y)?threat.x>n.x?2:1:threat.y<n.y?3:0;n.reactionLine=FEAR_LINES[n.id];}if(n.panic)n.moving=false;}
   if(!allowed){for(const n of this.actors)n.moving=false;return this.actors;}
   for(const n of this.actors){
-   n.moving=false;n.wait=Math.max(0,n.wait-dt);
+   n.moving=false;if(n.panic)continue;n.wait=Math.max(0,n.wait-dt);
    if(n.wait)continue;
    const target={x:n.route[n.target][0]*32,y:n.route[n.target][1]*32};
    n.repath-=dt;if(n.repath<=0){n.path=findPath(map,n,target);n.repath=.6;}
    const p=n.path[0]||target,dx=p.x-n.x,dy=p.y-n.y,d=Math.hypot(dx,dy);
    if(d<5&&n.path.length)n.path.shift();
    if(Math.hypot(target.x-n.x,target.y-n.y)<7){n.target=(n.target+1)%n.route.length;n.wait=phase===2?4:2;n.repath=0;continue;}
-   if(d>0){const step=Math.min(d,dt*(phase===2?15:32)),x=n.x+dx/d*step,y=n.y+dy/d*step;
+   if(d>0){const step=Math.min(d,dt*(n.corruption>=2?13:phase===2?15:32)),x=n.x+dx/d*step,y=n.y+dy/d*step;
     if((Math.hypot(x-s.x,y-s.y)>26||Math.hypot(x-s.x,y-s.y)>Math.hypot(n.x-s.x,n.y-s.y))&&canMove(map,x,y)){n.x=x;n.y=y;n.walk=advanceGait(n.walk,step,actorStride(n.column+1));n.moving=true;n.direction=Math.abs(dx)>Math.abs(dy)?dx>0?2:1:dy<0?3:0;}
    }
    if(phase>=1&&!n.moving&&Math.hypot(n.x-s.x,n.y-s.y)<160){const x=s.x-n.x,y=s.y-n.y;n.direction=Math.abs(x)>Math.abs(y)?x>0?2:1:y<0?3:0;}
@@ -30,7 +32,8 @@ export class Residents{
  }
  nearest(map,s){return this.actors.filter(n=>Math.hypot(n.x-s.x,n.y-s.y)<(n.id==='haerin'&&map.id==='relayEntry'?110:64)&&sight(map,s,n)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;}
 }
-export function residentDialogue(s,n){
+export function residentDialogue(s,n){const reaction=corruptionReply(s,n);const answer=residentAccount(s,n);return reaction?reaction+'\n\n'+answer:answer;}
+function residentAccount(s,n){
  if(s.flags['deduced_'+n.id])return ({haerin:'23:44 수신 행을 보셨군요. 그 줄은 제가 화면에서 숨겼어요. 통화 내용을 바꾼 건 아니지만 없었다고 적은 건 제 거짓말입니다. 수정 이력도 함께 가져가 주세요.',mijeong:'정우가 쓴 요약은 내가 확인한 내용과 달라. 나는 열쇠가 돌아간 것과 문이 안 움직인 것만 봤어. 화면을 누가 고쳤는지는 몰라. 그건 내 증언으로 채우면 안 돼.',dohyun:'운전표에 정지가 남아 있네요. 펌프 소리라고 적은 제 보고는 틀렸습니다. 직접 확인하지 않았고, 정우가 책임을 묻겠다고 하자 진술을 바꿨습니다.'})[n.id];
  if(n.id==='haerin'&&(s.flags.relayErasure||s.investigation?.rolls.haerin?.success))return '숨긴 행이 원본에는 남아 있었죠. 제가 원본을 지운 건 아니지만, 취소 뒤 수신이 없었다고 인계한 건 잘못입니다. 수정 이력을 원본 통화와 같이 보존해 주세요.';
  if(n.id==='haerin'&&s.flags.drawerSuspicion)return '서랍에 손댄 거 봤어요. 필요한 기록은 정식으로 요청하세요. 제 허락 없이 물건을 꺼내려 한 일은 잊지 않을 겁니다. 원본 조작 이력을 확인하는 건 막지 않겠어요.';
@@ -56,7 +59,7 @@ export function residentDialogue(s,n){
  return lines[n.id][phase];
 }
 
-export function residentExpression(s,n){if(residentPhase(s)===2)return 2;const r=s.investigation?.rolls[n.id];if(r)return r.success?3:1;return [0,1,2,3][residentPhase(s)];}
+export function residentExpression(s,n){if(n.panic)return 2;if(residentPhase(s)===2)return 2;const r=s.investigation?.rolls[n.id];if(r)return r.success?3:1;return [0,1,2,3][residentPhase(s)];}
 
 export const RESIDENT_QUESTIONS={
  haerin:[['왜 다시 연락했어요?','원본 대조를 원한다고 하셔서 도현 씨와 미정 씨도 불렀어요. 정우가 잠금을 유지한 회신이 남아 있거든요. 그 기록을 확인하면 당시 책임도 분명해질 거라고 생각했어요.'],['표시만 고쳤다는 게 무슨 뜻이죠?','같은 사건 번호가 반복된 행을 정리했어요. 인계 목록에는 필요한 통화가 다 있다고 생각했습니다. 원본과 차이가 난다면 기록동의 수정 이력 번호부터 확인하시죠.']],

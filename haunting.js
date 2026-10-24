@@ -1,4 +1,4 @@
-import {canMove,sight,clearSegment} from './world.js?v=0116eea318de';
+import {canMove,sight,clearSegment} from './world.js?v=354910042dff';
 export const OMEN_ART=[{"x":50,"y":123,"w":444,"h":330},{"x":575,"y":58,"w":423,"h":400},{"x":1059,"y":61,"w":438,"h":393},{"x":149,"y":543,"w":245,"h":428},{"x":651,"y":541,"w":248,"h":438},{"x":1081,"y":566,"w":405,"h":423}];
 export function rememberedHides(map,s){return map.objects.filter(o=>o.hide&&(s.flags['hide_known_'+map.id+'_'+o.id]||s.flags['seen_'+o.id]));}
 export function rememberHide(map,s,o){if(!o?.hide)return false;s.flags['hide_known_'+map.id+'_'+o.id]=true;s.flags['seen_'+o.id]=true;return true;}

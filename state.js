@@ -1,9 +1,9 @@
-import {canPreserve} from './chapter1-route.js?v=0116eea318de';
-import {bodyState,validBody} from './body.js?v=0116eea318de';
-import {validInvestigation} from './investigation.js?v=0116eea318de';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=0116eea318de';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=0116eea318de";
-import { STORY, canSurrender } from "./story.js?v=0116eea318de";
+import {canPreserve} from './chapter1-route.js?v=354910042dff';
+import {bodyState,validBody} from './body.js?v=354910042dff';
+import {validInvestigation} from './investigation.js?v=354910042dff';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=354910042dff';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=354910042dff";
+import { STORY, canSurrender } from "./story.js?v=354910042dff";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -55,6 +55,7 @@ export function restore(raw) {
   let s = JSON.parse(raw);
   // Migrate our earlier numeric omen counters out of the boolean story flags.
   if(s?.flags&&typeof s.flags==='object'&&!Array.isArray(s.flags))for(const key of Object.keys(s.flags))if(key.startsWith('room_omens_')&&Number.isInteger(s.flags[key])&&s.flags[key]>=0){s.omenVisits={...s.omenVisits,[key.slice(11)]:s.flags[key]};delete s.flags[key];}
+  if(s?.npcScreamAt!==undefined&&(!Number.isFinite(s.npcScreamAt)||s.npcScreamAt<0||s.npcScreamAt>86400))throw Error('유효하지 않은 비명 기록');
   if(s?.relayExposure!==undefined&&(!Number.isFinite(s.relayExposure)||s.relayExposure<0||s.relayExposure>86400))throw Error('유효하지 않은 체류 시간');
   if(!validBody(s?.body))throw Error('유효하지 않은 신체 상태');
   if(s?.omenVisits!==undefined&&(!s.omenVisits||typeof s.omenVisits!=='object'||Array.isArray(s.omenVisits)||!Object.entries(s.omenVisits).every(([key,value])=>Object.hasOwn(MAPS,key)&&Number.isInteger(value)&&value>=0&&value<=1000000)))throw Error('유효하지 않은 잔상 기록');
