@@ -1,9 +1,9 @@
-import {canPreserve} from './chapter1-route.js?v=354910042dff';
-import {bodyState,validBody} from './body.js?v=354910042dff';
-import {validInvestigation} from './investigation.js?v=354910042dff';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=354910042dff';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=354910042dff";
-import { STORY, canSurrender } from "./story.js?v=354910042dff";
+import {canPreserve} from './chapter1-route.js?v=908ea1317401';
+import {bodyState,validBody} from './body.js?v=908ea1317401';
+import {validInvestigation} from './investigation.js?v=908ea1317401';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=908ea1317401';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=908ea1317401";
+import { STORY, canSurrender } from "./story.js?v=908ea1317401";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
