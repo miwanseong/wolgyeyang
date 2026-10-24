@@ -1,5 +1,6 @@
-import {bindWatcher} from './encounters.js?v=c8043874a319';
-import {canMove,findPath} from './world.js?v=c8043874a319';
+import {RELAY_KINDS} from './relay-ghosts.js?v=b88b9e57fac6';
+import {bindWatcher} from './encounters.js?v=b88b9e57fac6';
+import {canMove,findPath} from './world.js?v=b88b9e57fac6';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}
@@ -15,6 +16,6 @@ export class RandomHunt{
   this.delay-=dt;if(this.delay>0)return false;
   this.delay=110+this.random()*80;
   if(!enemy.spawn(map,s)){this.delay=5;return false;}
-  const roll=this.random();enemy.kind=roll<(s.flags.power?.4:.5)?'hollow':roll<.8||!s.flags.power?'redlight':'jeongwoo';if(enemy.kind===this.lastKind)enemy.kind=enemy.kind==='hollow'?'redlight':'hollow';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';this.lastKind=enemy.kind;enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
+  const roll=this.random();enemy.kind=roll<(s.flags.power?.4:.5)?'hollow':roll<.8||!s.flags.power?'redlight':'jeongwoo';if(s.flags.chapter2)enemy.kind=RELAY_KINDS[roll<.5?0:1];if(s.flags.chapter2&&enemy.kind===this.lastKind)enemy.kind=RELAY_KINDS.find(k=>k!==this.lastKind);if(!s.flags.chapter2&&enemy.kind===this.lastKind)enemy.kind=enemy.kind==='hollow'?'redlight':'hollow';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';this.lastKind=enemy.kind;enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
  }
 }

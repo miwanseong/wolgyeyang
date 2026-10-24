@@ -37,7 +37,7 @@ export function addRelayChapter(M,map,prop,door){
  link('relayEntry','relay-entry-plant',32,9,'내려가는 계단 · 설비동','relayPlant',[49,32],{kind:'stairs',label:'B1 ↓'});
  action('relayEntry','relay-register','desk',13,11,'해린의 야간 인계대','register','인수 대상: 월계동 신고 접수 원본. 기록동 출입증은 인계대 서랍에 남겨 두었다.',{w:38,back:30,front:14});
  detail('relayEntry','relay-register-printer',4,18,11,'접수실 프린터','23:41 접수 / 23:43 취소 / 23:47 원격 잠금 유지. 세 장 모두 같은 번호를 가리킨다.');
- wall('relayEntry','relay-entry-board',5,12,6.5,'시설 구역 안내','접수동 → 기록동에서 취소 이력 대조 → 지하 냉각 회로 복구 → 송출층. 비상 송출은 복원 기록과 냉각 확인이 모두 필요하다.');
+ wall('relayEntry','relay-entry-board',5,12,6.5,'시설 구역 안내','1층 안내·접수 / 북측 연결 통로 기록동 / 당직실 계단 지하 설비동. 직원 전용 구역은 출입증을 제시하십시오.');
  furniture('relayEntry','relay-entry-chair','chair',13,13,'접수대 회전 의자','의자는 바깥 문을 등지고 있다.',{swivel:true,w:12,h:10});
  shelf('relayEntry','relay-entry-files',18,17,0);
  wall('relayEntry','relay-entry-curtain',0,18,6.5,'접수실 암막 커튼','유리에 산길 대신 현관 복도가 비친다.',{decor:0,fixture:'curtain'});
@@ -99,7 +99,7 @@ export function addRelayChapter(M,map,prop,door){
  link('relayYard','relay-yard-entry',35,15,'안내·접수동 출입문','relayEntry',[6,25],{doorType:'service'});
  M.relayYard.outdoor=true;
  for(const [i,x]of [9,14,19].entries())furniture('relayYard','relay-yard-car-'+i,'car',x,10,'동행자의 주차 차량','해린·미정·도현이 타고 온 차량. 보행 진입로 밖의 주차 구획에 세워져 있다.',{yardVisual:'car',variant:i,w:46,back:90,front:12});
- furniture('relayYard','relay-yard-map','sign',30,13,'야간 원본 대조 안내','해린·미정·도현의 동행 서명이 남았다.\n동쪽 문: 안내·접수동 → 북쪽 연결문: 기록동 / 접수동 당직실 계단: 지하 설비 → 송출층.',{w:18,back:14,front:10,yardVisual:'sign'});
+ furniture('relayYard','relay-yard-map','sign',30,13,'야간 접수 안내','산북 시설중계소\n야간 방문자는 안내·접수동에서 방문 목적을 말씀해 주십시오.\n관계자 외 기록동·설비동 출입 금지. 차량은 지정 구획에 주차해 주십시오.',{w:18,back:14,front:10,yardVisual:'sign'});
  furniture('relayYard','relay-yard-bus','sign',8,24,'진입 도로 · 버스 정류장 방향','서쪽 산길에서 왔다. 지금은 원본 대조를 마쳐야 한다. 돌아가는 길은 여기 남아 있다.',{w:16,back:12,front:10,yardVisual:'sign',chapterAction:'leaveRelay'});
  furniture('relayYard','relay-yard-bench','bench',12,20,'외부 휴게 의자','세 사람이 잠시 놓아 둔 장갑과 물병이 있다. 시설은 폐허가 아니라 야간 제한 운영 중이다.',{w:38,back:22,front:10});
  furniture('relayYard','relay-yard-service','cabinet',30,7,'외부 인입함','방수함의 덮개가 닫혀 있다. 출입구와 보행로를 피해 설치된 인입 배관.',{w:22,back:26,front:10,facility:7});
@@ -195,7 +195,7 @@ export function addRelayChapter(M,map,prop,door){
  M.relaySignal.rooms.push({x:5,y:20,w:17,h:5,name:'청취 부스 전실'});
  for(const id of ['relayArchive','relayPlant','relaySignal']){const grid=M[id].grid;for(let y=1;y<grid.length-1;y++)for(let x=1;x<grid[y].length-1;x++)if(grid[y][x]===0&&[[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>grid[y+dy][x+dx]===1))grid[y][x]=2;}
  Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-counter-2'),{partOf:undefined,covertDrawer:true,name:'안내 데스크 · 해린의 개인 인계 서랍'});
- Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-reception-cabinet'),{lostbox:true,name:'접수실 분실물 인수함',description:'인계 서류장 아래 칸의 분실물 함. 인수표와 함께 점검용 시계를 보관했다.'});
+ Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-reception-cabinet'),{lostbox:true,hide:false,fixture:'lost-property',w:24,back:18,front:10,name:'접수실 분실물 인수함',description:'인계 서류장 아래 칸의 분실물 함. 인수표와 함께 점검용 시계를 보관했다.'});
  furniture('relaySignal','relay-headset-drawer','desk',8,22,'청취 장비 보관대','서랍에 여분 청취 헤드셋이 있다.',{equipment:'headset',technical:6,w:25,back:22,front:10});
  detail('relayPlant','relay-work-vest',0,18,31,'정비용 조끼 걸이','안주머니가 있는 방음 작업 조끼.',{equipment:'vest'});
  detail('relayPlant','relay-pump-operation',5,16,15,'월계아파트 배수펌프 원격 운전 원장','2023.11.04 / B1 배수펌프23:40–23:50 정지. 중계소 자체 냉각펌프가 아니라 사고 현장의 원격 원장이다.',{pumpLog:true});

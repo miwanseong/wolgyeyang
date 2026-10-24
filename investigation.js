@@ -1,6 +1,6 @@
 export const CHECKS={
  theft:{label:'수정 이력 봉투를 몰래 꺼낸다',skill:'손재주',stat:1,dc:5,success:'접힌 탄소 사본을 챙겼다. 숨김 전 목록에 23:44 수신 행이 남아 있다. 해린에게 출처를 숨긴 채 묻는다면 신뢰를 잃을 수도 있다.',failure:'봉투가 서랍 레일에 걸렸다. 해린이 돌아본다. 손을 뗐다. 이제 허락 없이 같은 서랍에 손대기는 어렵다.'},
- request:{label:'수정 전 사본을 정식으로 요청한다',skill:'설득',stat:1,dc:5,flag:'relayErasure',success:'해린이 수정 전 탄소 사본을 건넸다. 원본 목록에는 23:44 수신이 있다.',failure:'해린은 원본 조작 이력을 먼저 확인하라고 한다. 정식 기록동 서랍의 조사 경로는 남아 있다.'},
+ request:{label:'수정 전 사본을 정식으로 요청한다',skill:'설득',stat:1,dc:5,flag:'relayErasure',success:'…이 사본 가져가세요.23시44분, 취소 뒤에도 전화가 왔어요. 제가 그 행을 화면에서 숨겼어요.',failure:'지금 제 말만 믿고 넘어가면 안 돼요. 기록동의 원본 조작 이력을 먼저 봐 주세요. 그 뒤에도 물으신다면… 대답할게요.'},
  lostbox:{label:'분실물 함의 걸린 잠금쇠를 푼다',skill:'손재주',stat:1,dc:5,success:'걸린 잠금쇠를 풀었다. 안에는 인수표와 함께 보관된 점검용 손목시계가 있다.',failure:'작은 잠금쇠가 헛돈다. 억지로 돌리지 않고 손을 뗐다. 필수 증거가 보관된 함은 아니다.'},
  haerin:{label:'취소 기록을 근거로 되묻는다',skill:'통찰',stat:2,dc:6,flag:'relayCancel',success:'원본은 안 지웠어요. 취소 뒤 다시 걸려 온 줄을 화면에서 숨겼을 뿐이에요. …뿐이라고 말하면, 덜한 일이 되나요? 서랍의 수정 번호도 제 번호예요.',failure:'그건 제가 설명해도 믿지 않으실 거잖아요. 서랍을 직접 보세요. …지금은 더 말 못 하겠어요.'},
  mijeong:{label:'열쇠와 빗장의 차이를 대조한다',skill:'관찰',stat:1,dc:5,item:'receipt',success:'열쇠는 돌아갔지만 문은 안 움직였어. 덧댄 장치를 누가 조작했는지는 내가 못 봤어. 내 수첩에 적힌 관찰과 정우가 쓴 인수 요약을 따로 봐 줘.',failure:'잠깐, 손이 떨려서… 자국이 잘 안 보인다. 내가 기억하는 것보다 수첩에 적어 둔 게 정확할 거야. 말로 하면 또 핑계가 섞일 것 같아.'},
@@ -34,7 +34,7 @@ export function validInvestigation(r){
 export function checkPreview(s,key){if(!Object.hasOwn(CHECKS,key))return null;const c=CHECKS[key],r=investigationState(s),gear=Object.values(r.slots).filter(Boolean).map(id=>EQUIPMENT[id]).filter(g=>g.skill===c.skill);return{...c,bonus:+!!(c.flag&&s.flags[c.flag]||c.item&&s.bag.includes(c.item)),gear:Math.min(3,gear.reduce((sum,g)=>sum+g.bonus,0)),equipment:gear.map(g=>g.name).join(' + ')||'관련 장비 없음'};}
 export function resolveCheck(s,key,_legacy=false,random=Math.random){
  if(!s.flags.chapter2||!Object.hasOwn(CHECKS,key))return null;
- const r=investigationState(s);if(r.rolls[key]){checkRewards(s,key,r.rolls[key]);return r.rolls[key];}
+ const r=investigationState(s);if(r.rolls[key]?.success){checkRewards(s,key,r.rolls[key]);return r.rolls[key];}
  const c=checkPreview(s,key),value=random();if(!Number.isFinite(value)||value<0||value>=1)return null;
  const die=1+Math.floor(value*6),total=die+c.stat+c.bonus+c.gear,success=total>=c.dc;
  const result={die,bonus:c.bonus,gear:c.gear,total,success};r.rolls[key]=result;r.stress=Math.min(4,r.stress+(success?0:1));checkRewards(s,key,result);return result;
