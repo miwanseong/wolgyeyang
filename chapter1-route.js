@@ -1,6 +1,6 @@
 // Only employees scheduled that night belong on this sheet. Resident access is recorded separately.
-export const ROSTER=[['11/04 22:00–06:00','서하','관리실 · 야간 전화 접수 보조'],['11/04 20:00–08:00','미정','경비 · 출입 확인 및 순찰'],['11/04 20:00–08:00','강태수','시설 당직 · 누수 및 전기 이상 접수']];
-export const ROSTER_FOOT='인계: 시설 당직 강태수는 22:50 누수 신고로 별동 이동. 경비 미정은 23:00부터 동문 순찰. 관리소장 정우는 비번·비상연락 대상. 공용실 열쇠 인수대장은 103호 비품함에 보관. 인계 서명: 강태수 / 미정.';
+export const ROSTER=[['11/04 22:00–06:00','서하','관리실 · 야간 전화 접수 보조'],['11/04 20:00–08:00','미정','경비 · 출입 확인 및 순찰'],['11/04 23:00','정우','관리소장 · 지하 순찰 및 비상 대응']];
+export const ROSTER_FOOT='야간 인계: 서하 — 관리실 전화 접수. 미정 — 동문 순찰 및 예비 열쇠 인계. 정우 — 지하 순찰 및 비상 대응. 공용실 열쇠 인수대장은 103호 비품함에 보관.';
 export function routeGate(s,action){
  if(action==='unit104')return s.bag.includes('unit104Key');
  if(action==='wax')return s.bag.includes('lighter');

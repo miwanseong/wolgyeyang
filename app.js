@@ -1,26 +1,27 @@
-import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=bcd9fa8ade9d';
-import {MirrorView} from './mirror.js?v=bcd9fa8ade9d';
-import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=bcd9fa8ade9d';
-import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup} from './body.js?v=bcd9fa8ade9d';
-import {RandomHunt} from './random-hunt.js?v=bcd9fa8ade9d';
-import {RoomHaunts,rememberHide} from './haunting.js?v=bcd9fa8ade9d';
-import {footContacts} from './gait.js?v=bcd9fa8ade9d';
-import {Inventory} from './inventory.js?v=bcd9fa8ade9d';
-import {ReasoningPanel} from './reasoning.js?v=bcd9fa8ade9d';
-import {inPuddle,witnessesEntry} from './facility.js?v=bcd9fa8ade9d';
-import {sanity,strain,Hallucinations} from './mental.js?v=bcd9fa8ade9d';
-import {Atmosphere} from './atmosphere.js?v=bcd9fa8ade9d';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=bcd9fa8ade9d';
-import {Crowd} from './crowd.js?v=bcd9fa8ade9d';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=bcd9fa8ade9d';
-import { PuzzlePanel } from './puzzles.js?v=bcd9fa8ade9d';
-import { CaptureAnimation, checkpoints } from './capture.js?v=bcd9fa8ade9d';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=bcd9fa8ade9d";
-import { Scene, facingDirection } from "./scene.js?v=bcd9fa8ade9d";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=bcd9fa8ade9d";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=bcd9fa8ade9d";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=bcd9fa8ade9d";
-import { AudioDirector, TRACKS } from "./audio.js?v=bcd9fa8ade9d";
+import {collectRecovery} from './body.js?v=c8043874a319';
+import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=c8043874a319';
+import {MirrorView} from './mirror.js?v=c8043874a319';
+import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=c8043874a319';
+import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup} from './body.js?v=c8043874a319';
+import {RandomHunt} from './random-hunt.js?v=c8043874a319';
+import {RoomHaunts,rememberHide} from './haunting.js?v=c8043874a319';
+import {footContacts} from './gait.js?v=c8043874a319';
+import {Inventory} from './inventory.js?v=c8043874a319';
+import {ReasoningPanel} from './reasoning.js?v=c8043874a319';
+import {inPuddle,witnessesEntry} from './facility.js?v=c8043874a319';
+import {sanity,strain,Hallucinations} from './mental.js?v=c8043874a319';
+import {Atmosphere} from './atmosphere.js?v=c8043874a319';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=c8043874a319';
+import {Crowd} from './crowd.js?v=c8043874a319';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,Residents,residentDialogue,residentExpression} from './residents.js?v=c8043874a319';
+import { PuzzlePanel } from './puzzles.js?v=c8043874a319';
+import { CaptureAnimation, checkpoints } from './capture.js?v=c8043874a319';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=c8043874a319";
+import { Scene, facingDirection } from "./scene.js?v=c8043874a319";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=c8043874a319";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=c8043874a319";
+import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=c8043874a319";
+import { AudioDirector, TRACKS } from "./audio.js?v=c8043874a319";
 import {
   initial,
   ITEMS,
@@ -32,7 +33,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=bcd9fa8ade9d";
+} from "./state.js?v=c8043874a319";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -177,7 +178,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=bcd9fa8ade9d')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const expression=residentExpression(state,person);face.style.backgroundImage="url('assets/resident-portraits.png?v=c8043874a319')";face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+['평상','경계','불안','후회'][expression]);face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -273,7 +274,7 @@ function objective() {
   if (!state.flags.locker) return "1층 관리실 · 날짜와 월 단서로 보관함을 연다";
   if (!state.flags.listened)
     return "동쪽 계단 ↑ 2층 방송실 · 테이프를 재생한다";
-  if(state.flags.listened&&!state.bag.includes("receipt"))return "101호 주방 식탁 · 원본 접수증을 챙겨 취소 서명과 안내를 확인한다";
+  if(state.flags.listened&&!state.bag.includes("receipt"))return "1층 관리실 전자 보관함 · 원본 접수증을 확인한다";
   if(!state.flags.shutterOpen)return "2층 방송 조정실 · 오른쪽 비상 제어반으로 현관 셔터를 연다";
   return "1층 현관으로 돌아가 기록의 운명을 결정한다";
 }
@@ -345,8 +346,8 @@ function routeInteract(o){
  if(action==='roster'){if(state.bag.includes('rosterScrap')){state.flags.rosterRestored=true;addNote('night-roster',ROSTER_FOOT);}showRoster();return;}
  if(action.startsWith('entry')){if(!state.bag.includes('serviceKey')&&!state.flags['entered_'+action.slice(5)]){say('서하','잠겼네… 공용 열쇠가 있었지.\n마지막으로 누가 가지고 있었더라…');return;}state.flags['entered_'+action.slice(5)]=true;state.flags['seen_'+o.id]=true;closeDialog();transition('unit'+action.slice(5),[19,22],o);return;}
  if(action==='lighter'){if(!state.bag.includes('lighter'))pickup('lighter');say('서하','서윤이 방수 봉투의 밀랍을 떼던 라이터.\n종이는 태우지 않고, 밀랍만 살짝 데웠었지.');return;}
- if(action==='rosterPiece'){if(!state.bag.includes('rosterScrap'))pickup('rosterScrap');say('미정의 인계 봉투','「서윤에게104호를 내주고 열쇠를 인계함. 정우에게 반납.」\n관리실 야간 근무표와 같은 격자와 찢긴 가장자리. 게시판의 빈 모서리에 맞을 것 같다.');return;}
- if(action==='keybox'){if(!routeGate(state,action)){say('서하','작은 열쇠 구멍… 이 비품함도 잠가 뒀구나.\n예전에 공용 열쇠로 열었던 것 같은데…');return;}if(!state.bag.includes('unit104Key'))pickup('unit104Key');say('104호 열쇠 표찰','「임시 문서실104호. 11월3일 사용 후 관리인에게 반납.」\n함께 접힌 문서실 인수표: 이용자 서윤(주간 서무 보조), 용도 점검 사진·주민대표 윤경숙의 민원 자료 정리.\n서윤이 서류를 정리하던 방이야. 관리실 열쇠와 달리 이 열쇠는 퇴근할 때 반납했구나. 자료가 남아 있다면, 왜 거기에 있는지도 알 수 있어.');return;}
+ if(action==='rosterPiece'){if(!state.bag.includes('rosterScrap'))pickup('rosterScrap');say('미정의 인계 봉투','「서하: 전화 접수. 미정: 동문 순찰 및 예비 열쇠 인계. 정우: 지하 순찰 및 비상 대응.」\n관리실 야간 근무표와 같은 격자와 찢긴 가장자리. 게시판의 빈 모서리에 맞을 것 같다.');return;}
+ if(action==='keybox'){if(!routeGate(state,action)){say('서하','작은 열쇠 구멍… 이 비품함도 잠가 뒀구나.\n예전에 공용 열쇠로 열었던 것 같은데…');return;}if(!state.bag.includes('unit104Key'))pickup('unit104Key');say('104호 열쇠 표찰','「임시 문서실104호. 11월3일 사용 후 관리인에게 반납.」\n함께 접힌 문서실 인수표: 이용자 서윤(주간 서무 보조), 용도 점검 사진·입주민 민원 자료 정리.\n서윤이 서류를 정리하던 방이야. 관리실 열쇠와 달리 이 열쇠는 퇴근할 때 반납했구나. 자료가 남아 있다면, 왜 거기에 있는지도 알 수 있어.');return;}
  if(action==='wax'){if(state.flags.hiddenWaxOpen){say(o.name,'떼어 낸 밀랍과 서명이 이어지는 봉투. 보관함 열쇠는 이미 챙겼다.');return;}if(!routeGate(state,action)){say(o.name,o.description+'\n굳은 밀랍을 잡아당기면 봉투와 서명도 찢어질 것 같다.');return;}
  say('서하','내가 아는 서윤의 봉인 방식이야. 밀랍만 데워 들어 올리면 서명과 종이는 남길 수 있어.',[['라이터로 밀랍만 데운다',()=>{closeDialog();sound.effect('lighter');scene.waxHeat={x:o.x,y:o.y,until:performance.now()+1500};state.flags.hiddenWaxOpen=true;pickup('archiveKey');addNote('wax-packet','서윤이 서명해 봉한 열쇠 봉투. 밀랍만 데워 봉투와 서명을 보존했다.');say('서하','서명은 이어져 있어. 봉투 속의 작은 열쇠… 저 금속 보관함의 열쇠겠지.');}],['손을 뗀다',closeDialog]]);return;}
  if(action==='cabinet'){if(!routeGate(state,action)){say(o.name,'보관함 표찰에 「점검 사진 원본」이라고 적혀 있다. 손잡이 아래 작은 열쇠 구멍. 옆 밀랍 봉투에 「사진함 열쇠」라고 적혀 있다.');return;}
@@ -429,6 +430,7 @@ function interact() {
   scene.inspect(o);
   state.flags["seen_" + id] = true;
   if(o.chapterAction){openRelayAction(o);return;}
+  if(o.recoveryItem){const item=collectRecovery(state,o);say(o.name,item?'포장 천 사이에 작은 실타래가 끼어 있다.\n손에 올리자 빈 윤곽 쪽으로 실 끝이 당겨진다.':'천과 포장지만 남아 있다. 실타래는 이미 챙겼다.');if(item){sound.effect('paper');toast('매듭실을 챙겼다.');}return;}
   if(o.collectible){
     if(!state.bag.includes(o.collectible)){
       pickup(o.collectible);addNote(o.collectible,o.description);
@@ -552,6 +554,7 @@ function interact() {
       break;
     case "locker":
       if (state.flags.locker) {
+        if(!state.bag.includes('receipt')){pickup('receipt');addNote('receipt',STORY.receipt);say('보관함 안쪽의 접수 서류',STORY.receipt);break;}
         say(
           "전자 보관함",
           "보관함은 비어 있다. 그 안에 있던 것은 이제 내 손에 있다.",
@@ -584,11 +587,11 @@ function interact() {
             forcedCue = "evidence";
             say(
               "서하",
-              "녹음테이프와 철거 전 입주 기록.\n기록의 마지막 줄은 지워져 있다.\n「신고를 취소한 사람: 서하」",
+              "봉인 봉투 안에 원본 접수증, 녹음테이프와 철거 전 입주 기록이 함께 들어 있다.\n접수증에는 내가 현장 개방을 확인했다고 서명했다.\n「신고를 취소한 사람: 서하」",
             );
             addNote(
               "evidence",
-              "보관함: 녹음테이프, 철거 전 입주 기록. 신고 취소자에 내 이름이 있다.",
+              "보관함: 원본 접수증, 녹음테이프, 철거 전 입주 기록. 신고 취소자에 내 이름이 있다.",
             );
           } else {
             sound.effect("thud");
@@ -962,7 +965,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=bcd9fa8ade9d", memory: "assets/event-memory.png?v=bcd9fa8ade9d"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=c8043874a319", memory: "assets/event-memory.png?v=c8043874a319"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;

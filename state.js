@@ -1,9 +1,9 @@
-import {canPreserve} from './chapter1-route.js?v=bcd9fa8ade9d';
-import {bodyState,validBody} from './body.js?v=bcd9fa8ade9d';
-import {validInvestigation} from './investigation.js?v=bcd9fa8ade9d';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=bcd9fa8ade9d';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=bcd9fa8ade9d";
-import { canSurrender } from "./story.js?v=bcd9fa8ade9d";
+import {canPreserve} from './chapter1-route.js?v=c8043874a319';
+import {bodyState,validBody} from './body.js?v=c8043874a319';
+import {validInvestigation} from './investigation.js?v=c8043874a319';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=c8043874a319';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=c8043874a319";
+import { STORY, canSurrender } from "./story.js?v=c8043874a319";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -28,6 +28,8 @@ export const ITEMS = {
   serviceKey:'관리인 공용 마스터키',unit104Key:'104호 출입 열쇠',archiveKey:'서윤의 봉투 보관함 열쇠',lighter:'라이터',rosterScrap:'찢어진 근무표 조각',inspectionPhotos:'104호 점검 사진 원본과 촬영 일지',
   knotThread:"매듭실",
   knotThreadSecond:"매듭실 · 남은 한 타래",
+  knotThreadPacked:"매듭실 · 이삿짐 속 실타래",
+  knotThreadStored:"매듭실 · 보관 상자의 실타래",
   auditMemo: "숨김 전 수신 목록 탄소 사본",
   pumpLog: "사고 당일 펌프 정지 운전표",
   notice: "서윤의 유품 보관 통지서",
@@ -115,6 +117,8 @@ export function unlock(s, code) {
   s.flags.locker = true;
   take(s, "tape");
   take(s, "evidence");
+  take(s, "receipt");
+  if(!s.notes.some(n=>n.id==='receipt'))s.notes.push({id:'receipt',text:STORY.receipt});
   return "ok";
 }
 function fixtureInReach(s,o,role){

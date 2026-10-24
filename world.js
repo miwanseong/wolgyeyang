@@ -1,5 +1,5 @@
-import { STORY } from "./story.js?v=bcd9fa8ade9d";
-import { addRelayChapter } from "./chapter-world.js?v=bcd9fa8ade9d";
+import { STORY } from "./story.js?v=c8043874a319";
+import { addRelayChapter } from "./chapter-world.js?v=c8043874a319";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -238,7 +238,7 @@ function run(m, key, row, startX, y, ids, names) {
     let o=M[m].objects.find(o=>o.id===id);
     if(!o){
       const labels=[['민원 기록철','퇴거 서류','봉인된 장부'],['주방 서랍','조리대','식기 보관장'],['작업대 서류','전화기와 메모','사무용 서랍'],['전력계 장비반','차단기 패널','통신 회로반']][row];
-      const texts={management:'같은 날 접수된 신고들이 묶여 있다. 접수 번호는 서로 다른데 취소 확인자의 서명은 모두 내 글씨다.',apartment:row===1?'식기는 두 사람 몫이다. 사용한 컵 아래에서 접수증이 비친다. 누군가 버리려다 다시 숨겨 둔 종이다.':'서윤의 작업 기록. 지하 방화문을 열어 달라는 메모가 마지막 페이지마다 반복된다.',basement:row===3?'관리실 보관함과 2층 방송실의 공용 회로. 퓨즈를 넣으면 두 장치에 전원이 돌아간다.':'창고의 물품이 용도별로 나뉘어 있다. 예비 퓨즈는 가운데 작업대의 작은 공구함에 보관한다.',upper:row===0?'취소된 신고의 사본. 정우는 잠금을 풀지 않았고, 해린은 접수를 지웠다. 원본과 마지막 녹음만 밖으로 가져가면 이 밤을 증언할 수 있다.':'같은 회로로 이어진 방송 장비. 카세트 데크는 방 가운데 연결된 책상 위에 있다.',lobby:'철거 접수대. 유품 통지서 옆에 101호 열쇠 보관 위치가 적혀 있다.'};
+      const texts={management:'같은 날 접수된 신고들이 묶여 있다. 접수 번호는 서로 다른데 취소 확인자의 서명은 모두 내 글씨다.',apartment:row===1?'식기는 두 사람 몫이다. 컵 아래에는 둥근 물자국이 남아 있다.':'서윤의 작업 기록. 지하 방화문을 열어 달라는 메모가 마지막 페이지마다 반복된다.',basement:row===3?'관리실 보관함과 2층 방송실의 공용 회로. 퓨즈를 넣으면 두 장치에 전원이 돌아간다.':'창고의 물품이 용도별로 나뉘어 있다. 예비 퓨즈는 가운데 작업대의 작은 공구함에 보관한다.',upper:row===0?'취소된 신고의 사본. 정우는 잠금을 풀지 않았고, 해린은 접수를 지웠다. 원본과 마지막 녹음만 밖으로 가져가면 이 밤을 증언할 수 있다.':'같은 회로로 이어진 방송 장비. 카세트 데크는 방 가운데 연결된 책상 위에 있다.',lobby:'철거 접수대. 유품 통지서 옆에 101호 열쇠 보관 위치가 적혀 있다.'};
       o=prop(id,row===0?'shelf':row===1?'cabinet':row===2?'desk':'rack',0,0,names?.[i]||labels[i%3],{description:texts[m]});M[m].objects.push(o)
     }
     Object.assign(o,{x:(startX+1+i*2)*32,y:y*32,module:{row,group:key,col:i===0?0:i===ids.length-1?2:1},w:31,back:row===0||row===3?52:40,front:16});
@@ -267,7 +267,7 @@ const move=(m,id,x,y,extra={})=>Object.assign(M[m].objects.find(o=>o.id===id),{x
 move('management','calendar',22,3.5);
 move('apartment','bed-home',6.5,11.5);move('apartment','home-closet',5.5,16);
 move('apartment','kitchen',24,10,{kind:'table',collectible:'receipt',description:'컵을 들어 올리자 접힌 접수증이 나온다. 2023년 11월 4일 23:41, 지하 방화문 개방 요청. 요청자는 서윤. 취소 확인 서명은 나, 서하다.'});
-M.apartment.objects.push(prop('home-chair','chair',14,9,'책상 앞 의자',{description:'공책을 보던 자리에 앉아 본다. 페이지에는 지하 방화문 그림이 여러 번 반복된다.'}),prop('bedside','cabinet',9.5,11.5,'침대 옆 협탁',{description:'서윤의 야간 작업 기록. 마지막 페이지는 지하 방화문 앞에서 끝난다.'}),prop('kitchen-seat-a','chair',22,11.5,'식탁 왼쪽 의자',{description:'서윤의 자리. 식사는 손대지 않은 채 굳어 있다.'}),prop('kitchen-seat-b','chair',26,11.5,'식탁 오른쪽 의자',{description:'내 자리. 컵 밑으로 접수증의 모서리가 보인다.'}));
+M.apartment.objects.push(prop('home-chair','chair',14,9,'책상 앞 의자',{description:'공책을 보던 자리에 앉아 본다. 페이지에는 지하 방화문 그림이 여러 번 반복된다.'}),prop('bedside','cabinet',9.5,11.5,'침대 옆 협탁',{description:'서윤의 야간 작업 기록. 마지막 페이지는 지하 방화문 앞에서 끝난다.'}),prop('kitchen-seat-a','chair',22,11.5,'식탁 왼쪽 의자',{description:'서윤의 자리. 식사는 손대지 않은 채 굳어 있다.'}),prop('kitchen-seat-b','chair',26,11.5,'식탁 오른쪽 의자',{description:'내 자리. 컵을 받치던 종이 자국만 남아 있다.'}));
 move('upper','broadcast-chair',33,13,{swivel:true});move('management','manager-chair',10,12,{swivel:true});
 move('upper','broadcast-hide',39,10);move('basement','utility-hide',39,10.5);
 // Props on worktops are part of the furniture, with collectible contents drawn in place.
@@ -405,7 +405,7 @@ for(const id of ['basement-shelves','storage-row-b','storage-row-d','storage-row
 Object.assign(M.basement.objects.find(o=>o.id==='basement-rack'),{regional:6,artRole:'drain-pipes',name:'배수 밸브와 감긴 호스',description:'배수관의 밸브와 정리된 호스. 전선이나 퓨즈를 연결하는 장치가 아니다.'});
 M.basement.objects.find(o=>o.id==='utility-hide').description='분전반 옆의 큰 청소용품 보관장. 불을 끄고 안에서 문을 닫을 수 있다.';
 // Settle the sink/worktop/stove as different modules, rather than repeating a sink sprite.
-const kitchenKinds=[['kitchen-cabinet',0,'가스레인지와 환풍 후드','가스 밸브가 잠겨 있다. 버너 위에 맞춰 달린 환풍 후드의 스위치를 눌러도 팬이 돌지 않는다.'],['kitchen-counter-a',1,'주방 조리대','칼자국이 남은 빈 조리대. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'],['kitchen-sink',2,'주방 싱크대','수전 하나와 개수대 하나. 배수구 안에는 아무것도 없다.'],['kitchen-counter-b',1,'주방 서랍장','수저와 행주가 용도별로 나뉘어 있다.'],['kitchen-rack',3,'식기 건조대','컵 두 개가 엎어져 있다. 접수증은 건조대가 아니라 식탁의 컵 아래에 있었다.']];
+const kitchenKinds=[['kitchen-cabinet',0,'가스레인지와 환풍 후드','가스 밸브가 잠겨 있다. 버너 위에 맞춰 달린 환풍 후드의 스위치를 눌러도 팬이 돌지 않는다.'],['kitchen-counter-a',1,'주방 조리대','칼자국이 남은 빈 조리대. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'],['kitchen-sink',2,'주방 싱크대','수전 하나와 개수대 하나. 배수구 안에는 아무것도 없다.'],['kitchen-counter-b',1,'주방 서랍장','수저와 행주가 용도별로 나뉘어 있다.'],['kitchen-rack',3,'식기 건조대','컵 두 개가 엎어져 있다. 컵 바닥의 물때가 말라 있다.']];
 for(const [id,index,name,description]of kitchenKinds){const o=M.apartment.objects.find(o=>o.id===id);delete o.module;Object.assign(o,{kitchenTile:index,artRole:'kitchen-'+index,name,description,w:31,back:36,front:14});}
 Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{routeAction:'lighter',description:'조리대 뒤쪽의 작은 금속 라이터. 서윤이 방수 봉투의 밀랍을 데울 때 쓰던 것이다. 옆 메모에는 「종이에 불을 대지 말 것」이라고 적혀 있다.'});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-tv'),{x:26.5*32});
@@ -481,7 +481,10 @@ const hiddenDoor=M.lobby.objects.find(o=>o.id==='sealed-unit-2');hiddenDoor.hidd
 
 M.lobby.objects.find(o=>o.id==='arrival-letter').description='발신인 미정. 서윤의 유품과 사고 접수 기록은 관리실 전자 보관함에 있다. 06:00 철거 반출 예정. 미정의 메모: 「나도 열쇠를 건넸다는 말로 기다린 시간을 덮었어. 원본을 보지도 않은 채 또 내 탓만 빼고 말할 수는 없어. 예비 열쇠는 101호 현관 신발장에 있다.」';
 M.management.objects.find(o=>o.id==='manager-files').description='2024년 사고 보고서. 정우는 추가 빗장의 흔적을 철거하러 폐쇄된 지하에 들어갔다가 노출 배선에 감전되어 사망했다. 소방 점검표의 원본과 원격 제어 로그는 철거 목록에 없었다. 근무가 끝난 뒤에도 순찰하는 형상이 그를 닮았다.';
-M.apartment.objects.find(o=>o.id==='kitchen').description=STORY.receipt;
+Object.assign(M.apartment.objects.find(o=>o.id==='kitchen'),{description:'두 사람 몫의 식기가 놓여 있다. 식탁 위에는 말라붙은 컵 자국만 남았다.'});
+delete M.apartment.objects.find(o=>o.id==='kitchen').collectible;
+Object.assign(M.basement.objects.find(o=>o.id==='basement-crates-b'),{recoveryItem:'knotThreadPacked',description:'101호 침구 이삿짐. 느슨해진 포장 천 사이로 작은 실 끝이 삐져나와 있다.'});
+Object.assign(M.relayArchive.objects.find(o=>o.id==='relay-gallery-box'),{recoveryItem:'knotThreadStored',description:'복원 대기 문서 상자. 포장용 천 주머니 안에 낡은 실타래가 하나 남아 있다.'});
 // Repeated structural walls match the apartment block, while each home has distinct contents.
 for(const [unit,person]of [[102,'미정'],[103,'정우']]){
  const id='unit'+unit,m=map(id,'1F · '+unit+'호 / '+person+'의 옛집',32,28,'wood',[[12,17,14,8],[4,5,10,12],[17,5,10,10],[21,15,3,3],[4,19,6,6],[10,20,3,3]]);M[id]=m;
@@ -498,7 +501,7 @@ for(const [unit,person]of [[102,'미정'],[103,'정우']]){
  const entrance=M.lobby.objects.find(o=>o.id==='sealed-unit-'+(unit-102));Object.assign(entrance,{routeAction:'entry'+unit,description:unit+'호 문 손잡이에 낡은 철거 확인띠가 붙어 있다. 자물쇠가 잠겼다.'});
 }
 M.unit102.objects.push(prop('102-handover','desk',19,20,'미정이 정리한 인계 봉투',{w:27,back:24,front:12,routeAction:'rosterPiece',description:'서윤에게104호 자료실 열쇠를 넘겨 준 날의 쪽지. 야간 근무표에서 잘라 가져온 모서리가 봉투 속에 있다.'}),prop('102-armchair','armchair',15,22,'창을 바라보는 의자',{decor:6,w:17,back:20,front:10,description:'미정이 창을 바라보며 앉던 의자.'}));
-M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'열쇠 구멍이 있는 작은 비품 보관함. 손잡이를 당겨도 움직이지 않는다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호 임시 문서실 인수표. 이용자는 서윤(주간 서무 보조), 용도는 점검 사진과 주민대표 윤경숙의 민원 자료 정리, 사용일은11월3일이다.'}));
+M.unit103.objects.push(prop('103-keybox','cabinet',12.5,7,'관리인 잠금 비품함',{routeArt:5,mount:false,solid:true,facing:'north',routeAction:'keybox',description:'열쇠 구멍이 있는 작은 비품 보관함. 손잡이를 당겨도 움직이지 않는다.'}),prop('103-duty-desk','desk',19,20,'순찰 준비 책상',{w:29,back:25,front:12,description:'책상 위의 서류와 접힌 메모.104호 임시 문서실 인수표. 이용자는 서윤(주간 서무 보조), 용도는 점검 사진과 입주민 민원 자료 정리, 사용일은11월3일이다.'}));
 Object.assign(M.management.objects.find(o=>o.id==='office-board'),{routeAction:'roster',routeArt:3});
 M.upper.objects.find(o=>o.id==='studio-notice').x=26.5*32;
 Object.assign(M.apartment.objects.find(o=>o.id==='bath-shower'),{routeArt:2,facing:'north',name:'유리문 샤워 부스',description:'샤워 트레이 위를 유리문과 금속 프레임이 둘러싼다. 샤워기는 부스 안쪽 벽에 고정돼 있다.'});delete M.apartment.objects.find(o=>o.id==='bath-shower').technical;

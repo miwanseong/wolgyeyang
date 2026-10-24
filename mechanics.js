@@ -1,6 +1,6 @@
-import {redLightUpdate} from './encounters.js?v=bcd9fa8ade9d';
-import {bodyState} from './body.js?v=bcd9fa8ade9d';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=bcd9fa8ade9d";
+import {redLightUpdate} from './encounters.js?v=c8043874a319';
+import {bodyState} from './body.js?v=c8043874a319';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=c8043874a319";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
