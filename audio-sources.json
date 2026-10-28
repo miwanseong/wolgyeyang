@@ -209,5 +209,29 @@
     "pack": "Kenney RPG Audio",
     "source": "rpg-audio/Audio/creak2.ogg + doorOpen_2.ogg; sequential recordings, gain and fades only",
     "sha256": "2ec80b24438f0aea3b2fc7ff918a574e34efb78cf313e45dd194c88831d51f08"
+  },
+  {
+    "file": "cc0_rain_loop.ogg",
+    "pack": "Ylmir / Rain (Loopable)",
+    "source": "https://opengameart.org/content/rain-loopable",
+    "sha256": "bb4ca6a4a2aa396988581a296e255c5319e40798764f45e81a51863ff6896b39"
+  },
+  {
+    "file": "cc0_shutter.wav",
+    "pack": "sinny / Old Elevator Door",
+    "source": "https://opengameart.org/content/old-elevator-door",
+    "sha256": "9ce4923d48eac1266151dedbcaca8a62302e564601d10be2f19c80d1465bea03"
+  },
+  {
+    "file": "cc0_vent_cover.wav",
+    "pack": "BMacZero / Mechanical Sounds",
+    "source": "https://opengameart.org/content/mechanical-sounds",
+    "sha256": "e1d78fa24d8837eeb3537feaf8e9ab24091acfd9fd00fe2018be47edfc3ddd37"
+  },
+  {
+    "file": "cc0_wardrobe.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "https://kenney.nl/assets/rpg-audio",
+    "sha256": "01363e08cf8c1ad2ef80693a76179afe7d6c3a28a2dd493471619fb968b3691f"
   }
 ]

@@ -1,4 +1,4 @@
-import {lowerLightForPickup} from './body.js?v=eb60cef005f5';
+import {lowerLightForPickup} from './body.js?v=0626962de89e';
 export const TRAP_DOORS=['relay-quiet-inner-door','relay-booth-door'];
 export function chooseRecordRoute(s,route){
  if(!s.bag.includes('relayCopy')||s.bag.includes('relayExport'))return false;

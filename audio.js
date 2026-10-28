@@ -20,6 +20,7 @@ export const TRACKS = {
 };
 export const FOOTSTEP_GROUPS={wood:['stepWood0','stepWood1','stepWood2','stepWood3'],carpet:['stepCarpet0','stepCarpet1','stepCarpet2','stepCarpet3'],water:['stepWater0','stepWater1'],concrete:['stepConcrete0','stepConcrete1','stepConcrete2','stepConcrete3']};
 export const EFFECTS = {
+ rain:'cc0_rain_loop.ogg',shutter:'cc0_shutter.wav',wardrobe:'cc0_wardrobe.wav',ventCover:'cc0_vent_cover.wav',clothHide:'cc0_cloth.wav',valve:'cc0_vent_cover.wav',
   doorClose:'cc0_door_close.wav',fireDoor:'cc0_latch.wav',fireDoorClose:'cc0_metal_hit.wav',heartbeat:'cc0_heartbeat.wav',
   paperAlt:'cc0_paper_alt.wav',diceAlt1:'cc0_dice_1.wav',diceAlt2:'cc0_dice_2.wav',
   ...Object.fromEntries(Object.entries(FOOTSTEP_GROUPS).flatMap(([surface,keys])=>keys.map((key,i)=>[key,'cc0_step_'+surface+'_'+i+'.wav']))),
@@ -28,10 +29,10 @@ export const EFFECTS = {
   bloodDrip: "cc0_step_water_1.wav",
   omenKnock: "cc0_three_knocks.wav",
   hallucination: "cc0_ghost_breath.wav",
-  checkSuccess: "cc0_item.wav",
-  checkFailure: "cc0_thud.wav",
+  checkSuccess: "fx_check_success.wav",
+  checkFailure: "fx_check_failure.wav",
   photo: "sfx_camera_shutter.mp3",
-  dice: "cc0_dice_0.wav",
+  dice: "fx_dice_roll.wav",
   giggle: "cc0_cackle.wav",
   puzzleSlide: "cc0_creak.wav",
   puzzleTurn: "cc0_latch.wav",
@@ -51,8 +52,8 @@ export const EFFECTS = {
   thud: "cc0_thud.wav",
   glass: "sfx_glass_breaking.mp3",
 };
-const EFFECT_VARIANTS={paper:['paper','paperAlt'],dice:['dice','diceAlt1','diceAlt2']};
-export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
+const EFFECT_VARIANTS={paper:['paper','paperAlt'],dice:['dice']};
+export const EFFECT_MIX={shutter:{gain:.8,duration:3.2,fade:.08,cooldown:3},checkSuccess:{gain:1.3,duration:1.5},checkFailure:{gain:1.3,duration:1.5},mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;
@@ -90,7 +91,7 @@ export class AudioDirector {
     this.enabled = true;
     this.apply();
     this.play(cue);
-    for(const name of ["scream","screamAlt","whisper","lighter","door","doorClose","paper","heartbeat","mirrorLaugh","giggle","apparition","omenKnock",...Object.values(FOOTSTEP_GROUPS).flat()])this.loadEffect(name).catch(()=>{});
+    for(const name of ["scream","screamAlt","whisper","lighter","door","doorClose","paper","heartbeat","mirrorLaugh","giggle","apparition","omenKnock","dice","checkSuccess","checkFailure","rain","stepWater0","stepWater1",...Object.values(FOOTSTEP_GROUPS).flat()])this.loadEffect(name).catch(()=>{});
   }
   apply() {
     if (this.master)
@@ -169,6 +170,15 @@ export class AudioDirector {
       const source=this.ctx.createBufferSource(),gain=this.ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;gain.gain.setTargetAtTime(this.crowdTarget,this.ctx.currentTime,.4);source.connect(gain).connect(this.fxBus);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();this.crowdGain=gain;this.crowdSource=source;this.crowdSourceKey=key;
     }).catch(()=>this.error('배경 군중 음원을 불러오지 못했습니다.')).finally(()=>{if(token===this.crowdToken)this.crowdLoadingKey=null;});
   }
+  weatherLevel(level=0){
+    if(!this.ctx||!this.enabled)level=0;
+    this.rainTarget=level;
+    if(this.rainGain)this.rainGain.gain.setTargetAtTime(level,this.ctx.currentTime,.6);
+    if(!level||this.rainSource||this.rainLoading)return;
+    this.rainLoading=this.loadEffect('rain').then(buffer=>{
+      const source=this.ctx.createBufferSource(),gain=this.ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;gain.gain.setTargetAtTime(this.rainTarget,this.ctx.currentTime,.8);source.connect(gain).connect(this.fxBus);source.start();this.rainSource=source;this.rainGain=gain;
+    }).catch(()=>this.error('빗소리를 불러오지 못했습니다.')).finally(()=>this.rainLoading=null);
+  }
   async effect(name, level=1,pan=0) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;
     if(['door','doorClose','fireDoor','fireDoorClose'].includes(name)){const now=performance.now();if(now-this.doorRequestedAt<650)return;this.doorRequestedAt=now;}
@@ -193,6 +203,7 @@ export class AudioDirector {
     }
   }
   step(surface, running) {
+    if(surface==='water')return this.effect(this.stepIndex++%2?'stepWater1':'stepWater0',running?.7:.5);
     if (!this.ctx || !this.enabled) return;
     const c = this.ctx,
       rate = c.sampleRate,

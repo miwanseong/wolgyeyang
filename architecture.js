@@ -22,17 +22,17 @@ export function applyArchitecture(M,prop){
  while(M.relayEntry.grid.length<40)M.relayEntry.grid.push(Array(M.relayEntry.w).fill(0));M.relayEntry.h=40;
  // Two independent public WC rooms off the existing public corridor, not through offices.
  for(const [sex,x,door]of [['남자',8,12],['여자',24,28]]){
-  room('relayEntry',x,30,10,8,sex+' 화장실');leaf('relayEntry','wc-'+door,door,29,sex+' 화장실 출입문');
+  room('relayEntry',x,30,10,8,sex+' 화장실');leaf('relayEntry','wc-'+door,door,29,sex+' 화장실 출입문');M.relayEntry.objects.at(-1).doorType='bathroom';
   fixture('relayEntry','wc-'+door+'-toilet',x+1.5,33,sex+' 화장실 좌변기',0);
-  fixture('relayEntry','wc-'+door+'-basin',x+7.5,31,sex+' 화장실 세면대',1);
-  fixture('relayEntry','wc-'+door+'-mirror',x+7.5,29.5,sex+' 화장실 거울',4,{mount:true,solid:false,facing:'north'});
+  fixture('relayEntry','wc-'+door+'-basin',x+7.5,29.5,sex+' 화장실 세면대',1,{lineBasin:true,mount:true,facing:'north',solid:false,w:32});
+  
   fixture('relayEntry','wc-'+door+'-partition',x+3,33,'용변 칸막이',3,{w:5,back:25,front:10,mount:true,solid:false,facing:'west'});
   for(let xx=x;xx<=x+3;xx++)M.relayEntry.grid[31][xx]=2;for(let yy=31;yy<=35;yy++)M.relayEntry.grid[yy][x+3]=2;for(let xx=x;xx<=x+3;xx++)M.relayEntry.grid[35][xx]=2;leaf('relayEntry','wc-'+door+'-stall',x+1,35,sex+' 화장실 안쪽 칸 문');
   if(sex==='여자'){for(let xx=x+4;xx<=x+6;xx++)M.relayEntry.grid[31][xx]=2;for(let yy=31;yy<=35;yy++)M.relayEntry.grid[yy][x+6]=2;for(let xx=x+4;xx<=x+6;xx++)M.relayEntry.grid[35][xx]=2;leaf('relayEntry','wc-'+door+'-stall2',x+4,35,'여자 화장실 두 번째 칸 문');}
   fixture('relayEntry','wc-'+door+'-second',sex==='남자'?x+6:x+4.5,sex==='남자'?29.5:33,sex==='남자'?'남자 화장실 소변기':'여자 화장실 두 번째 좌변기',sex==='남자'?2:0,sex==='남자'?{mount:true,facing:'north',solid:false}:{});
   M.relayEntry.objects=M.relayEntry.objects.filter(o=>o.id!=='wc-'+door+'-partition');
-  fixture('relayEntry','wc-'+door+'-bin',x+8,34,'위생용품 수거함',5,{w:5,back:8,front:5});
-  M.relayEntry.objects.push(prop('wc-'+door+'-sign','sign',door+.5,28,sex+' 화장실 표지',{solid:false,roomSign:sex+' 화장실',description:sex+' 화장실. 공용 복도에서 진입하며 세면 구역과 용변 구역이 나뉜다.'}));
+  fixture('relayEntry','wc-'+door+'-bin',x+9.7,37.6,'위생용품 수거함',5,{w:4,back:6,front:3,slimBin:true});
+  M.relayEntry.objects.push(prop('wc-'+door+'-sign','sign',door-1.5,29.5,sex+' 화장실 표지',{solid:false,mount:true,facing:'north',decorativeOnly:true,roomSign:sex+' 화장실',signSex:sex}));
  }
  // The vacant flat still has the wet services of a home.
  room('unit104',5,20,4,5,'104호 · 욕실');for(let y=21;y<=23;y++)for(let x=9;x<=11;x++)M.unit104.grid[y][x]=1;for(let y=20;y<=24;y++)M.unit104.grid[y][9]=2;leaf('unit104','104-bath-door',9,22,'104호 욕실 문');M.unit104.objects.at(-1).facing='east';
@@ -44,6 +44,7 @@ export function applyArchitecture(M,prop){
  M.relayArchive.objects.push(prop('relay-seal-desk','desk',8,20,'원본 인계 봉인대',{standardDesk:true,recordRoute:'A',w:23,back:20,front:10,description:'원본 전체의 인수 번호를 묶어 봉인하는 자리. 내 통화만 골라 빼지 않고 복원·인계한다.'}),prop('relay-edit-card','desk',46,18,'부분 사본 발급대',{standardDesk:true,recordRoute:'B',w:23,back:20,front:10,description:'편집용 관리카드 발급대. 정우의 조작 이력만 빠르게 복사할 수 있으나, 누락된 통화 원본은 확인하지 않은 사본이다.'}));
  M.relaySignal.objects.push(prop('relay-booth-release','panel',20,10,'청취 부스 비상 잠금 해제기',{trapRelease:true,technical:7,w:10,back:12,front:8,description:'문틀에 연결된 기계식 비상 해제 손잡이.'}),prop('relay-partial-copy','monitor',42,15,'부분 사본 편집 단말',{partialExport:true,regional:1,w:20,back:22,front:10,description:'관리카드로 지정한 원격 잠금 이력만 복사한다.'}));
  for(const [id,m]of Object.entries(M)){
+  for(const o of m.objects){if(o.internalDoor&&/욕실|화장실|칸 문/.test(o.name))o.doorType='bathroom';}
   m.spacePlan=SPACE_PLANS[id];m.wetCells=new Set();for(const r of m.rooms.filter(r=>/욕실|화장실/.test(r.name)))for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)if(m.grid[y]?.[x]===1)m.wetCells.add(x+','+y);
   for(const o of m.objects){
    if(o.kind==='desk'&&!o.mount&&!o.module&&o.counter===undefined&&o.technical===undefined&&o.facility===undefined&&o.regional===undefined&&o.supply===undefined&&!o.hideKind&&!o.hiddenClue){o.standardDesk=true;o.deskWidth=64;}

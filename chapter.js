@@ -1,7 +1,7 @@
-import {bodyState} from './body.js?v=eb60cef005f5';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=eb60cef005f5";
-import { MAPS, sight, worldFor } from "./world.js?v=eb60cef005f5";
-import { take, note } from "./state.js?v=eb60cef005f5";
+import {bodyState} from './body.js?v=0626962de89e';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=0626962de89e";
+import { MAPS, sight, worldFor } from "./world.js?v=0626962de89e";
+import { take, note } from "./state.js?v=0626962de89e";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -105,7 +105,7 @@ export function relayAction(s,o,choice=null){
  if(records[action]){
   const [flag,title,text]=records[action];const first=!s.flags[flag];s.flags[flag]=true;note(s,o.id,text);
   if(action==='register')take(s,'relayBadge');
-  return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'drawer',choices:action==='lastVoice'&&!s.bag.includes('relayExport')?[['내 목소리까지 포함한 통화 원본을 챙긴다','collectOriginal']]:undefined,haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
+  return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'paper',choices:action==='lastVoice'&&!s.bag.includes('relayExport')?[['내 목소리까지 포함한 통화 원본을 챙긴다','collectOriginal']]:undefined,haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
  }
  if(action==='compare'){
   if(s.bag.includes('relayCopy'))return result(o.name,'파일 번호를 조회한 출력 사본은 이미 챙겼다. 비어 있는 번호는 수정 전 목록과 대조해야 한다.');
@@ -126,7 +126,7 @@ export function relayAction(s,o,choice=null){
   if(!s.flags.relayPipes)return result(o.name,'점검판의 배관이 분리되어 있다. 회전 관을 연결해야 한다.',{puzzle:'pipes'});
   s.bag=s.bag.filter(k=>k!=='relayWheel');s.flags.relayCooling=true;
   note(s,'relay-cooling','수동 핸들을 냉각 밸브 축에 연결하고 개방했다. 기존 입력을 분리한 다음 비상 회선을 투입한다.');
-  return result(o.name,'사각 홈을 맞추고 핸들을 돌렸다. 배관 안쪽으로 물이 흐른다.',{sound:'door'});
+  return result(o.name,'사각 홈을 맞추고 핸들을 돌렸다. 배관 안쪽으로 물이 흐른다.',{sound:'valve'});
  }
  if(action==='isolate'){
   if(!s.flags.relayCooling)return result(o.name,'운전 안내: 먼저 서쪽 순환실의 냉각 밸브를 열 것. 순환 확인 없이 절체할 수 없다.');

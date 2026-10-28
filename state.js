@@ -1,14 +1,14 @@
-import {MEMENTOS} from './mementos.js?v=eb60cef005f5';
-import {canPreserve} from './chapter1-route.js?v=eb60cef005f5';
-import {bodyState,validBody} from './body.js?v=eb60cef005f5';
-import {validInvestigation} from './investigation.js?v=eb60cef005f5';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=eb60cef005f5';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=eb60cef005f5";
-import { STORY, canSurrender } from "./story.js?v=eb60cef005f5";
+import {MEMENTOS} from './mementos.js?v=0626962de89e';
+import {canPreserve} from './chapter1-route.js?v=0626962de89e';
+import {bodyState,validBody} from './body.js?v=0626962de89e';
+import {validInvestigation} from './investigation.js?v=0626962de89e';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=0626962de89e';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=0626962de89e";
+import { STORY, canSurrender } from "./story.js?v=0626962de89e";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 14,
+  layout: 15,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -26,6 +26,7 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+  knotThreadMemoryFirst:'매듭실 · 모아 둔 기억',knotThreadMemoryComplete:'매듭실 · 되찾은 일상',
   ...Object.fromEntries(Object.entries(MEMENTOS).map(([id,m])=>[id,m.name])),
   editPass:'부분 사본 편집 관리카드',
   restoredRoster:'복원한 야간 근무·인계표 원본',
@@ -106,7 +107,7 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===14)throw Error("가구 내부의 저장 위치");
+    if(s.layout===15)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -116,7 +117,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:14, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:15, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

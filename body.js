@@ -1,5 +1,5 @@
 export function discoverThread(s){if(s.flags.threadDiscovered)return null;s.flags.threadDiscovered=true;return '이건 뭐지…? 평범한 실 같은데, 손끝이 이상하게 저려.\n실 끝이 내 그림자 쪽으로 끌려가고 있어. 버리면 안 될 것 같은 기분이야.';}
-export const RECOVERY_ITEMS=['knotThread','knotThreadSecond','knotThreadPacked','knotThreadStored'];
+export const RECOVERY_ITEMS=['knotThread','knotThreadSecond','knotThreadPacked','knotThreadStored','knotThreadMemoryFirst','knotThreadMemoryComplete'];
 export const isRecoveryItem=id=>RECOVERY_ITEMS.includes(id);
 export function collectRecovery(s,o){if(!isRecoveryItem(o?.recoveryItem)||s.flags['recovered_'+o.id])return null;s.flags['recovered_'+o.id]=true;if(!s.bag.includes(o.recoveryItem))s.bag.push(o.recoveryItem);lowerLightForPickup(s);return o.recoveryItem;}
 export function validBody(b){

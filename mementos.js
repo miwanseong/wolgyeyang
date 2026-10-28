@@ -1,4 +1,4 @@
-import {lowerLightForPickup} from './body.js?v=eb60cef005f5';
+import {lowerLightForPickup} from './body.js?v=0626962de89e';
 export const MEMENTOS={
  memoryMeal:{name:'접힌 식사 약속',map:'apartment',object:'home-books-a',text:'책갈피 대신 접힌 종이. 서윤의 글씨: 「다음 쉬는 날은 언니가 고르기. 지난번엔 내가 고른 집이 너무 매웠으니까.」 뒷면에는 내가 적은 가게 이름 세 개가 지워졌다 다시 쓰여 있다.'},
  memoryOrange:{name:'102호 장보기 메모',map:'unit102',object:'102-tea-table',text:'미정의 장보기 목록 아래 「101호에 귤 봉지 돌려주기」. 봉지에 붙였던 서윤의 작은 웃는 얼굴 스티커가 종이 끝에 남아 있다.'},
@@ -9,3 +9,10 @@ export const MEMENTOS={
 };
 export function collectMemento(s,id){const entry=MEMENTOS[id];if(!entry||s.bag.includes(id)||entry.requiresWatch&&!s.investigation?.gear?.includes('watch'))return false;lowerLightForPickup(s);s.bag.push(id);if(!s.notes.some(n=>n.id===id))s.notes.push({id,text:entry.text});return true;}
 export function collectedMementos(s){return Object.entries(MEMENTOS).filter(([id])=>s.bag.includes(id));}
+
+export const MEMENTO_REWARDS=[{count:3,item:'knotThreadMemoryFirst',flag:'memoryReward3'},{count:6,item:'knotThreadMemoryComplete',flag:'memoryReward6'}];
+export function claimMementoRewards(s){
+ const count=collectedMementos(s).length,rewards=[];
+ for(const r of MEMENTO_REWARDS)if(count>=r.count&&!s.flags[r.flag]){s.flags[r.flag]=true;if(!s.bag.includes(r.item))s.bag.push(r.item);s.notes.push({id:r.flag,text:`일상의 조각 ${r.count}개를 모았다. 종이를 묶던 실이 그림자 쪽으로 감긴다. 매듭실 한 타래로 잃은 윤곽 하나를 회복할 수 있다.`});rewards.push(r.item);}
+ return rewards;
+}
