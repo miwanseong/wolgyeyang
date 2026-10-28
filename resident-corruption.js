@@ -1,5 +1,5 @@
 export const CORRUPT_HEADS=[[186,10,304,332],[598,10,324,332],[1047,10,307,335],[196,355,266,335],[627,355,276,335],[1080,355,262,340],[201,697,251,314],[634,696,261,315],[1087,695,247,316]];
-import {distortionStage} from './distortion.js?v=fec696cf7392';
+import {distortionStage} from './distortion.js?v=54ec5e85cbbf';
 export function npcCorruption(s){
  if(!s.flags.chapter2||!s.flags.npcScreamHeard)return 0;
  const elapsed=(s.relayExposure||0)-(s.npcScreamAt||0);

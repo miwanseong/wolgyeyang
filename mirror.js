@@ -1,6 +1,6 @@
 export function mirrorGeometry(w,h){const height=h*.99,width=height*564/1024;return{x:(w-width)/2,y:(h-height)/2,w:width,h:height};}
 export class MirrorView{
- constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.image=new Image();this.image.src='assets/mirror-pair.png?v=fec696cf7392';this.ready=this.image.decode();this.time=0;this.active=false;}
+ constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.image=new Image();this.image.src='assets/mirror-pair.png?v=54ec5e85cbbf';this.ready=this.image.decode();this.time=0;this.active=false;}
  open(flash){this.time=0;this.flash=flash;this.played=false;this.active=true;}
  prepareOverlay(w,h,g){
   const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const c=canvas.getContext('2d');

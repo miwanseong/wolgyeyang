@@ -47,7 +47,7 @@ export const EFFECTS = {
   drawer: "cc0_creak.wav",
   save: "cc0_switch.wav",
   capture: "cc0_soft_hit.wav",
-  door: "cc0_door_open.wav",
+  door: "audiosfx_door_open.mp3",
   thud: "cc0_thud.wav",
   glass: "sfx_glass_breaking.mp3",
 };
