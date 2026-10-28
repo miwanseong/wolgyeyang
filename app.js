@@ -1,41 +1,42 @@
-import {assistResident} from './npc-threat.js?v=35d4de009dfc';
-import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective} from './exploration.js?v=35d4de009dfc';
-import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=35d4de009dfc';
-import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=35d4de009dfc';
-import {ensureRun,recordDeathReturn} from './return-memory.js?v=35d4de009dfc';
-import {ThresholdHorror} from './threshold-horror.js?v=35d4de009dfc';
-import {MEMENTOS,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=35d4de009dfc';
-import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=35d4de009dfc';
-import {acquireRelayMap} from './chapter.js?v=35d4de009dfc';
-import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=35d4de009dfc';
-import {advanceDistortion} from './distortion.js?v=35d4de009dfc';
-import {hollowStage} from './hollow-art.js?v=35d4de009dfc';
-import {isRelayGhost} from './relay-ghosts.js?v=35d4de009dfc';
-import {collectRecovery,discoverThread} from './body.js?v=35d4de009dfc';
-import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=35d4de009dfc';
-import {MirrorView} from './mirror.js?v=35d4de009dfc';
-import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=35d4de009dfc';
-import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem} from './body.js?v=35d4de009dfc';
-import {RandomHunt} from './random-hunt.js?v=35d4de009dfc';
-import {RoomHaunts,rememberHide} from './haunting.js?v=35d4de009dfc';
-import {travelSound} from './audio.js?v=35d4de009dfc';
-import {footContacts} from './gait.js?v=35d4de009dfc';
-import {Inventory,itemIcon,itemDescription} from './inventory.js?v=35d4de009dfc';
-import {ReasoningPanel,comparisonView} from './reasoning.js?v=35d4de009dfc';
-import {inPuddle,witnessesEntry} from './facility.js?v=35d4de009dfc';
-import {sanity,strain,Hallucinations} from './mental.js?v=35d4de009dfc';
-import {Atmosphere} from './atmosphere.js?v=35d4de009dfc';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=35d4de009dfc';
-import {Crowd} from './crowd.js?v=35d4de009dfc';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=35d4de009dfc';
-import { PuzzlePanel } from './puzzles.js?v=35d4de009dfc';
-import { CaptureAnimation, checkpoints } from './capture.js?v=35d4de009dfc';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender } from "./story.js?v=35d4de009dfc";
-import { Scene, facingDirection } from "./scene.js?v=35d4de009dfc";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=35d4de009dfc";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=35d4de009dfc";
-import { enterChapterTwo, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=35d4de009dfc";
-import { AudioDirector, TRACKS } from "./audio.js?v=35d4de009dfc";
+import {callFor} from './phone-calls.js?v=178ec9dc0c70';
+import {assistResident} from './npc-threat.js?v=178ec9dc0c70';
+import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective} from './exploration.js?v=178ec9dc0c70';
+import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=178ec9dc0c70';
+import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=178ec9dc0c70';
+import {ensureRun,recordDeathReturn} from './return-memory.js?v=178ec9dc0c70';
+import {ThresholdHorror} from './threshold-horror.js?v=178ec9dc0c70';
+import {MEMENTOS,MEMENTO_MONOLOGUES,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=178ec9dc0c70';
+import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=178ec9dc0c70';
+import {acquireRelayMap} from './chapter.js?v=178ec9dc0c70';
+import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=178ec9dc0c70';
+import {advanceDistortion} from './distortion.js?v=178ec9dc0c70';
+import {hollowStage} from './hollow-art.js?v=178ec9dc0c70';
+import {isRelayGhost} from './relay-ghosts.js?v=178ec9dc0c70';
+import {collectRecovery,discoverThread} from './body.js?v=178ec9dc0c70';
+import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=178ec9dc0c70';
+import {MirrorView} from './mirror.js?v=178ec9dc0c70';
+import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=178ec9dc0c70';
+import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem,pickupBlocked,stowLight} from './body.js?v=178ec9dc0c70';
+import {RandomHunt} from './random-hunt.js?v=178ec9dc0c70';
+import {RoomHaunts,rememberHide} from './haunting.js?v=178ec9dc0c70';
+import {travelSound} from './audio.js?v=178ec9dc0c70';
+import {footContacts} from './gait.js?v=178ec9dc0c70';
+import {Inventory,itemIcon,itemDescription} from './inventory.js?v=178ec9dc0c70';
+import {ReasoningPanel,comparisonView} from './reasoning.js?v=178ec9dc0c70';
+import {inPuddle,witnessesEntry} from './facility.js?v=178ec9dc0c70';
+import {sanity,strain,Hallucinations} from './mental.js?v=178ec9dc0c70';
+import {Atmosphere} from './atmosphere.js?v=178ec9dc0c70';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=178ec9dc0c70';
+import {Crowd} from './crowd.js?v=178ec9dc0c70';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=178ec9dc0c70';
+import { PuzzlePanel } from './puzzles.js?v=178ec9dc0c70';
+import { CaptureAnimation, checkpoints } from './capture.js?v=178ec9dc0c70';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender,canSeekOriginal } from "./story.js?v=178ec9dc0c70";
+import { Scene, facingDirection } from "./scene.js?v=178ec9dc0c70";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=178ec9dc0c70";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=178ec9dc0c70";
+import { enterChapterTwo,arrivalBodyLine, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=178ec9dc0c70";
+import { AudioDirector, TRACKS } from "./audio.js?v=178ec9dc0c70";
 import {
   initial,
   ITEMS,
@@ -47,7 +48,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=35d4de009dfc";
+} from "./state.js?v=178ec9dc0c70";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -194,7 +195,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=35d4de009dfc')":"url('assets/resident-portraits.png?v=35d4de009dfc')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=178ec9dc0c70')":"url('assets/resident-portraits.png?v=178ec9dc0c70')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -221,20 +222,21 @@ function observeAcquisitions(t){
  for(const id of observedItems)if(!ids().includes(id))observedItems.delete(id);
  if(t<acquisitionUntil)return;
  const id=acquisitionQueue.shift();if(!id){acquiredPanel.hidden=true;return;}
- acquiredPanel.dataset.item=id;acquiredPanel.replaceChildren(itemIcon(id));const text=document.createElement('div'),heading=document.createElement('strong'),description=document.createElement('p');heading.textContent=(ITEMS[id]||EQUIPMENT[id]?.name||id)+' 획득';description.textContent=EQUIPMENT[id]?.description||itemDescription(id);text.append(heading,description);acquiredPanel.append(text);acquiredPanel.hidden=false;acquisitionUntil=t+3400;
+ acquiredPanel.dataset.item=id;acquiredPanel.replaceChildren(itemIcon(id));const text=document.createElement('div'),heading=document.createElement('strong'),description=document.createElement('p');heading.textContent=(ITEMS[id]||EQUIPMENT[id]?.name||id)+' 획득';description.textContent=MEMENTO_MONOLOGUES[id]||EQUIPMENT[id]?.description||itemDescription(id);text.append(heading,description);acquiredPanel.append(text);acquiredPanel.hidden=false;acquisitionUntil=t+3400;
 }
 function mementoText(memory){
- const rewards=claimMementoRewards(state);if(!rewards.length)return memory.text;
- const first=discoverThread(state);return memory.text+'\n\n흩어진 종이를 함께 묶자, 엉켜 있던 실 한 타래가 손에 남았다.\n'+(first||'이 느낌… 잃은 자리를 붙잡아 주던 실과 같아.');
+ const monologue=MEMENTO_MONOLOGUES[Object.keys(MEMENTOS).find(id=>MEMENTOS[id]===memory)]||memory.text;const rewards=claimMementoRewards(state);if(!rewards.length)return monologue;
+ const first=discoverThread(state);return monologue+'\n\n흩어진 종이를 함께 묶자, 엉켜 있던 실 한 타래가 손에 남았다.\n'+(first||'이 느낌… 잃은 자리를 붙잡아 주던 실과 같아.');
 }
 function pickup(key) {
-  if(lowerLightForPickup(state))toast('물건을 집으려고 손전등을 잠시 내려놓았다.');
+  if(pickupBlocked(state)){toast('남은 손이 비지 않는다. F로 손전등을 내려놓아야 해.');return false;}
   if (!state.bag.includes(key)) {
     take(state, key);
     sound.effect("item");
     scene.burst(nearest?.x||state.x,nearest?.y||state.y,"spark");
     toast(`${ITEMS[key]} 획득 · 기록 앱에서 단서 확인`);
   }
+  return true;
 }
 function canHunt(mapId=state.map){
  if(state.flags.relayTrapActive||thresholdHorror.active)return false;
@@ -242,6 +244,7 @@ function canHunt(mapId=state.map){
  return state.flags.chapter2?state.flags.relayPower&&['relayArchive','relayPlant','relaySignal'].includes(mapId):state.flags.power&&['basement','upper'].includes(mapId);
 }
 function openRelayAction(o,choice=null){
+ if(pickupBlocked(state)&&['incoming','register','compare','lastVoice','wheel','export'].includes(o.chapterAction)){say('서하','남은 손으로 수화기나 매체를 집을 수 없어. F로 손전등부터 내려놓자.');return;}
  prepareExploration(state);
  if(o.chapterAction==='lastVoice'&&state.flags.relayPower&&!state.flags.relayLastVoice&&!state.flags.deckCouplerInstalled){
   state.flags.deckCouplerNeeded=true;
@@ -263,6 +266,8 @@ function openRelayAction(o,choice=null){
  say(r.title,r.text,actions);
 }
 function talkResident(o){
+ const b=bodyState(state),loss=b.leg?'leg':b.arm?'arm':null,lossKey='noticedPlayer_'+o.id+'_'+loss;
+ if(loss&&!state.flags[lossKey]){state.flags[lossKey]=true;const concern=loss==='leg'?({haerin:'잠깐… 다리가…! 여기까지 기어오신 거예요? 움직이지 마세요. 어디 잡을 곳이 필요하세요?',mijeong:'서하야, 다리가 왜…! 잠깐만, 내 손 잡아. 여기까지 어떻게 온 거야?',dohyun:'바닥을 짚지 마세요. 젖은 선이 있습니다. 다리가… 도움이 필요하십니까? 우선 마른 쪽으로 오세요.'})[o.id]:({haerin:'소매가 비었어요… 다치신 거예요? 남은 손까지 떨리는데 제가 봉투를 받아 드릴까요?',mijeong:'팔이… 언제 이렇게 된 거야. 혼자 버티지 말고 말해. 잠깐 기대도 돼.',dohyun:'팔을 다치셨군요. 장비는 제가 맡겠습니다. 힘줘서 스위치를 누르지 마세요.'})[o.id];say(o.name,concern,[['잠깐 부축해 주세요',()=>say('서하','잠깐만 기대도 될까요… 여기가 아직 아파요.',[["기록 이야기를 이어 간다",()=>talkResident(o)]])],['아직 움직일 수 있어요. 가져온 기록을 봐 주세요',()=>talkResident(o)]]);return;}
  const shock=noticeNpc(state,o);if(shock){state.running=false;state.facing=Math.atan2(o.y-state.y,o.x-state.x);say('서하',shock,[['대답을 기다린다',()=>talkResident(o)]]);scene.focus=o;return;}
  const dx=state.x-o.x,dy=state.y-o.y;o.direction=Math.abs(dx)>Math.abs(dy)?(dx>0?2:1):(dy<0?3:0);
  const text=residentDialogue(state,o);state.flags['talked_'+o.id]=true;
@@ -278,6 +283,7 @@ function talkResident(o){
  say(o.name,text,[...help,...questions,...(options.power?[["원본 데크의 전원 복구를 부탁한다",()=>{if(!state.bag.includes('relayCopy')){say('도현','먼저 기록동 원본 색인에서 누락된 파일 번호를 찾아 주세요. 어떤 데크를 살려야 하는지 확인되면 제가 설비를 맡겠습니다.');return;}for(const key of ['relayLogic','relayPipes','relayCooling','relayIsolated','relayPower','relayTechnicianRestored'])state.flags[key]=true;state.bag=state.bag.filter(k=>k!=='relayWheel');sound.effect('flashlightOn');say('도현','냉각과 절체는 제가 맡겠습니다. 점검표에 원본 데크 회선 어댑터의 접점 부식이 남아 있어요. 전원을 올리는 것만으로는 재생이 안 됩니다. 설비층 서쪽 정비동 작업대에서 보관실 비품 열쇠를 챙겨 같은 모델의 밀봉 어댑터를 가져오세요. 그걸 송출층 원본 데크에 연결한 뒤 두 신호를 맞추면 됩니다.');}]]:[]),...(options.check?[[CHECKS[o.id].label+(state.investigation?.rolls[o.id]?'':' · 판정'),()=>say('서하',({haerin:'취소 뒤에 다시 온 전화가 빠져 있어요. 해린 씨가 숨긴 건가요?',mijeong:'열쇠가 돌아갔는데 문은 안 열렸어요. 빗장이 따로 있었던 거죠?',dohyun:'냉각 확인 뒤에 기존 입력을 분리하고 비상 회선을 투입하는 거죠?'})[o.id],[['답변을 듣는다',()=>openCheck(o.id,o.name)]])]]:[]),...(comparison.sourceReady&&comparison.evidenceReady?[['말과 기록을 나란히 본다',()=>openReasoning(o.id)]]:[]),...(options.request?[['잘린 통화를 찾기 위해 수정 전 목록을 요청한다 · 설득',()=>say('서하','제가 가져온 녹음에는 잘린 구간이 있어요. 인계 목록에서 빠진 파일이 원본에는 남았는지 확인하고 싶어요. 수정 전 목록의 사본을 주세요.',[['사본 제공을 설득한다',()=>openCheck('request','해린')],['말을 거둔다',closeDialog]])]]:[]),['대화를 마친다',closeDialog]]);
 }
 function openCheck(key,speaker='서하'){
+ if(pickupBlocked(state)&&['theft','request','lostbox'].includes(key)){say('서하','손을 비워야 꺼낼 수 있어. F로 손전등을 내려놓자.');return;}
  if(key==='request'&&!state.flags.relayCompared&&!state.flags.relayErasure&&!state.bag.includes('relayCopy')&&!state.bag.includes('auditMemo')){say('해린','어떤 기록이 빠졌다는 건지 먼저 확인해 주세요. 기록동의 접수와 취소 녹음, 잠금 회신에는 각각 원본 파일 번호가 있어요. 제 인계 목록과 번호가 다르면… 수정 전 사본을 내드릴지 이야기하죠.');return;}
  const c=checkPreview(state,key);if(!c)return;const recorded=state.investigation?.rolls[key];if(recorded?.success){say(speaker,recorded.success?c.success:c.failure);return;}closeDialog();eventActive=true;keys.clear();
  const panel=$('roll-panel');panel.hidden=false;
@@ -293,7 +299,7 @@ function startChapterTwo(){
  if(!enterChapterTwo(state))return;
  closeDialog();enemy.reset();pursuerTrail=null;huntDelay=0;huntCooldown=45;stillness.reset();
  scene.begin(state,worldFor(state));revealRoom('제2장 · 외부 진입 마당');
- say('제2장 · 산북 시설중계소','정우가 문을 잠갔어. 나는 화면에 열린 걸 보고 취소했을 뿐이야… 그랬을 거야.\n하지만 아파트 녹음은 중간이 잘려 있었다. 여기 남은 원본을 들으면, 내가 취소한 뒤 무슨 일이 있었는지 확인할 수 있어.\n잘린 통화의 원본부터 찾자. 설비는 도현 씨에게 부탁할 수 있어. 내가 확인해야 할 건 그날 내 목소리야.');
+ say('서하',arrivalBodyLine(state)+'\n\n정우가 문을 잠갔어. 나는 화면에 열린 걸 보고 취소했을 뿐이야… 그랬을 거야.\n하지만 아파트 녹음은 중간이 잘려 있었다. 여기 남은 원본을 들으면, 내가 취소한 뒤 무슨 일이 있었는지 확인할 수 있어.\n잘린 통화의 원본부터 찾자. 설비는 도현 씨에게 부탁할 수 있어. 내가 확인해야 할 건 그날 내 목소리야.');
 }
 const inventory=new Inventory({sound:name=>sound.effect(name),sanity,recover:useThread});
 const reasoning=new ReasoningPanel($('reasoning-panel'),{sound:name=>sound.effect(name),wrong:()=>strain(state,10),close:()=>{eventActive=false;$('reasoning-panel').hidden=true;keys.clear();canvas.focus();}});
@@ -414,7 +420,7 @@ function showRoster(){
  for(const row of ROSTER){const tr=document.createElement('tr');for(const text of row){const td=document.createElement('td');td.textContent=text;tr.append(td);}$('roster-rows').append(tr);}
  $('roster-fragment').textContent=state.flags.rosterRestored?ROSTER_FOOT:'';$('roster-take').hidden=!state.flags.rosterRestored||state.bag.includes('restoredRoster');$('roster-close').focus();sound.effect('paper');
 }
-$('roster-take').onclick=()=>{if(!state.flags.rosterRestored)return;pickup('restoredRoster');state.bag=state.bag.filter(k=>k!=='rosterScrap');state.flags.rosterTaken=true;$('roster-modal').hidden=true;eventActive=false;canvas.focus();};
+$('roster-take').onclick=()=>{if(!state.flags.rosterRestored)return;if(!pickup('restoredRoster'))return;state.bag=state.bag.filter(k=>k!=='rosterScrap');state.flags.rosterTaken=true;$('roster-modal').hidden=true;eventActive=false;canvas.focus();};
 $('roster-close').onclick=()=>{$('roster-modal').hidden=true;eventActive=false;canvas.focus();};
 function useThread(item,part){
  if(!recoverLimb(state,part,item))return;closePhone();sound.effect('paper');scene.impact();say('서하',part==='leg'?'발끝이 바닥에 닿았다. 실을 당기자 차갑던 자리에 감각이 돌아온다.\n이번에는… 놓치지 말자.':'빈 소매 안으로 손가락의 감각이 돌아온다. 매듭실은 손안에서 가루가 됐다.\n빛을 다시 잡을 수 있어.');
@@ -428,6 +434,8 @@ function interact() {
   if (!nearest) return;
   const o = nearest,
     id = o.id;
+  if(['entry-intercom','relay-duty-intercom'].includes(o.id)&&callFor(state,o.id)){answerPhone(o);return;}
+  const handling=o.memento||o.recoveryItem||o.routeAction&&!o.routeAction.startsWith('entry')&&o.routeAction!=='roster'||o.recordRoute||o.partialExport||o.pumpLog||o.lostbox||o.fixture==='fuse-source'||o.exploreAction&&o.exploreAction!=='laundryDrain'||o.storySupply||o.hiddenClue||['lighter','rosterPiece','keybox','wax'].includes(o.routeAction)||o.collectible||['locker','flashlight','fuse','archive','shoe','desk','archive-original'].includes(o.id);if(handling&&pickupBlocked(state)){say('서하','남은 손에 손전등을 쥐고 있어. F로 내려놓고 집어야 해.');return;}
   if(o.exploreSealed){say('서하',o.exploreSealed);return;}
   if(o.exploreAction){const r=explorationAction(state,o);if(r){if(r.item)pickup(r.item);if(r.sound)sound.effect(r.sound);if(r.item==='courtSlip')addNote('courtSlip',r.line);say('서하',r.item&&isRecoveryItem(r.item)?discoverThread(state)||r.line:r.line);}return;}
   if(o.storySupply){
@@ -780,11 +788,11 @@ function showDeparture(){
   storyScreen('departure');$('story-art').style.backgroundImage=`url(${canvas.toDataURL('image/png')})`;
   $('story-kicker').textContent='월계아파트 · 열린 현관';$('story-heading').textContent='내 이름이 적힌 봉투';
   $('story-line').textContent='나는 문이 열렸다고 확인했다.\n그 확인이 거짓이었다는 목소리가 봉투 안에 있다.';
-  storyButton('원본을 모두 가지고 경찰서에 가서 자수한다',()=>ending('surrender'),!canSurrender(state));
-  storyButton('「내가 죽인 건 아니야」 · 원격 기록을 확인하러 간다',()=>ending('return'),!state.flags.listened||!state.bag.includes('tape'));
+  storyButton('가진 녹음을 들고 경찰서에 가서 자수한다',()=>ending('surrender'),!canSurrender(state));
+  storyButton('「내가 죽인 건 아니야」 · 원격 기록을 확인하러 간다',()=>ending('return'),!canSeekOriginal(state));
   if(canPreserve(state))storyButton('104호 촬영 원본과 인수 경위를 함께 봉인해 제출한다',()=>ending('preserve'));
   storyButton('아직 챙길 것이 있다 · 건물로 돌아간다',()=>{eventActive=false;$('story-sequence').hidden=true;canvas.focus();});
-  $('story-evidence').textContent=ORIGINALS.map(k=>(state.bag.includes(k)?'✓ ':'미확보 · ')+ITEMS[k]).join('   /   ')+(state.flags.listened?'':'\n방송실에서 테이프를 먼저 들어야 한다.');
+  $('story-evidence').textContent=ORIGINALS.map(k=>(state.bag.includes(k)?'✓ ':'미확보 · ')+ITEMS[k]).join('   /   ')+(state.bag.includes('inspectionPhotos')?'\n✓ 104호 점검 사진 원본':'\n104호 점검 사진 원본 미확보 · 원격 기록 확인 경로 잠김')+(state.flags.listened?'':'\n방송실에서 테이프를 먼저 들어야 한다.');
   $('story-actions').querySelector('button:not(:disabled)')?.focus();
 }
 function ending(choice){
@@ -1038,7 +1046,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=35d4de009dfc", memory: "assets/event-memory.png?v=35d4de009dfc"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=178ec9dc0c70", memory: "assets/event-memory.png?v=178ec9dc0c70"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1127,7 +1135,7 @@ function startStoryShot(kind){
  const map=worldFor(state),find=id=>map.objects.find(o=>o.id===id),point=kind==='lightAccident'?find('story-drain-pipe-a'):kind==='cancelEyes'?find('relay-cancel'):kind==='powerPhone'?find('entry-intercom'):kind==='intakeDoor'?find('relay-audit-door'):kind==='archiveAlarm'?find('story-archive-hatch'):kind==='powerReturn'?find('relay-plant-signal'):kind==='drainPursuit'?{x:17*32,y:12*32}:null;
  const seen={cancelEyes:'storyVerifierSeen',powerPhone:'storyPowerSeen',intakeDoor:'storyIntakeSeen',archiveAlarm:'storyArchiveAlarm',powerReturn:'storyPowerReturn',voiceReaction:'storyVoiceReaction',floorFall:'storyFell',drainPursuit:'storyDrainPursuit'}[kind];if(seen)state.flags[seen]=true;
  storyShot={kind,elapsed:0,duration:kind==='floorFall'?1.5:kind==='voiceReaction'?2.8:2.2,focus:point||{x:state.x,y:state.y}};scene.cinematicFocus=storyShot.focus;
- if(kind==='lightAccident'){sound.effect('glass',.5);scene.impact();}else if(kind==='archiveAlarm'||kind==='floorFall'){sound.effect('shutter',.7);scene.impact();forcedCue='panic';}else if(kind==='powerPhone'||kind==='voiceReaction'){sound.effect('whisper',.4);forcedCue='panic';}else sound.effect('omenKnock',.5);
+ if(kind==='lightAccident'){sound.effect('glass',.5);scene.impact();}else if(kind==='archiveAlarm'||kind==='floorFall'){sound.effect('shutter',.7);scene.impact();forcedCue='panic';}else if(kind==='powerPhone'||kind==='voiceReaction'){if(kind==='powerPhone')sound.phoneRing();else sound.effect('whisper',.4);forcedCue='panic';}else sound.effect('omenKnock',.5);
  if(kind==='cancelEyes'){scene.storyVerifier={x:storyShot.focus.x+32,y:storyShot.focus.y+12,hollowStage:0,age:4,target:state};noteManifestation(state,'hollow');}
  if(kind==='voiceReaction'){for(let i=0;i<12;i++){const angle=i*Math.PI/6,p={x:state.x+Math.cos(angle)*72,y:state.y+Math.sin(angle)*72};if(canMove(map,p.x,p.y)&&sight(map,state,p)){scene.echo={...p,elapsed:0,duration:3.6};storyShot.focus=p;break;}}storyShot.duration=3.6;}
  if(kind==='drainPursuit'&&enemy.follow(map,{x:17*32,y:12*32,targetX:state.x,targetY:state.y},state)){enemy.kind='hollow';enemy.hollowTime=35;enemy.grace=4;noteManifestation(state,'hollow');state.flags['met_relay_hollow_'+hollowStage(state)]=true;}
@@ -1148,7 +1156,7 @@ function finishStoryShot(kind){
   options.push(['휴대폰 화면으로 발밑을 비춘다',()=>{useEmergencyLight(state,'phone');say('서하','화면 밝기를 올렸다. 가까운 바닥 정도는 보여. 벽의 비상등 아래 안전함을 찾아야 해.');}]);
   say('서하','관에서 떨어진 물이 손전등 안으로 스며들었다. 빛이 떨리더니 꺼졌어.\n천장에 비친 건 내 그림자가 아니었어… 지금은 저 비상등을 따라가야 해.',options);return;
  }
- if(kind==='powerPhone'){say('서하','전기를 올렸을 뿐인데… 현관 인터폰 수화기에서 숨소리가 나.\n「열렸는지… 직접 봤어?」\n내가 확인했다고 남긴 서류… 봉인된 보관함에 그대로 있을까.');scene.focus=MAPS[state.map].objects.find(o=>o.to==='upper');}
+ if(kind==='powerPhone'){say('서하','전기를 올리자 현관 인터폰이 울리기 시작했어. 이 시간에 누가…\n수화기 표시등이 깜빡이고 있어. 확인해 보자.');scene.focus=MAPS[state.map].objects.find(o=>o.id==='entry-intercom');}
  if(kind==='cancelEyes')say('서하','완료 표시는 켜져 있는데, 문이 열렸다는 칸은 비어 있어.\n저 눈… 내가 보지 않고 확인했다고 쓴 칸에서 번졌어. 서윤 얼굴이 아니야. 빈 기록이 나를 보고 있어.');
  if(kind==='intakeDoor')say('서하','봉투 안에 대조실 비품 열쇠가 있었어.\n문 뒤에서 먼저 잠금쇠가 울렸어… 아직 열쇠를 넣지도 않았는데. 내 취소 통화는 저 안에 있어.');
  if(kind==='archiveAlarm')stormChoice();
@@ -1180,6 +1188,11 @@ function updateStoryShot(t,dt){
  if(shot.kind==='floorFall'){const c=canvas.getContext('2d');c.fillStyle=`rgba(0,0,0,${Math.max(0,(shot.elapsed/shot.duration-.55)/.45)})`;c.fillRect(0,0,canvas.width,canvas.height);}
  if(shot.elapsed>=shot.duration)finishStoryShot(shot.kind);
 }
+let ringClock=0,ringState=null;
+function answerPhone(o){
+ const call=callFor(state,o.id);if(!call)return;if(pickupBlocked(state)){say('서하','수화기를 잡을 손이 없어. F로 손전등을 내려놓자.');return;}
+ say('서하','수화기 안쪽에서 연결음이 떨린다.',[["수화기를 들어 전화를 받는다",()=>{scene.focus=o;scene.receiver=o.id;sound.effect('puzzleTurn',.5);say(call.speaker,call.first,[[call.question,()=>say('서하',call.question,[["상대의 대답을 듣는다",()=>{sound.effect('whisper',.3);say(call.speaker,call.reply,[["수화기를 내려놓는다",()=>{state.flags[call.flag]=true;scene.receiver=null;addNote(call.flag,call.last);closeDialog();say('서하',call.last);}]]);}]] )]]);}],["아직 받지 않는다",closeDialog]]);
+}
 let roomTimer;
 function revealRoom(name) {
   clearTimeout(roomTimer);
@@ -1193,6 +1206,7 @@ function render(t) {
   last = t;
   if (!started) return;
   observeAcquisitions(t);
+  if(ringState!==state){ringState=state;ringClock=0;}ringClock=Math.max(0,ringClock-dt);if(!ringClock&&!dialog&&!phone&&!eventActive&&!traveling&&!enemy.active){const ringing=worldFor(state).objects.find(o=>callFor(state,o.id));if(ringing){sound.phoneRing();ringClock=7;}}
   if(document.hidden){stillness.reset();return;}
   if(!$("death-screen").hidden){
     const pose=captureAnimation.draw(dt,scene.reduced);
@@ -1379,7 +1393,7 @@ function render(t) {
     ? "숨 고르기"
     : Math.ceil(state.stamina) + "%";
   const bodyText=bodyDescription(state);$("body-state").hidden=!bodyText;$("body-state").textContent=bodyText;
-  $("flash-state").textContent = !canHoldLight(state) ? "LIGHT / —" : !state.bag.includes("flashlight") ? "LIGHT / 미소지" : state.flags.flashlightBroken ? (state.flags.temporaryLighter?"LIGHT / 라이터":state.flags.temporaryPhone?"LIGHT / 휴대폰":"LIGHT / 침수") : state.flashlight
+  $("flash-state").textContent = !canHoldLight(state) ? "LIGHT / —" : !state.bag.includes("flashlight") ? "LIGHT / 미소지" : state.flags.flashlightBroken ? (state.flags.temporaryLighter?"LIGHT / 라이터":state.flags.temporaryPhone?"LIGHT / 휴대폰":"LIGHT / 침수") : state.flags.lightStowed ? "LIGHT / 내려놓음" : state.flashlight
     ? "LIGHT / ON"
     : "LIGHT / OFF";
   $("threat").textContent = pursuerTrail ? "층간 추적 중 — 문 너머에서 따라온다" : enemy.active
@@ -1423,14 +1437,15 @@ document
   .forEach((b) => (b.onclick = () => app(b.dataset.app)));
 for (let i = 0; i < 24; i++) $("windows").append(document.createElement("div"));
 function flashlight() {
- if(state?.flags.flashlightBroken){const source=state.bag.includes('lighter')?'lighter':'phone';useEmergencyLight(state,source);sound.effect(source==='lighter'?'lighter':'flashlightOff');toast(source==='lighter'?'라이터 불을 손으로 가렸다.':'휴대폰 화면으로 가까운 바닥을 비췄다.');return;}
+ if(!started||eventActive||dialog||phone||state.hidden)return;
+ if(state?.flags.flashlightBroken){if(state.flags.temporaryLighter||state.flags.temporaryPhone){stowLight(state,true);toast('임시 조명을 내려놓았다.');return;}state.flags.lightStowed=false;const source=state.bag.includes('lighter')?'lighter':'phone';useEmergencyLight(state,source);sound.effect(source==='lighter'?'lighter':'flashlightOff');toast(source==='lighter'?'라이터 불을 손으로 가렸다.':'휴대폰 화면으로 가까운 바닥을 비췄다.');return;}
   if (!started || eventActive || dialog || phone || state.hidden) return;
   if(!state.bag.includes("flashlight")){toast("접수대에서 손전등을 먼저 챙겨야 한다.");return;}
   if(!canHoldLight(state)){state.flashlight=false;toast("잡으려 해도 두 소매만 흔들린다.");return;}
-  state.flashlight = !state.flashlight;
+  stowLight(state,state.flashlight||!state.flags.lightStowed);
   sound.effect(state.flashlight ? "flashlightOn" : "flashlightOff");
   toast(
-    state.flashlight ? "손전등을 켰다." : "손전등을 껐다. 발각 거리가 줄었다.",
+    state.flashlight ? (bodyState(state).arms===1?"남은 손으로 손전등을 들어 올렸다.":"손전등을 들어 올렸다.") : "손전등을 내려놓았다. 손이 비었다.",
   );
 }
 window.addEventListener("keydown", (e) => {
@@ -1459,7 +1474,7 @@ window.addEventListener("keydown", (e) => {
   }
   if (e.target.matches("input,select") && k !== "escape") return;
   if (k === "escape") {
-    if (dialog) closeDialog();
+    if (dialog){scene.receiver=null;closeDialog();}
     else if (phone) {if(phoneApp)phoneHome();else closePhone();}
     return;
   }
@@ -1484,7 +1499,7 @@ window.addEventListener("keydown", (e) => {
   if (["arrowup", "arrowdown", "arrowleft", "arrowright", " "].includes(k))
     e.preventDefault();
   if (k === "e" || k === "enter") {
-    if (!e.repeat) interact();
+    e.preventDefault();if (!e.repeat) interact();
     return;
   }
   keys.add(k);

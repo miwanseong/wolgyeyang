@@ -1,7 +1,8 @@
-import {residentOutcome} from './npc-threat.js?v=35d4de009dfc';
-import {familyEnding} from './haunt-causality.js?v=35d4de009dfc';
-import {stormEndingBeat} from './story-flow.js?v=35d4de009dfc';
-import {lowerLightForPickup} from './body.js?v=35d4de009dfc';
+import {hasOriginals} from './story.js?v=178ec9dc0c70';
+import {residentOutcome} from './npc-threat.js?v=178ec9dc0c70';
+import {familyEnding} from './haunt-causality.js?v=178ec9dc0c70';
+import {stormEndingBeat} from './story-flow.js?v=178ec9dc0c70';
+import {lowerLightForPickup} from './body.js?v=178ec9dc0c70';
 export const TRAP_DOORS=['relay-quiet-inner-door','relay-booth-door'];
 export function chooseRecordRoute(s,route){
  if(!s.bag.includes('relayCopy')||s.bag.includes('relayExport'))return false;
@@ -25,4 +26,4 @@ function baseRouteFilm(s,id,film){
  return film;
 }
 
-export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const rescued=residentOutcome(s);if(rescued&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats,rescued]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}
+export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);if(id==='surrender'&&!hasOriginals(s))result={...film,beats:[['내 목소리','녹음테이프를 창구 위에 올렸다. 그날 내가 한 확인과 취소를 내 말로 진술했다.',''],['남겨 둔 증거','104호 사진과 남은 서류를 확보하지 못했다고 말했다. 확인하지 못한 사실까지 채워 넣지는 않았다.',''],['진술 접수','녹음과 진술의 인수 번호가 적힌 종이를 받았다. 조사는 이제 시작이었다.','']]};const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const rescued=residentOutcome(s);if(rescued&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats,rescued]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}

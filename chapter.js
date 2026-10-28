@@ -1,12 +1,13 @@
-import {prepareExploration,explorationObjective} from './exploration.js?v=35d4de009dfc';
-import {learnFamilyBinding} from './haunt-causality.js?v=35d4de009dfc';
-import {prepareStoryFlow,storyObjective} from './story-flow.js?v=35d4de009dfc';
-import {bodyState} from './body.js?v=35d4de009dfc';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=35d4de009dfc";
-import { MAPS, sight, worldFor } from "./world.js?v=35d4de009dfc";
-import { take, note } from "./state.js?v=35d4de009dfc";
+import {prepareExploration,explorationObjective} from './exploration.js?v=178ec9dc0c70';
+import {learnFamilyBinding} from './haunt-causality.js?v=178ec9dc0c70';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=178ec9dc0c70';
+import {bodyState,pickupBlocked} from './body.js?v=178ec9dc0c70';
+import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=178ec9dc0c70";
+import { MAPS, sight, worldFor } from "./world.js?v=178ec9dc0c70";
+import { take, note } from "./state.js?v=178ec9dc0c70";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
+ if(!s.flags.chapter2&&s.ending==='return'&&!canSeekOriginal(s)){s.ending=null;s.flags.denial=false;if(!s.notes.some(n=>n.id==='104-route-needed'))s.notes.push({id:'104-route-needed',text:'원격 기록을 확인하러 가기 전에104호 점검 사진 원본부터 확보한다. 녹음만 제출하고 진술하는 경로는 열려 있다.'});}
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
  const ids={register:'relay-register',dutyNote:'relay-duty-note',incoming:'relay-incoming',cancel:'relay-cancel',override:'relay-override',erasure:'relay-erasure',pressure:'relay-pressure',lastVoice:'relay-last-voice',names:'relay-six-names'};
  for(const [key,id]of Object.entries(ids))replacements[id]=records[key][2];
@@ -23,10 +24,10 @@ export function migrateStorySave(s){
  prepareStoryFlow(s);if(s.flags.relayLastVoice&&s.flags.storyVoiceReaction)learnFamilyBinding(s);s.flags.storyV3=true;return s;
 }
 export function enterChapterTwo(s){
- if(s.ending!=='return'||!s.flags.denial||s.flags.chapter2)return false;
+ if(s.ending!=='return'||!s.flags.denial||s.flags.chapter2||!canSeekOriginal(s))return false;
  s.flags.originalKept=hasOriginals(s);s.flags.chapter2=true;s.ending=null;
  s.map='relayYard';s.x=28*32;s.y=16*32;s.stamina=100;s.hidden=false;s.running=false;
- take(s,'flashlight');s.flashlight=bodyState(s).arms<2;
+ take(s,'flashlight');s.flashlight=!s.flags.lightStowed&&bodyState(s).arms<2;
  note(s,'chapter2-arrival','02:13 · 산북 시설중계소. 지하 화재 때 시설 출동과 원격 잠금 명령을 중계한 위탁관리 시설이다. 소방서나 119 상황실이 아니다.\n접수증 뒷면의 R-17 안내를 따라 해린에게 원본 대조를 요청했다. 해린은 설비 담당 도현과 사고 당시 야간 경비였던 미정을 불렀다. 출입 목적은 잘린 녹음의 원본 확인이다. 동행인 명단은 접수대의 방문 인수 기록에 남겼다. 내가 직접 잠근 건 아니었다는 걸 확인하고 싶었다. 봉투의 원본은 버리지 않았다.');
  return true;
 }
@@ -102,7 +103,7 @@ export const records={
 function result(title,text,extra={}){return {title,text,...extra};}
 export function relayAction(s,o,choice=null){
  if(!s.flags.chapter2||!MAPS[s.map]?.objects.includes(o)||!o.chapterAction||Math.hypot(s.x-o.x,s.y-o.y)>=70||!sight(worldFor(s),s,o))return null;
- const action=o.chapterAction;
+ const action=o.chapterAction;if(['register','incoming','compare','wheel','lastVoice','export'].includes(action)&&pickupBlocked(s))return result('서하','남은 손이 비지 않는다. F로 손전등을 내려놓고 집어야 해.');
  if(action==='lastVoice'&&choice==='collectOriginal'&&s.flags.relayLastVoice){take(s,'relayExport');s.flags.relayExported=true;s.flags.relayRedacted=false;s.flags.routeA=true;s.flags.routeB=false;s.bag=s.bag.filter(k=>k!=='editPass');note(s,'relay-export','23:44 통화 원본과 복원 시각·파일 번호를 함께 보존했다. 서하의 종료 조작도 빠짐없이 저장했다.');return result('원본 녹음 확보','재생한 원본 통화와 파일 번호를 저장 매체에 옮겨 봉투에 넣었다.\n내 목소리도… 이번에는 끝까지 남겼다. 이제 이걸 가지고 밖으로 나가자.',{exported:true,sound:'item'});}
  if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다.');
  if(action==='lastVoice'&&!s.flags.relayLastVoice&&!s.flags.relaySync)return result(o.name,'두 복제 신호가 어긋나 말소리가 묻힌다. 기준 펄스를 먼저 대조해야 한다.',{puzzle:'sync'});
@@ -172,3 +173,5 @@ export function relayAction(s,o,choice=null){
 }
 
 export function acquireRelayMap(s){if(s.flags.relayMap)return false;s.flags.relayMap=true;return true;}
+
+export function arrivalBodyLine(s){const b=bodyState(s);return b.leg?(b.arm?'다리를 딛을 곳도, 붙잡을 손도 허전해. 남은 팔로 바닥을 밀었다. 여기까지는 왔어.':'다리가 있어야 할 자리가 허전해. 바닥을 짚으니 손바닥에 젖은 흙이 묻었다. 여기까지 기어왔구나.'):b.arms>=2?'두 소매가 비에 달라붙었다. 봉투를 몸으로 밀어 여기까지 왔다. 혼자서는 더 버티기 어려울 것 같아.':b.arm?'빈 소매가 비에 달라붙었다. 남은 손으로 봉투를 끌어안았다. 누군가 이 꼴을 보면 뭐라고 할까.':'비를 맞고 나니 다리에 힘이 풀린다. 그래도 걸을 수 있어. 봉투부터 젖지 않게 하자.';}

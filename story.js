@@ -1,7 +1,8 @@
+export const canSeekOriginal=s=>!!(s.flags.listened&&s.bag.includes('tape')&&s.bag.includes('inspectionPhotos'));
 // Canonical story and cinematic beats. No verdict is announced by an NPC or UI.
 export const ORIGINALS=['receipt','evidence','tape'];
 export const hasOriginals=s=>ORIGINALS.every(k=>s.bag.includes(k));
-export const canSurrender=s=>!!(s.flags.shutterOpen&&s.flags.listened&&hasOriginals(s));
+export const canSurrender=s=>!!(s.flags.shutterOpen&&s.flags.listened&&s.bag.includes('tape'));
 export const STORY={
  prologue:'2026년 11월 3일, 23시 41분. 철거까지 여섯 시간.\n3년 전 이 집의 지하 화재로 동생 서윤이 죽었다. 시설 결함을 동반한 화재사고로 기록됐다.\n서윤과 나는 101호에 살았다. 서윤은 관리실 주간 서무 보조였고, 나는 야간 전화 접수 보조였다. 동생은 서류와 비품을 맡아 관리실 열쇠를 갖고 있었다.\n나는 생활비를 벌려고 관리실 야간 전화 접수를 맡았다. 정우는 우리 위탁관리소장이었다. 화면의 「해제 완료」를 보고 구조 출동 요청을 취소했다. 문까지 내려가 보지는 않았다.\n철거 전 보관품 인수 통지서가 내 이름으로 왔다. 정우가 숨긴 기록과 동생의 녹음을 확인하려고 돌아왔다.\n현관 셔터가 내려갔다. 전기를 복구하고 기록을 챙겨 나가야 한다.\n\n접수대 손전등부터 챙기자. WASD 이동 · Shift 달리기 · E 조사\nF 손전등 · Tab 휴대폰: 저장·소지품·기록. 위험하면 불을 끄고 보관장에 숨는다.',
  receipt:'2023.11.04 / 23:41 내부 시설 구조 출동 접수증. 119 신고서가 아니다.\n사유: 지하 피난문 개방. 접수자 서하. 처리: 현장 개방 확인 후 취소. 확인란의 서명은 내 것이다.\n뒷면: 산북 시설중계소 원격제어 원본 보관. R-17 「해제 완료」는 명령 전송 응답이며, 문 열림 접점 확인을 뜻하지 않는다.',

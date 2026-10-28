@@ -1,3 +1,4 @@
+import {pickupBlocked} from './body.js?v=178ec9dc0c70';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){
@@ -50,7 +51,7 @@ export function addExploration(M,map,prop,door){
 export function prepareExploration(s){if(s.flags.explorationV1)return;s.flags.explorationV1=true;if(s.flags.relayPower||s.flags.relayLastVoice||s.bag.includes('relayExport'))s.flags.deckCouplerInstalled=true;}
 export function explorationGate(s,o){if(!o.exploreGate)return null;return s.bag.includes(o.exploreGate)?null:o.lockedLine;}
 export function explorationAction(s,o){
- const a=o.exploreAction;if(!a)return null;
+ const a=o.exploreAction;if(!a)return null;if(a!=='laundryDrain'&&pickupBlocked(s))return{line:'남은 손에 손전등을 쥐고 있어. F로 내려놓고 집어야 해.'};
  if(a==='laundryDrain'){if(s.flags.laundryDrained)return{line:'배수관을 따라 물이 빠지고 있다.'};s.flags.laundryDrained=true;return{line:'밸브를 열자 분실물 선반 아래까지 차 있던 물이 내려갔다.\n세탁기는 꺼져 있는데… 뒤에서 한 바퀴 돌아가는 소리가 났어.',sound:'valve'};}
  if(a==='rearKey'&&!s.flags.laundryDrained)return{line:'선반 아래에 배수가 역류했어. 전선이 물에 잠겨 있어… 먼저 벽의 우회 밸브로 물을 빼야 해.'};
  const supply={laundryKey:['laundryKey','경비 인계 열쇠판의 반납 고리. 세탁실 표찰이 달린 열쇠가 있어.'],rearKey:['rearKey','분실물 상자 옆 인계 고리에 걸린 후면 현관 열쇠. 누가 마지막으로 퇴근했는지 이름만 지워졌어.'],partsKey:['partsKey','계측기 옆 비품 인수 봉투의 열쇠. 동쪽 밀봉 부품실용이야.'],deckCoupler:['deckCoupler','봉인 포장의 모델 번호가 원본 데크와 같아. 부식된 회선 어댑터를 이걸로 교체할 수 있어.'],storeThread:['knotThreadService','폐기 예정 천 주머니 안에서 매듭실이 따라 나왔다. 손에 감기던 그 느낌이야… 하나만 남아 있어.'],courtMemory:['courtSlip','젖지 않게 접힌 세탁 인수표. 「11월3일, 서윤: 사진 보관 주머니와 근무복 인수」. 서류를 숨기러 온 게 아니라 근무를 마치고 돌아갈 준비를 했던 거야.']};

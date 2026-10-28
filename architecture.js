@@ -32,6 +32,7 @@ export function applyArchitecture(M,prop){
   if(sex==='여자'){for(let xx=x+4;xx<=x+6;xx++)M.relayEntry.grid[31][xx]=2;for(let yy=31;yy<=35;yy++)M.relayEntry.grid[yy][x+6]=2;for(let xx=x+4;xx<=x+6;xx++)M.relayEntry.grid[35][xx]=2;leaf('relayEntry','wc-'+door+'-stall2',x+4,35,'여자 화장실 두 번째 칸 문');}
   fixture('relayEntry','wc-'+door+'-second',sex==='남자'?x+6:x+4.5,sex==='남자'?29.5:33,sex==='남자'?'남자 화장실 소변기':'여자 화장실 두 번째 좌변기',sex==='남자'?2:0,sex==='남자'?{mount:true,facing:'north',solid:false}:{});
   M.relayEntry.objects=M.relayEntry.objects.filter(o=>o.id!=='wc-'+door+'-partition');
+  if(sex==='남자'){M.relayEntry.objects=M.relayEntry.objects.filter(o=>o.id!=='wc-'+door+'-second');for(const [i,y]of [31.5,34,36.5].entries())fixture('relayEntry','wc-urinal-'+i,x+10,y,'남자 화장실 오른쪽 벽 소변기 '+(i+1),2,{urinalSide:true,decorativeOnly:true,mount:true,facing:'east',solid:false});}
   fixture('relayEntry','wc-'+door+'-bin',x+9.7,37.6,'위생용품 수거함',5,{w:4,back:6,front:3,slimBin:true});
   M.relayEntry.objects.push(prop('wc-'+door+'-sign','sign',door-1.5,29.5,sex+' 화장실 표지',{solid:false,mount:true,facing:'north',decorativeOnly:true,roomSign:sex+' 화장실',signSex:sex}));
  }

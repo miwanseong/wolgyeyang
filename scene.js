@@ -1,16 +1,17 @@
-import {drawThresholdShadow} from './threshold-horror.js?v=35d4de009dfc';
-import {drawCorruptHead,drawNpcReaction} from './resident-corruption.js?v=35d4de009dfc';
-import {drawDistortion} from './distortion.js?v=35d4de009dfc';
-import {isRelayGhost,relayPose,drawRelay} from './relay-ghosts.js?v=35d4de009dfc';
-import {WATCHER_POSES,watcherPose} from './watcher-art.js?v=35d4de009dfc';
-import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=35d4de009dfc';
-import {INJURY_POSES,HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=35d4de009dfc';
-import {drawFloorOmen,omenOpacity,OMEN_ART} from './haunting.js?v=35d4de009dfc';
-import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=35d4de009dfc';
-import {PLAYER_POSES,playerHand} from './player-art.js?v=35d4de009dfc';
-import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=35d4de009dfc';
-import {facilityArt} from './facility-art.js?v=35d4de009dfc';
-import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=35d4de009dfc";
+import {survivingGrip} from './limb-poses.js?v=178ec9dc0c70';
+import {drawThresholdShadow} from './threshold-horror.js?v=178ec9dc0c70';
+import {drawCorruptHead,drawNpcReaction} from './resident-corruption.js?v=178ec9dc0c70';
+import {drawDistortion} from './distortion.js?v=178ec9dc0c70';
+import {isRelayGhost,relayPose,drawRelay} from './relay-ghosts.js?v=178ec9dc0c70';
+import {WATCHER_POSES,watcherPose} from './watcher-art.js?v=178ec9dc0c70';
+import {bodyState,injuryRow,injuryDirection,canHoldLight} from './body.js?v=178ec9dc0c70';
+import {INJURY_POSES,HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=178ec9dc0c70';
+import {drawFloorOmen,omenOpacity,OMEN_ART} from './haunting.js?v=178ec9dc0c70';
+import {advanceGait,drawSide,sideGrip,actorStride} from './gait.js?v=178ec9dc0c70';
+import {PLAYER_POSES,playerHand} from './player-art.js?v=178ec9dc0c70';
+import {LAMPS,lampStrength,PUDDLES} from './facility.js?v=178ec9dc0c70';
+import {facilityArt} from './facility-art.js?v=178ec9dc0c70';
+import { sight, opaque, closedDoorAt, doorOpen, fixtureVisual, wallAnchor, clearSegment } from "./world.js?v=178ec9dc0c70";
 export const PROP_TYPES = [
   "desk",
   "locker",
@@ -168,53 +169,54 @@ export class Scene {
     this.facilityTiles=facilityArt();this.npcs=[];
     this.assets = Promise.all(
       [
-        "assets/props-support.png?v=35d4de009dfc",
-        "assets/seoha-walk.png?v=35d4de009dfc",
-        "assets/props-painted.png?v=35d4de009dfc",
-        "assets/floors-painted.png?v=35d4de009dfc",
-        "assets/jeongwoo-motions.png?v=35d4de009dfc",
-        "assets/seoha-diagonal.png?v=35d4de009dfc",
-        "assets/shoe-cabinet.png?v=35d4de009dfc",
-        "assets/chair-turn.png?v=35d4de009dfc",
-        "assets/room-modules.png?v=35d4de009dfc",
-        "assets/dining-table.png?v=35d4de009dfc",
-        "assets/regional-props.png?v=35d4de009dfc",
-        "assets/wall-side.png?v=35d4de009dfc",
-        "assets/architecture.png?v=35d4de009dfc",
-        "assets/technical-kit.png?v=35d4de009dfc",
-        "assets/technical-doors.png?v=35d4de009dfc",
-        "assets/kitchen-kit.png?v=35d4de009dfc",
-        "assets/decor-kit.png?v=35d4de009dfc",
-        "assets/supply-kit.png?v=35d4de009dfc",
-        "assets/room-details.png?v=35d4de009dfc",
-        "assets/seoyun-echo.png?v=35d4de009dfc",
-        "assets/relay-floors.png?v=35d4de009dfc",
-        "assets/haunted-portraits.png?v=35d4de009dfc",
-        "assets/reception-parking.png?v=35d4de009dfc",
-        "assets/resident-walk.png?v=35d4de009dfc",
-        "assets/seoha-adult-walk.png?v=35d4de009dfc",
-        "assets/player-side-walk.png?v=35d4de009dfc",
-        "assets/resident-side-walk.png?v=35d4de009dfc",
-        "assets/relay-furniture.png?v=35d4de009dfc",
-        "assets/room-omens.png?v=35d4de009dfc",
-        "assets/injury-walk.png?v=35d4de009dfc",
-        "assets/severe-walk.png?v=35d4de009dfc",
-        "assets/crawl-walk.png?v=35d4de009dfc",
-        "assets/watcher-sprites.png?v=35d4de009dfc",
-        "assets/chapter1-fixtures.png?v=35d4de009dfc",
-        "assets/hollow-hunter.png?v=35d4de009dfc",
-        "assets/relay-ghosts.png?v=35d4de009dfc",
-        "assets/lost-property.png?v=35d4de009dfc",
-        "assets/resident-corrupt-heads.png?v=35d4de009dfc",
-        "assets/relay-walk.png?v=35d4de009dfc",
-        "assets/relay-back-walk.png?v=35d4de009dfc",
-        "assets/vent-hatch.png?v=35d4de009dfc",
-        "assets/sanitary-desks.png?v=35d4de009dfc",
-        "assets/wetroom-fixtures.png?v=35d4de009dfc",
-        "assets/drain-story-kit.png?v=35d4de009dfc",
-        "assets/exploration-kit.png?v=35d4de009dfc",
+        "assets/props-support.png?v=178ec9dc0c70",
+        "assets/seoha-walk.png?v=178ec9dc0c70",
+        "assets/props-painted.png?v=178ec9dc0c70",
+        "assets/floors-painted.png?v=178ec9dc0c70",
+        "assets/jeongwoo-motions.png?v=178ec9dc0c70",
+        "assets/seoha-diagonal.png?v=178ec9dc0c70",
+        "assets/shoe-cabinet.png?v=178ec9dc0c70",
+        "assets/chair-turn.png?v=178ec9dc0c70",
+        "assets/room-modules.png?v=178ec9dc0c70",
+        "assets/dining-table.png?v=178ec9dc0c70",
+        "assets/regional-props.png?v=178ec9dc0c70",
+        "assets/wall-side.png?v=178ec9dc0c70",
+        "assets/architecture.png?v=178ec9dc0c70",
+        "assets/technical-kit.png?v=178ec9dc0c70",
+        "assets/technical-doors.png?v=178ec9dc0c70",
+        "assets/kitchen-kit.png?v=178ec9dc0c70",
+        "assets/decor-kit.png?v=178ec9dc0c70",
+        "assets/supply-kit.png?v=178ec9dc0c70",
+        "assets/room-details.png?v=178ec9dc0c70",
+        "assets/seoyun-echo.png?v=178ec9dc0c70",
+        "assets/relay-floors.png?v=178ec9dc0c70",
+        "assets/haunted-portraits.png?v=178ec9dc0c70",
+        "assets/reception-parking.png?v=178ec9dc0c70",
+        "assets/resident-walk.png?v=178ec9dc0c70",
+        "assets/seoha-adult-walk.png?v=178ec9dc0c70",
+        "assets/player-side-walk.png?v=178ec9dc0c70",
+        "assets/resident-side-walk.png?v=178ec9dc0c70",
+        "assets/relay-furniture.png?v=178ec9dc0c70",
+        "assets/room-omens.png?v=178ec9dc0c70",
+        "assets/injury-walk.png?v=178ec9dc0c70",
+        "assets/severe-walk.png?v=178ec9dc0c70",
+        "assets/crawl-walk.png?v=178ec9dc0c70",
+        "assets/watcher-sprites.png?v=178ec9dc0c70",
+        "assets/chapter1-fixtures.png?v=178ec9dc0c70",
+        "assets/hollow-hunter.png?v=178ec9dc0c70",
+        "assets/relay-ghosts.png?v=178ec9dc0c70",
+        "assets/lost-property.png?v=178ec9dc0c70",
+        "assets/resident-corrupt-heads.png?v=178ec9dc0c70",
+        "assets/relay-walk.png?v=178ec9dc0c70",
+        "assets/relay-back-walk.png?v=178ec9dc0c70",
+        "assets/vent-hatch.png?v=178ec9dc0c70",
+        "assets/sanitary-desks.png?v=178ec9dc0c70",
+        "assets/wetroom-fixtures.png?v=178ec9dc0c70",
+        "assets/drain-story-kit.png?v=178ec9dc0c70",
+        "assets/exploration-kit.png?v=178ec9dc0c70",
+        "assets/urinal-side.png?v=178ec9dc0c70",
       ].map(load),
-    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, chapterFixtures, hollowHunter, relayGhosts, lostProperty, corruptHeads, relayWalk, relayBackWalk, ventHatch, sanitaryDesks, wetroomFixtures, drainStoryKit, explorationKit]) => {
+    ).then(([props, actor, painted, floors, monster, diagonal, shoeCabinet, chairSheet, roomModules, diningTable, regionalProps, wallSide, architecture, technicalKit, technicalDoors, kitchenKit, decorKit, supplyKit, roomDetails, seoyunEcho, relayFloors, hauntedPortraits, receptionParking, residentWalk, playerWalk, playerSideWalk, residentSideWalk, relayFurniture, omenAtlas, injuryWalk, severeWalk, crawlWalk, watcherArt, chapterFixtures, hollowHunter, relayGhosts, lostProperty, corruptHeads, relayWalk, relayBackWalk, ventHatch, sanitaryDesks, wetroomFixtures, drainStoryKit, explorationKit, urinalSide]) => {
       this.residentBounds=[];
       const measure=document.createElement('canvas');measure.width=residentWalk.width;measure.height=residentWalk.height;const measureCtx=measure.getContext('2d',{willReadFrequently:true});measureCtx.drawImage(residentWalk,0,0);const pixels=measureCtx.getImageData(0,0,measure.width,measure.height).data,sw=measure.width/6,sh=measure.height/4;
       // This atlas uses measured row gutters; never crop a foot at an assumed 256px edge.
@@ -240,6 +242,7 @@ export class Scene {
         const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(regionalProps,x,y,w,h,0,0,tile.width,tile.height);return tile;
       });
       const cacheFrames=(im,rects)=>rects.map(([x,y,w,h],index)=>{const tile=document.createElement('canvas');tile.dataset.asset=(im.src||'').split('/').pop().split('?')[0];tile.dataset.frame=String(index);tile.width=128;tile.height=Math.ceil(128*h/w);const ctx=tile.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(im,x,y,w,h,0,0,tile.width,tile.height);return tile});
+      this.urinalSide=urinalSide;
       this.explorationTiles=cacheFrames(explorationKit,[[70,48,326,399],[498,72,335,381],[920,70,352,384],[1345,100,402,346],[35,541,396,291],[454,573,446,264],[931,512,361,332],[1318,539,447,310]]);
       this.drainStoryTiles=cacheFrames(drainStoryKit,[[55,65,335,320],[497,65,335,320],[900,55,420,365],[1365,28,390,390],[30,465,390,383],[475,461,416,391],[910,550,410,253],[1424,507,270,363]]);
       this.wetroomTiles=cacheFrames(wetroomFixtures,[[110,190,220,245],[410,164,545,237],[1005,5,272,440],[1380,4,283,460],[125,540,195,274],[570,540,200,274],[1000,528,199,320],[1380,464,292,400]]);
@@ -299,15 +302,21 @@ export class Scene {
     c.save();c.translate(enemy.x,enemy.y);if(enemy.signal==='turn'&&enemy.target?.x<enemy.x)c.scale(-1,1);c.drawImage(this.watcherArt,...p,-width/2,-height,width,height);c.restore();
   }
   drawSevere(c,s,t){
-    const b=bodyState(s);if(b.legs<2&&b.arms<2)return false;
-    const image=b.legs===2?this.crawlWalk:this.severeWalk;if(!image?.naturalWidth)return false;
-    const row=b.legs===2?0:1,dir=injuryDirection(this.direction);
+    const b=bodyState(s);if(!b.leg)return false;
+    const image=b.leg?this.crawlWalk:this.severeWalk;if(!image?.naturalWidth)return false;
+    const row=b.leg?0:1,dir=injuryDirection(this.direction);
     const poses=[[[40,73,318,309],[390,85,369,288],[794,87,358,285],[1152,69,354,285]],[[66,391,240,573],[446,398,259,563],[836,401,262,558],[1238,395,234,568]]],crawl=[[[33,87,410,351],[443,102,433,338],[896,103,432,338],[1351,82,390,346]],[[21,472,397,365],[443,484,426,347],[895,485,432,345],[1355,468,403,361]]],p=row===0?crawl[this.moving?Math.floor(this.walk*1.1)%2:0][dir]:poses[1][dir];
     const height=row===0?29:61,width=p[2]/p[3]*height,bob=this.moving&&!this.reduced?Math.sin(this.walk*3)*(row===0?1: .7):0;
     c.drawImage(image,...p,s.x-width/2,s.y-height+bob,width,height);return true;
   }
-  injuryPose(s){const row=injuryRow(s);return row<0?null:INJURY_POSES[row][injuryDirection(this.direction)*2+(this.moving?Math.floor(this.walk*(bodyState(s).leg?.5:1))%2:0)];}
-  torchGrip(){if(this.playerState&&bodyState(this.playerState).legs===2)return{x:this.direction===1?-19:19,y:-4};const p=this.playerState&&this.injuryPose(this.playerState);if(p)return{x:(p.grip[0]-p.pivot)*p.width,y:-56+p.grip[1]*61};return (this.moving&&(this.direction===1||this.direction===2))?sideGrip(0,this.walk,this.direction===2,this.moving):handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1);}
+  drawArmOnly(c,s){
+    const b=bodyState(s);if(b.leg||!b.arm)return false;
+    c.save();c.beginPath();c.rect(s.x-70,s.y-90,140,140);c.rect(s.x-22,s.y-36,13,21);c.rect(s.x+9,s.y-36,13,21);c.clip('evenodd');
+    const f=this.moving?Math.floor(this.walk)%4:1,p=PLAYER_POSES[this.direction][f];if(this.moving&&(this.direction===1||this.direction===2))drawSide(c,this.playerSideWalk,0,this.walk,s.x,s.y,this.direction===2,true);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);c.restore();if(b.arms>=2)return true;
+    const held=!s.flags.lightStowed&&s.bag.includes('flashlight')||s.flags.temporaryLighter||s.flags.temporaryPhone,g=held?survivingGrip(this.direction):{x:survivingGrip(this.direction).x*.8,y:-18},sign=Math.sign(g.x);c.save();c.strokeStyle='#242427';c.lineWidth=6;c.lineCap='round';c.beginPath();c.moveTo(s.x+sign*9,s.y-36);c.lineTo(s.x+sign*14,s.y-29);c.lineTo(s.x+g.x,s.y+g.y);c.stroke();c.fillStyle='#b7b3b0';c.fillRect(s.x+g.x-1.5,s.y+g.y-1.5,3,3);c.restore();return true;
+  }
+  injuryPose(s){const row=injuryRow(s);return row<0||!bodyState(s).leg&&bodyState(s).arms>0?null:INJURY_POSES[row][injuryDirection(this.direction)*2+(this.moving?Math.floor(this.walk*(bodyState(s).leg?.5:1))%2:0)];}
+  torchGrip(){if(this.playerState&&bodyState(this.playerState).arms===1&&!bodyState(this.playerState).leg)return survivingGrip(this.direction);if(this.playerState&&bodyState(this.playerState).leg)return{x:this.direction===1?-19:19,y:-4};const p=this.playerState&&this.injuryPose(this.playerState);if(p)return{x:(p.grip[0]-p.pivot)*p.width,y:-56+p.grip[1]*61};return (this.moving&&(this.direction===1||this.direction===2))?sideGrip(0,this.walk,this.direction===2,this.moving):handGrip(this.direction,this.moving?Math.floor(this.walk)%4:1);}
   inspect(o) {
     this.focus = o;
     if (o.swivel) this.chairTurns.set(o.id, performance.now());
@@ -335,6 +344,7 @@ export class Scene {
     c.drawImage(injured>=0?this.injuryWalk:this.playerWalk,p.x,p.y,p.w,p.h,-w/2,-h*.72,w,h);c.restore();
   }
   prop(o, s, t, dt) {
+    if(this.receiver===o.id){const c=this.ctx;c.save();c.strokeStyle='#a1a1a1';c.lineWidth=4;c.lineCap='round';c.beginPath();c.moveTo(o.x+8,o.y-39);c.quadraticCurveTo(o.x+22,o.y-25,o.x+5,o.y-15);c.stroke();c.strokeStyle='#454545';c.lineWidth=1;c.beginPath();c.moveTo(o.x+6,o.y-15);c.quadraticCurveTo(o.x+25,o.y+5,o.x-3,o.y-12);c.stroke();c.restore();}
     if(o.storyFloorHatch)return;
     if(o.exploreArt!==undefined){const tile=this.explorationTiles[o.exploreArt],widths=[48,46,48,68,56,60,54,64],w=widths[o.exploreArt],h=w*tile.height/tile.width,g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y+8-h,w,h};this.ctx.drawImage(tile,g.x,g.y,g.w,g.h);return;}
     if(o.storyArt!==undefined){const tile=this.drainStoryTiles[o.storyArt],widths=[56,56,64,48,48,100,46,24],w=widths[o.storyArt],h=w*tile.height/tile.width,g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y+9-h,w,h};this.ctx.drawImage(tile,g.x,g.y,g.w,g.h);return;}
@@ -346,6 +356,7 @@ export class Scene {
     if(o.lineBasin){const tile=this.wetroomTiles[1],g=mountedGeometry(this.map,o,76,30);this.ctx.drawImage(tile,g.x,g.y,g.w,g.h);return;}
     if(o.slimBin){this.ctx.drawImage(this.wetroomTiles[6],o.x-7,o.y-14,14,23);return;}
     if(o.hide&&!o.hideKind&&['cabinet','locker'].includes(o.kind)){this.ctx.drawImage(this.wetroomTiles[7],o.x-25,o.y-63,50,72);return;}
+    if(o.urinalSide){const g={x:o.x-22,y:o.y-31,w:24,h:43};this.ctx.drawImage(this.urinalSide,330,40,640,1160,g.x,g.y,g.w,g.h);return;}
     if(o.sanitary!==undefined){const p=sanitaryPoses[o.sanitary],heights=[34,30,34,40,32,14],h=heights[o.sanitary],w=h*p[2]/p[3],g=o.mount?mountedGeometry(this.map,o,w,h):{x:o.x-w/2,y:o.y+8-h,w,h};this.ctx.drawImage(this.sanitaryDesks,...p,g.x,g.y,w,h);return;}
     if(o.roomSign){const tile=this.wetroomTiles[o.signSex==='여자'?5:4],g=mountedGeometry(this.map,o,12,17);this.ctx.drawImage(tile,g.x,g.y,g.w,g.h);return;}
     if(o.standardDesk){const c=this.ctx,p=sanitaryPoses[6];c.drawImage(this.sanitaryDesks,...p,o.x-32,o.y-36,64,44);if(o.equipment&&!s.investigation?.gear?.includes(o.equipment)){c.strokeStyle='#b6b4ab';c.lineWidth=1.2;if(o.equipment==='lens'){c.beginPath();c.arc(o.x,o.y-28,4,0,6.3);c.stroke();c.beginPath();c.moveTo(o.x+3,o.y-25);c.lineTo(o.x+8,o.y-20);c.stroke();}else{c.fillStyle='#292b2d';c.fillRect(o.x-4,o.y-32,8,11);c.strokeRect(o.x-4,o.y-32,8,11);c.fillStyle='#888d86';c.fillRect(o.x-2,o.y-30,4,3);}}
@@ -977,9 +988,9 @@ export class Scene {
           c.ellipse(s.x, s.y + 5, 11, 4, 0, 0, 7);
           c.fill();
           const f=this.moving?Math.floor(this.walk)%4:1,p=PLAYER_POSES[this.direction][f];
-          const injured=this.injuryPose(s);if(this.drawSevere(c,s,t)){}else if(injured)c.drawImage(this.injuryWalk,injured.x,injured.y,injured.w,injured.h,s.x-injured.pivot*injured.width,s.y-56,injured.width,61);else if(this.moving&&(this.direction===1||this.direction===2))drawSide(c,this.playerSideWalk,0,this.walk,s.x,s.y,this.direction===2,this.moving);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
+          const injured=this.injuryPose(s);if(this.drawSevere(c,s,t)){}else if(this.drawArmOnly(c,s)){}else if(injured)c.drawImage(this.injuryWalk,injured.x,injured.y,injured.w,injured.h,s.x-injured.pivot*injured.width,s.y-56,injured.width,61);else if(this.moving&&(this.direction===1||this.direction===2))drawSide(c,this.playerSideWalk,0,this.walk,s.x,s.y,this.direction===2,this.moving);else c.drawImage(this.playerWalk,p.x,p.y,p.w,p.h,s.x-p.width/2,s.y-56,p.width,61);
           if((s.flags.temporaryLighter||s.flags.temporaryPhone)&&canHoldLight(s)&&!s.hidden){const grip=this.torchGrip();c.save();c.translate(s.x+grip.x,s.y+grip.y);c.fillStyle='#333';c.fillRect(-2,-4,4,7);if(s.flags.temporaryLighter){c.fillStyle='#efcf9b';c.beginPath();c.ellipse(0,-6,1.6,3+Math.sin(t/90)*.5,0,0,7);c.fill();}else{c.fillStyle='#c6d2dd';c.fillRect(-1.5,-3,3,5);}c.restore();}
-          else if (s.bag.includes("flashlight")&&canHoldLight(s)) {
+          else if (s.bag.includes("flashlight")&&canHoldLight(s)&&!s.flags.lightStowed) {
             const grip=this.torchGrip();
             c.save();c.translate(s.x+grip.x,s.y+grip.y);c.rotate(s.facing);
             c.fillStyle='#303030';c.beginPath();c.roundRect(0,-1.5,9,3,1.5);c.fill();

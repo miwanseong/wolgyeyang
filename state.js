@@ -1,10 +1,10 @@
-import {MEMENTOS} from './mementos.js?v=35d4de009dfc';
-import {canPreserve} from './chapter1-route.js?v=35d4de009dfc';
-import {bodyState,validBody} from './body.js?v=35d4de009dfc';
-import {validInvestigation} from './investigation.js?v=35d4de009dfc';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=35d4de009dfc';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=35d4de009dfc";
-import { STORY, canSurrender } from "./story.js?v=35d4de009dfc";
+import {MEMENTOS} from './mementos.js?v=178ec9dc0c70';
+import {canPreserve} from './chapter1-route.js?v=178ec9dc0c70';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=178ec9dc0c70';
+import {validInvestigation} from './investigation.js?v=178ec9dc0c70';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=178ec9dc0c70';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=178ec9dc0c70";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=178ec9dc0c70";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -53,7 +53,7 @@ export const ITEMS = {
   relayExport: "원본 대조 로그와 23:44 통화를 담은 증거 매체",
 };
 export function take(s, key) {
-  if (!s.bag.includes(key)){if(bodyState(s).arms===1)s.flashlight=false;s.bag.push(key);}
+  if(pickupBlocked(s))return false;if (!s.bag.includes(key))s.bag.push(key);return true;
 }
 export function note(s, id, text) {
   if (!s.notes.some((n) => n.id === id)) s.notes.push({ id, text });
@@ -152,7 +152,7 @@ export function repair(s,o) {
 export function finish(s, choice) {
   if (!s.flags.shutterOpen) return false;
   if(['witness','surrender'].includes(choice)&&!canSurrender(s))return false;
-  if(choice==='return'&&(!s.flags.listened||!s.bag.includes('tape')))return false;
+  if(choice==='return'&&!canSeekOriginal(s))return false;
   if(choice==='preserve'&&!canPreserve(s))return false;
   if (!["witness", "return", "surrender","preserve"].includes(choice)) return false;
   s.ending = choice==='witness'?'surrender':choice;
