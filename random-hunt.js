@@ -1,6 +1,6 @@
-import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=0626962de89e';
-import {bindWatcher} from './encounters.js?v=0626962de89e';
-import {canMove,findPath} from './world.js?v=0626962de89e';
+import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=fa18be954288';
+import {bindWatcher} from './encounters.js?v=fa18be954288';
+import {canMove,findPath} from './world.js?v=fa18be954288';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}

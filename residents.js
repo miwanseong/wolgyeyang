@@ -1,6 +1,6 @@
-import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=0626962de89e';
-import {advanceGait,actorStride} from './gait.js?v=0626962de89e';
-import {canMove,findPath,sight} from './world.js?v=0626962de89e';
+import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=fa18be954288';
+import {advanceGait,actorStride} from './gait.js?v=fa18be954288';
+import {canMove,findPath,sight} from './world.js?v=fa18be954288';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
@@ -75,3 +75,17 @@ export const FOLLOW_UP={
 
 RESIDENT_QUESTIONS.haerin.push(['이곳은 정확히 어떤 곳이에요?','아파트 위탁관리사가 쓰던 시설 출동 중계소예요. 주민의 출동 요청과 원격 명령, 녹음의 백업을 보관합니다. 접수 완료 신호와 문이 실제 열린 신호는 별개인데, 그날 보고서는 둘을 같은 뜻으로 썼어요.']);
 FOLLOW_UP.haerin.push(['그럼 여기서는 통화 기록과 실제 설비 기록을 대조해야겠네요.','맞아요. 기록동에서 접수와 취소, 잠금 유지 회신을 먼저 비교해 주세요. 마지막 통화는 송출층 원본 데크에 있어요. 내선에서 반복되는 목소리 대신 기록의 시각과 발신자를 확인해야 합니다.']);
+
+// Original question indexes stay stable so old conversation notes remain valid.
+export function residentQuestions(s,id){
+ const has=k=>s.bag.includes(k),f=k=>!!s.flags[k],requirements={
+  haerin:[()=>has('tape')||has('relayBadge'),()=>has('auditMemo')||f('relayErasure')||f('relayRegistered')&&has('relayCopy'),()=>true],
+  mijeong:[()=>has('receipt')||f('relayDuty'),()=>has('restoredRoster')||has('rosterScrap')||f('relayDuty')],
+  dohyun:[()=>has('pumpLog')||f('relayPressure'),()=>f('seen_relay-circuit-tester')||['A','B','C'].some(k=>f('seen_relay-test-'+k))||f('relayLogic')||s.investigation?.gear?.includes('tester')]
+ };
+ return (RESIDENT_QUESTIONS[id]||[]).map(([label,line],index)=>({label,line,index})).filter(q=>f('question_'+id+'_'+q.index)||requirements[id]?.[q.index]?.());
+}
+export function residentActions(s,id){
+ const has=k=>s.bag.includes(k),f=k=>!!s.flags[k];
+ return {check:!!({haerin:has('auditMemo')||f('relayErasure')||f('relayLastVoice'),mijeong:has('receipt')&&f('relayDuty'),dohyun:f('seen_relay-cooling-guide')||f('relayCooling')||f('relayIsolated')})[id],request:id==='haerin'&&(has('relayCopy')||has('auditMemo')||f('relayErasure')),power:id==='dohyun'&&has('relayCopy')&&!f('relayPower')};
+}
