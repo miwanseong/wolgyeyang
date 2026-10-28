@@ -203,5 +203,11 @@
     "source": "https://opengameart.org/sites/default/files/evil_cackle_laugh_1.ogg",
     "license": "CC0",
     "sha256": "22b5644217896112c62c48956cb8ab79ab49cc49b3b5fdbd34e94683438da34e"
+  },
+  {
+    "file": "cc0_door_creak.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/creak2.ogg + doorOpen_2.ogg; sequential recordings, gain and fades only",
+    "sha256": "2ec80b24438f0aea3b2fc7ff918a574e34efb78cf313e45dd194c88831d51f08"
   }
 ]

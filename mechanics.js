@@ -1,8 +1,8 @@
-import {hollowStage} from './hollow-art.js?v=58afa086feda';
-import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=58afa086feda';
-import {redLightUpdate} from './encounters.js?v=58afa086feda';
-import {bodyState} from './body.js?v=58afa086feda';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=58afa086feda";
+import {hollowStage} from './hollow-art.js?v=595f32ee2567';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=595f32ee2567';
+import {redLightUpdate} from './encounters.js?v=595f32ee2567';
+import {bodyState} from './body.js?v=595f32ee2567';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=595f32ee2567";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}

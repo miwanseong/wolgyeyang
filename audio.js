@@ -1,3 +1,4 @@
+export function travelSound(portal){return portal?.kind==='stairs'?null:'door';}
 export const TRACKS = {
   main: "user_creepy_soundscape.mp3",
   lobby: "user_creepy_soundscape.mp3",
@@ -46,12 +47,12 @@ export const EFFECTS = {
   drawer: "cc0_creak.wav",
   save: "cc0_switch.wav",
   capture: "cc0_soft_hit.wav",
-  door: "cc0_door_open.wav",
+  door: "cc0_door_creak.wav",
   thud: "cc0_thud.wav",
   glass: "sfx_glass_breaking.mp3",
 };
 const EFFECT_VARIANTS={paper:['paper','paperAlt'],dice:['dice','diceAlt1','diceAlt2']};
-export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},door:{gain:.8,duration:1.8,fade:.08},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
+export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},door:{gain:.8,duration:2.6,fade:.08},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;
@@ -185,7 +186,7 @@ export class AudioDirector {
       if(mix?.fade)gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(0,duration-mix.fade),mix.fade/4);
       if(mix?.duck){this.ducks.set(s,mix.duck);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.04);}
       s.onended=()=>{if(mix?.duck){this.ducks.delete(s);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.25);}stereo?.disconnect();gain.disconnect();s.disconnect();if(this.doorSource===s)this.doorSource=null;};
-      if(['door','doorClose','fireDoor','fireDoorClose'].includes(name)){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(.05,duration-.08),.03);s.start(0,0,Math.min(1.8,duration));}else if(mix)s.start(0,0,duration);else s.start();
+      if(['door','doorClose','fireDoor','fireDoorClose'].includes(name)){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(.05,duration-.08),.03);s.start(0,0,Math.min(2.6,duration));}else if(mix)s.start(0,0,duration);else s.start();
       this.playedEffects++;
     } catch {
       this.error("효과음을 불러오지 못했습니다: " + name);
@@ -193,8 +194,38 @@ export class AudioDirector {
   }
   step(surface, running) {
     if (!this.ctx || !this.enabled) return;
-    const group=FOOTSTEP_GROUPS[surface]||FOOTSTEP_GROUPS.concrete,key=group[this.stepIndex++%group.length];
-    return this.effect(key,running?.9:.7);
+    const c = this.ctx,
+      rate = c.sampleRate,
+      length = Math.floor(rate * (surface==='water'?.18:.11)),
+      b = c.createBuffer(1, length, rate),
+      data = b.getChannelData(0);
+    let sample = 0;
+    for (let i = 0; i < length; i++) {
+      sample = sample * 0.62 + (Math.random() * 2 - 1) * 0.38;
+      data[i] =
+        sample *
+        Math.exp(-i / (length * (surface==='water'?.4:.16))) *
+        (surface === "wood" ? 0.75 : 1);
+    }
+    const source = c.createBufferSource(),
+      filter = c.createBiquadFilter(),
+      gain = c.createGain();
+    source.buffer = b;
+    filter.type = "lowpass";
+    filter.frequency.value = surface === "wood" ? 850 : surface==='water'?3200:1900;
+    gain.gain.value = running ? 0.75 : 0.48;
+    source.playbackRate.value = 0.88 + (this.stepIndex++ % 3) * 0.11;
+    source.connect(filter).connect(gain).connect(this.fxBus);
+    source.start();
+    this.playedEffects++;
+    const o = c.createOscillator(),
+      g = c.createGain();
+    o.frequency.value = surface === "wood" ? 115 : 73;
+    g.gain.setValueAtTime(running ? 0.25 : 0.13, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.09);
+    o.connect(g).connect(this.fxBus);
+    o.start();
+    o.stop(c.currentTime + 0.1);
   }
   heartbeat(){return this.effect('heartbeat',.75);}
 

@@ -38,3 +38,5 @@ AuraVoice / Evil Cackle Laugh 1 (CC0)
 https://opengameart.org/content/evil-cackle-laugh-1
 https://opengameart.org/sites/default/files/evil_cackle_laugh_1.ogg
 성우가 공개한 웃음 녹음의 짧은 구간 사용. 음높이를 합성하거나 변경하지 않았습니다.
+
+문 열기 cc0_door_creak.wav: Kenney RPG Audio(CC0)의 creak2.ogg와 doorOpen_2.ogg 녹음을 순서대로 연결하고 음량·페이드만 조정했습니다. 걷기/뛰기 발소리는 사용자 요청으로 교체 전 합성 구현으로 복원했습니다.

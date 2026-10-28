@@ -1,7 +1,7 @@
-import {bodyState} from './body.js?v=58afa086feda';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=58afa086feda";
-import { MAPS, sight, worldFor } from "./world.js?v=58afa086feda";
-import { take, note } from "./state.js?v=58afa086feda";
+import {bodyState} from './body.js?v=595f32ee2567';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=595f32ee2567";
+import { MAPS, sight, worldFor } from "./world.js?v=595f32ee2567";
+import { take, note } from "./state.js?v=595f32ee2567";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
