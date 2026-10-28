@@ -194,7 +194,7 @@ export class AudioDirector {
   step(surface, running) {
     if (!this.ctx || !this.enabled) return;
     const group=FOOTSTEP_GROUPS[surface]||FOOTSTEP_GROUPS.concrete,key=group[this.stepIndex++%group.length];
-    return this.effect(key,running?.58:.4);
+    return this.effect(key,running?.9:.7);
   }
   heartbeat(){return this.effect('heartbeat',.75);}
 

@@ -1,7 +1,7 @@
-import {MEMENTOS} from './mementos.js?v=78bf240a0fe9';
-import {applyArchitecture} from './architecture.js?v=78bf240a0fe9';
-import { STORY } from "./story.js?v=78bf240a0fe9";
-import { addRelayChapter } from "./chapter-world.js?v=78bf240a0fe9";
+import {MEMENTOS} from './mementos.js?v=58afa086feda';
+import {applyArchitecture} from './architecture.js?v=58afa086feda';
+import { STORY } from "./story.js?v=58afa086feda";
+import { addRelayChapter } from "./chapter-world.js?v=58afa086feda";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
