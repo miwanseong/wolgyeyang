@@ -52,12 +52,12 @@ export function stormEndingBeat(s){
 // A supply found before an accident becomes a real additional choice afterwards.
 export function replaceWetLight(s){
  if(!s.flags.flashlightBroken||!s.bag.includes('spareLight'))return false;
- s.bag=s.bag.filter(id=>id!=='spareLight');s.flags.flashlightBroken=false;s.flags.temporaryLight=null;s.flags.storyLightReplaced=true;s.flashlight=true;return true;
+ s.bag=s.bag.filter(id=>id!=='spareLight');s.flags.flashlightBroken=false;s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;s.flags.storyLightReplaced=true;s.flashlight=true;return true;
 }
 
 export function useEmergencyLight(s,source){
  if(!s.flags.flashlightBroken)return false;
  if(source==='lighter'&&!s.bag.includes('lighter'))return false;
  if(!['lighter','phone'].includes(source))return false;
- s.flags.temporaryLight=source;s.flashlight=false;return true;
+ s.flags.temporaryLighter=source==='lighter';s.flags.temporaryPhone=source==='phone';s.flashlight=false;return true;
 }

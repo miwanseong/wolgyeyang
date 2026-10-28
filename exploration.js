@@ -1,0 +1,73 @@
+// Side wings have physical purposes, supply chains and finite discoveries.
+export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
+export function addExploration(M,map,prop,door){
+ const make=(id,name,floor,rects,rooms,chapter=1)=>{const m=M[id]=map(id,name,32,28,floor,rects);m.chapter=chapter;m.rooms=rooms.map(([x,y,w,h,name])=>({x,y,w,h,name}));m.spacePlan={use:name,circulation:rooms.map(r=>r[4]).join('→'),service:'용도별 비품은 벽 가장자리, 중앙 이동 통로는 비워 둔다'};return m;};
+ make('serviceHall','1F · 후면 관리 복도','stone',[[4,7,9,16],[11,13,17,5],[23,5,5,12]],[[4,7,9,7,'경비 인계 전실'],[4,14,9,9,'후면 현관'],[13,13,15,5,'후면 연결 복도']]);
+ make('laundry','1F · 공동 세탁실','stone',[[4,5,22,13],[6,17,7,7],[20,17,6,7]],[[4,5,13,13,'세탁 작업 구역'],[17,5,9,13,'분실물·열쇠 인계'],[6,18,7,6,'세탁실 전실'],[20,18,6,6,'뒷마당 출입 전실']]);
+ make('rearCourt','외부 · 후면 건조 마당','concrete',[[4,5,24,18]],[[4,5,24,18,'배수로와 공동 건조 마당']]);M.rearCourt.outdoor=true;
+ make('relayService','B1 · 정비 연결 복도','concrete',[[4,5,8,18],[10,15,18,5],[22,5,6,14]],[[4,5,8,10,'설비동 연결 전실'],[4,15,24,5,'정비 복도'],[22,5,6,10,'부품 보관 전실']],2);
+ make('relayWorkshop','B1 · 통신 정비 작업실','concrete',[[4,5,23,14],[7,18,7,6]],[[4,5,12,14,'계측·커넥터 정비'],[16,5,11,14,'공구와 열쇠 관리'],[7,19,7,5,'작업실 전실']],2);
+ make('relayStore','B1 · 밀봉 부품 보관실','wood',[[4,5,23,14],[7,18,7,6]],[[4,5,11,14,'방습 포장·인수 구역'],[15,5,12,14,'음성 회선 예비 부품'],[7,19,7,5,'보관실 전실']],2);
+ const put=(m,id,kind,x,y,name,e={})=>M[m].objects.push(prop(id,kind,x,y,name,e));
+ const link=(m,id,x,y,name,to,spawn,e={})=>M[m].objects.push(door(id,x,y,name,to,spawn,e));
+ // Both ends of every connection are real wall doorways, not unmarked teleports.
+ link('lobby','west-service-door',4.5,19,'후면 관리 복도 출입문','serviceHall',[8,21],{facing:'west'});
+ link('serviceHall','service-lobby',8,23,'현관 복도로','lobby',[7,19]);
+ link('serviceHall','service-laundry',25,4.5,'잠긴 공동 세탁실','laundry',[9,22],{exploreGate:'laundryKey',lockedLine:'열쇠 구멍에 세탁실 비품 표찰이 걸려 있어. 경비 인계함에 반납하던 열쇠였지.'});
+ link('laundry','laundry-back',9,24,'후면 관리 복도로','serviceHall',[25,7]);
+ link('laundry','laundry-court',23,24,'후면 건조 마당 출입문','rearCourt',[9,21],{exploreGate:'rearKey',lockedLine:'후면 현관 열쇠로 여는 문이야. 세탁실 담당자가 분실물함과 함께 관리했었지.'});
+ link('rearCourt','court-back',9,23,'세탁실로','laundry',[23,22]);
+ link('relayPlant','plant-service-wing',6,17,'정비 연결 복도','relayService',[8,21],{kind:'stairs',label:'정비동 ↓'});
+ link('relayService','service-plant',8,23,'설비동으로','relayPlant',[8,17],{kind:'stairs',label:'설비동 ↑'});
+ link('relayService','service-workshop',8,4.5,'통신 정비 작업실','relayWorkshop',[10,22]);
+ link('relayWorkshop','workshop-back',10,24,'정비 연결 복도로','relayService',[8,7]);
+ link('relayService','service-store',25,4.5,'잠긴 밀봉 부품실','relayStore',[10,22],{exploreGate:'partsKey',lockedLine:'방습 부품 보관실. 정비 담당자의 비품 열쇠가 있어야 열려. 정비 작업대에서 인수 서명을 하던 곳이야.'});
+ link('relayStore','store-back',10,24,'정비 연결 복도로','relayService',[25,7]);
+ put('serviceHall','service-duty-drawer','desk',7,6.5,'경비 인계 열쇠판',{exploreAction:'laundryKey',exploreArt:4,mount:true,facing:'north',solid:false});
+ put('serviceHall','service-bench','bench',6,16,'작업화 교체 벤치',{exploreArt:5,w:26,back:14,front:7,description:'순찰 때 신던 고무 장화가 아래에 가지런히 들어 있다.'});
+ put('serviceHall','service-cleaning','cabinet',11,9,'청소 비품함',{technical:2,w:12,description:'걸레와 중성 세제를 둔 함. 사건 서류를 보관하는 곳이 아니다.'});
+ put('serviceHall','service-condemned','door',4.5,11,'폐쇄된 옛 보일러실',{sealed:true,architecture:2,exploreSealed:'천장 석면 철거 구역. 자물쇠 바깥을 철판으로 덧댔다. 열쇠를 구해도 이쪽으로는 들어갈 수 없어.'});
+ for(const x of [7,11,15])put('laundry','washer-'+x,'rack',x,6,'공동 세탁기',{exploreArt:0,w:20,back:18,front:8,description:'물은 빠져 있는데 마지막 헹굼 표시만 남아 있다.'});
+ put('laundry','laundry-cart','rack',8,13,'젖은 세탁물 운반 카트',{exploreArt:1,w:19,back:18,front:8,description:'흰 시트 아래에서 물이 떨어진다. 세탁실 밖으로 옮길 때 쓰던 바퀴 달린 카트.'});
+ put('laundry','laundry-valve','rack',24,8,'배수 우회 밸브',{regional:6,exploreAction:'laundryDrain',w:12,back:15,front:8});
+ put('laundry','laundry-lost-property','bench',22,13,'젖은 분실물 인계 상자',{exploreArt:5,exploreAction:'rearKey',w:23,back:14,front:8});
+ put('laundry','laundry-hide','desk',16,15,'작업대 아래',{standardDesk:true,hide:true,hideKind:'desk',w:24,back:20,front:10,description:'아래 가림판 뒤로 몸을 낮출 수 있다.'});
+ put('rearCourt','court-planter','rack',23,7,'갈라진 화단',{exploreArt:7,w:24,back:18,front:8,description:'오래된 뿌리가 배수 방향으로 뻗었다. 화단 아래에 얕은 배수로가 있다.'});
+ put('rearCourt','court-bench','bench',7,7,'접힌 우비를 둔 벤치',{exploreArt:5,w:25,back:12,front:8,exploreAction:'courtMemory'});
+ put('rearCourt','court-pump-door','door',27.5,12,'침하로 폐쇄된 펌프실',{doorType:'fire',exploreSealed:'문틀 아래가 가라앉고 봉인 볼트가 박혀 있어. 안쪽은 침하 조사 구역이다. 힘으로 열면 무너질 수 있어.'});
+ put('rearCourt','court-crates','rack',25,18,'덮개를 씌운 주민 보관 상자',{exploreArt:6,w:22,back:18,front:8});
+ put('relayService','service-parts-board','detail',7,4.5,'정비동 배치도',{details:6,mount:true,facing:'north',solid:false,description:'서쪽 작업실: 계측·비품 열쇠. 동쪽 보관실: 밀봉된 커넥터. 송출층 데크는 같은 모델의 회선 어댑터만 사용할 것.'});
+ put('relayService','service-toolcart','rack',25,16,'폐기 공구 운반함',{exploreArt:2,w:20,back:17,front:8});
+ put('relayService','service-danger-door','door',4.5,11,'침수된 고압실',{doorType:'fire',exploreSealed:'고압 전기실. 바닥에 물이 찼고 안전 잠금이 내려와 있다. 도현의 작업 구역 밖이야. 들어가면 안 돼.'});
+ put('relayWorkshop','workshop-testbench','desk',9,7,'회선 커넥터 계측 작업대',{exploreArt:3,exploreAction:'partsKey',w:25,back:20,front:10});
+ put('relayWorkshop','workshop-tools','rack',23,7,'정비 공구함',{exploreArt:2,w:20,back:20,front:10});
+ put('relayWorkshop','workshop-spares','rack',23,14,'반납 부품 상자',{exploreArt:6,w:23,back:18,front:8,description:'단선·부식된 부품을 빨간 반환 봉투에 분리해 두었다. 재생용 예비품과 섞지 않는다.'});
+ put('relayWorkshop','workshop-hide','desk',8,15,'계측 책상 아래',{standardDesk:true,hide:true,hideKind:'desk',w:24,back:20,front:10,description:'전면 가림판 뒤에 몸을 숨길 수 있다.'});
+ for(const [x,y]of [[7,7],[23,7],[23,13]])put('relayStore','parts-crate-'+x+'-'+y,'rack',x,y,'밀봉 회선 부품 상자',{exploreArt:6,w:24,back:19,front:9,description:'연식과 단자 형식별로 포장해 벽 쪽에 쌓아 두었다.'});
+ put('relayStore','parts-coupler','desk',10,13,'원본 재생 데크용 어댑터 보관대',{exploreArt:3,exploreAction:'deckCoupler',w:25,back:20,front:10});
+ put('relayStore','parts-return','cabinet',25,17,'미사용 반환 비품함',{technical:2,exploreAction:'storeThread',w:12,back:20,front:8});
+}
+export function prepareExploration(s){if(s.flags.explorationV1)return;s.flags.explorationV1=true;if(s.flags.relayPower||s.flags.relayLastVoice||s.bag.includes('relayExport'))s.flags.deckCouplerInstalled=true;}
+export function explorationGate(s,o){if(!o.exploreGate)return null;return s.bag.includes(o.exploreGate)?null:o.lockedLine;}
+export function explorationAction(s,o){
+ const a=o.exploreAction;if(!a)return null;
+ if(a==='laundryDrain'){if(s.flags.laundryDrained)return{line:'배수관을 따라 물이 빠지고 있다.'};s.flags.laundryDrained=true;return{line:'밸브를 열자 분실물 선반 아래까지 차 있던 물이 내려갔다.\n세탁기는 꺼져 있는데… 뒤에서 한 바퀴 돌아가는 소리가 났어.',sound:'valve'};}
+ if(a==='rearKey'&&!s.flags.laundryDrained)return{line:'선반 아래에 배수가 역류했어. 전선이 물에 잠겨 있어… 먼저 벽의 우회 밸브로 물을 빼야 해.'};
+ const supply={laundryKey:['laundryKey','경비 인계 열쇠판의 반납 고리. 세탁실 표찰이 달린 열쇠가 있어.'],rearKey:['rearKey','분실물 상자 옆 인계 고리에 걸린 후면 현관 열쇠. 누가 마지막으로 퇴근했는지 이름만 지워졌어.'],partsKey:['partsKey','계측기 옆 비품 인수 봉투의 열쇠. 동쪽 밀봉 부품실용이야.'],deckCoupler:['deckCoupler','봉인 포장의 모델 번호가 원본 데크와 같아. 부식된 회선 어댑터를 이걸로 교체할 수 있어.'],storeThread:['knotThreadService','폐기 예정 천 주머니 안에서 매듭실이 따라 나왔다. 손에 감기던 그 느낌이야… 하나만 남아 있어.'],courtMemory:['courtSlip','젖지 않게 접힌 세탁 인수표. 「11월3일, 서윤: 사진 보관 주머니와 근무복 인수」. 서류를 숨기러 온 게 아니라 근무를 마치고 돌아갈 준비를 했던 거야.']};
+ const [item,line]=supply[a]||[];if(!item)return null;const flag='exploreTaken_'+a;if(s.flags[flag])return{line:'비어 있는 인수 자리와 떼어 낸 봉인만 남았다.'};s.flags[flag]=true;return{item,line,sound:'paper'};
+}
+export function explorationBeat(s){prepareExploration(s);const f=s.flags;
+ const spec=s.map==='serviceHall'?['hallKnock','service-condemned','닫힌 보일러실 안에서, 내 발걸음보다 한 번 늦게 세 번 두드렸어. 전원도 끊긴 방인데.','omenKnock']:
+ s.map==='laundry'&&f.exploreTaken_rearKey?['washerTurn','washer-11','열쇠를 꺼내자 가운데 세탁기 안에서 손바닥이 유리를 쓸었어.\n다가가니 아무것도 없어. 뒤쪽 문으로 가자.','scrape']:
+ s.map==='rearCourt'?['courtWindow','court-pump-door','저 문 뒤로 그림자가 지나갔어. 안쪽은 무너져서 못 들어가는 곳인데… 문고리가 안에서 내려갔다.','doorClose']:
+ s.map==='relayService'&&f.exploreTaken_deckCoupler?['returnShadow','service-danger-door','올 때는 없던 젖은 발자국이 앞서 가고 있어.\n고압실 문 아래에서 끝났어. 따라 들어가면 안 돼.','stepWater0']:
+ s.map==='relayWorkshop'&&f.exploreTaken_partsKey?['toolKnock','workshop-tools','공구함 서랍이 안에서 밀렸어. 누가 열쇠를 돌려놓으라는 듯이…\n등 뒤에서 열쇠 고리가 한 번 더 울렸어.','omenKnock']:
+ s.map==='relayStore'&&f.exploreTaken_deckCoupler?['crateEyes','parts-crate-23-7','상자 사이에 눈이 있었어. 내가 들고 있는 부품이 아니라… 내 얼굴을 보고 있었어.\n이걸 데크에 연결하고 원본을 들어야 해.','apparition']:null;
+ if(!spec||f['exploreSeen_'+spec[0]])return null;
+ return{kind:'explore_'+spec[0],focus:spec[1],line:spec[2],sound:spec[3],eyes:['washerTurn','crateEyes'].includes(spec[0]),shadow:spec[0]==='courtWindow'||spec[0]==='returnShadow'};
+}
+export function explorationObjective(s){
+ if(s.map==='laundry')return !s.flags.laundryDrained?'세탁실 물을 빼기 위해 벽의 배수 우회 밸브를 연다':!s.bag.includes('rearKey')?'분실물 인계 선반에서 후면 출입 열쇠를 확인한다':'후면 현관 열쇠로 건조 마당을 확인하거나 관리 복도로 돌아간다';
+ if(!s.flags.routeB&&s.flags.chapter2&&s.flags.relayPower&&!s.flags.deckCouplerInstalled&&!s.flags.relayLastVoice)return s.bag.includes('deckCoupler')?'송출층 원본 데크에 회선 어댑터를 연결한다':s.bag.includes('partsKey')?'정비 연결 복도 동쪽 밀봉 부품실에서 같은 모델의 회선 어댑터를 찾는다':'원본 데크의 부식된 어댑터를 교체한다 · 설비층 서쪽 정비 연결 복도 → 통신 정비 작업실';
+ return null;
+}

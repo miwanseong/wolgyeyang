@@ -46,7 +46,7 @@ export function applyArchitecture(M,prop){
  M.relaySignal.objects.push(prop('relay-booth-release','panel',20,10,'청취 부스 비상 잠금 해제기',{trapRelease:true,technical:7,w:10,back:12,front:8,description:'문틀에 연결된 기계식 비상 해제 손잡이.'}),prop('relay-partial-copy','monitor',42,15,'부분 사본 편집 단말',{partialExport:true,regional:1,w:20,back:22,front:10,description:'관리카드로 지정한 원격 잠금 이력만 복사한다.'}));
  for(const [id,m]of Object.entries(M)){
   for(const o of m.objects){if(o.internalDoor&&/욕실|화장실|칸 문/.test(o.name))o.doorType='bathroom';}
-  m.spacePlan=SPACE_PLANS[id];m.wetCells=new Set();for(const r of m.rooms.filter(r=>/욕실|화장실/.test(r.name)))for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)if(m.grid[y]?.[x]===1)m.wetCells.add(x+','+y);
+  m.spacePlan=SPACE_PLANS[id]||m.spacePlan;m.wetCells=new Set();for(const r of m.rooms.filter(r=>/욕실|화장실/.test(r.name)))for(let y=r.y;y<r.y+r.h;y++)for(let x=r.x;x<r.x+r.w;x++)if(m.grid[y]?.[x]===1)m.wetCells.add(x+','+y);
   for(const o of m.objects){
    if(o.kind==='desk'&&!o.mount&&!o.module&&o.counter===undefined&&o.technical===undefined&&o.facility===undefined&&o.regional===undefined&&o.supply===undefined&&!o.hideKind&&!o.hiddenClue){o.standardDesk=true;o.deskWidth=64;}
   }

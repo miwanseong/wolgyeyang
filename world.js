@@ -1,8 +1,9 @@
-import {addStorySpaces} from './story-spaces.js?v=fa5ea17edd12';
-import {MEMENTOS} from './mementos.js?v=fa5ea17edd12';
-import {applyArchitecture} from './architecture.js?v=fa5ea17edd12';
-import { STORY } from "./story.js?v=fa5ea17edd12";
-import { addRelayChapter } from "./chapter-world.js?v=fa5ea17edd12";
+import {addExploration} from './exploration.js?v=35d4de009dfc';
+import {addStorySpaces} from './story-spaces.js?v=35d4de009dfc';
+import {MEMENTOS} from './mementos.js?v=35d4de009dfc';
+import {applyArchitecture} from './architecture.js?v=35d4de009dfc';
+import { STORY } from "./story.js?v=35d4de009dfc";
+import { addRelayChapter } from "./chapter-world.js?v=35d4de009dfc";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -533,6 +534,7 @@ M.unit102.objects.push(prop('102-tea-table','side-table',24,12,'주방 옆 다�
 placeUnit('unit103','unit103-bed',11,10,{description:'순찰 사이에 쉬던 침대. 침구가 발치 쪽으로 밀려 있다.'});placeUnit('unit103','unit103-kitchen',24.5,7);placeUnit('unit103','unit103-sink',22.5,7);placeUnit('unit103','unit103-bath',7.5,23);placeUnit('unit103','103-keybox',6,7);placeUnit('unit103','103-duty-desk',22,20);
 M.unit103.objects.push(prop('103-duty-chair','chair',22,22,'순찰 책상 앞 회전 의자',{swivel:true,w:13,back:13,front:8,description:'서류를 보던 회전 의자. 책상 앞으로 당겨 놓았다.'}),prop('103-moving-tools','crates',15,19,'묶어 둔 작업용품 상자',{supply:0,w:24,back:26,front:12,description:'작업용품을 담고 테이프로 묶은 상자. 좁은 통로를 막지 않게 벽 쪽에 모아 두었다.'}),prop('103-coat-rack','detail',6,12,'작업복 외투 걸이',{details:0,w:12,back:20,front:8,description:'순찰할 때 입던 외투를 걸어 두는 자리. 침대와는 반대편 벽에 붙였다.'}));
 addStorySpaces(M,map,prop,door);
+addExploration(M,map,prop,door);
 applyArchitecture(M,prop);
 for(const[id,m]of Object.entries(MEMENTOS)){const o=M[m.map].objects.find(o=>o.id===m.object);if(o)o.memento=id;}
 // Every fixture has a single explicit semantic action; plain props remain inspection only.

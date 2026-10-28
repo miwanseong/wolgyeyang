@@ -1,10 +1,10 @@
-import {MEMENTOS} from './mementos.js?v=fa5ea17edd12';
-import {canPreserve} from './chapter1-route.js?v=fa5ea17edd12';
-import {bodyState,validBody} from './body.js?v=fa5ea17edd12';
-import {validInvestigation} from './investigation.js?v=fa5ea17edd12';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=fa5ea17edd12';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=fa5ea17edd12";
-import { STORY, canSurrender } from "./story.js?v=fa5ea17edd12";
+import {MEMENTOS} from './mementos.js?v=35d4de009dfc';
+import {canPreserve} from './chapter1-route.js?v=35d4de009dfc';
+import {bodyState,validBody} from './body.js?v=35d4de009dfc';
+import {validInvestigation} from './investigation.js?v=35d4de009dfc';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=35d4de009dfc';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=35d4de009dfc";
+import { STORY, canSurrender } from "./story.js?v=35d4de009dfc";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -22,11 +22,12 @@ export const initial = () => ({
   hidden: false,
   bag: [],
   notes: [],
-  flags: {storyV3:true,storyFlowV1:true},
+  flags: {storyV3:true,storyFlowV1:true,explorationV1:true},
   ending: null,
 });
 export const ITEMS = {
  spareLight:'방수 포장의 예비 작업등',
+ laundryKey:'공동 세탁실 열쇠',rearKey:'후면 현관 열쇠',partsKey:'밀봉 부품실 열쇠',deckCoupler:'원본 데크용 회선 어댑터',courtSlip:'서윤의 세탁 인수표',knotThreadService:'매듭실 · 반환 비품함',
  relayAuditKey:'원본 보관대의 대조실 비품 열쇠',
   knotThreadMemoryFirst:'매듭실 · 모아 둔 기억',knotThreadMemoryComplete:'매듭실 · 되찾은 일상',
   ...Object.fromEntries(Object.entries(MEMENTOS).map(([id,m])=>[id,m.name])),
@@ -71,6 +72,8 @@ export function restore(raw) {
   if(!validPuzzles(s.puzzles))throw Error("유효하지 않은 퍼즐 기록");
   if(!validInvestigation(s.investigation))throw Error("유효하지 않은 조사 판정 기록");
   reconcilePuzzles(s);
+  if(s.flags&&['lighter','phone',null].includes(s.flags.temporaryLight)){s.flags.temporaryLighter=s.flags.temporaryLight==='lighter';s.flags.temporaryPhone=s.flags.temporaryLight==='phone';delete s.flags.temporaryLight;}
+  if(s.crowdRemains!==undefined&&(!Array.isArray(s.crowdRemains)||s.crowdRemains.length>32||!s.crowdRemains.every(r=>r&&MAPS[r.map]&&Number.isInteger(r.index)&&Number.isFinite(r.x)&&Number.isFinite(r.y)&&r.x>=0&&r.y>=0&&r.x<MAPS[r.map].w*32&&r.y<MAPS[r.map].h*32)))throw Error('손상된 목격 기록');
   const oldLayout=s.layout;
   if (s.version === 1) {
     s = {

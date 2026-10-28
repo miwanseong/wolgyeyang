@@ -1,6 +1,7 @@
-import {familyEnding} from './haunt-causality.js?v=fa5ea17edd12';
-import {stormEndingBeat} from './story-flow.js?v=fa5ea17edd12';
-import {lowerLightForPickup} from './body.js?v=fa5ea17edd12';
+import {residentOutcome} from './npc-threat.js?v=35d4de009dfc';
+import {familyEnding} from './haunt-causality.js?v=35d4de009dfc';
+import {stormEndingBeat} from './story-flow.js?v=35d4de009dfc';
+import {lowerLightForPickup} from './body.js?v=35d4de009dfc';
 export const TRAP_DOORS=['relay-quiet-inner-door','relay-booth-door'];
 export function chooseRecordRoute(s,route){
  if(!s.bag.includes('relayCopy')||s.bag.includes('relayExport'))return false;
@@ -24,4 +25,4 @@ function baseRouteFilm(s,id,film){
  return film;
 }
 
-export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}
+export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const rescued=residentOutcome(s);if(rescued&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats,rescued]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}

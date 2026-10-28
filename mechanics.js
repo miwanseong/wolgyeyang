@@ -1,9 +1,9 @@
-import {hauntEligible} from './haunt-causality.js?v=fa5ea17edd12';
-import {hollowStage} from './hollow-art.js?v=fa5ea17edd12';
-import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=fa5ea17edd12';
-import {redLightUpdate} from './encounters.js?v=fa5ea17edd12';
-import {bodyState} from './body.js?v=fa5ea17edd12';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=fa5ea17edd12";
+import {hauntEligible} from './haunt-causality.js?v=35d4de009dfc';
+import {hollowStage} from './hollow-art.js?v=35d4de009dfc';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=35d4de009dfc';
+import {redLightUpdate} from './encounters.js?v=35d4de009dfc';
+import {bodyState} from './body.js?v=35d4de009dfc';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=35d4de009dfc";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}

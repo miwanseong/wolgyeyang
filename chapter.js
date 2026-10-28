@@ -1,9 +1,10 @@
-import {learnFamilyBinding} from './haunt-causality.js?v=fa5ea17edd12';
-import {prepareStoryFlow,storyObjective} from './story-flow.js?v=fa5ea17edd12';
-import {bodyState} from './body.js?v=fa5ea17edd12';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=fa5ea17edd12";
-import { MAPS, sight, worldFor } from "./world.js?v=fa5ea17edd12";
-import { take, note } from "./state.js?v=fa5ea17edd12";
+import {prepareExploration,explorationObjective} from './exploration.js?v=35d4de009dfc';
+import {learnFamilyBinding} from './haunt-causality.js?v=35d4de009dfc';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=35d4de009dfc';
+import {bodyState} from './body.js?v=35d4de009dfc';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=35d4de009dfc";
+import { MAPS, sight, worldFor } from "./world.js?v=35d4de009dfc";
+import { take, note } from "./state.js?v=35d4de009dfc";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -30,7 +31,7 @@ export function enterChapterTwo(s){
  return true;
 }
 export function relayObjective(s){
- const urgent=storyObjective(s);if(urgent)return urgent;
+ prepareExploration(s);const urgent=storyObjective(s)||explorationObjective(s);if(urgent)return urgent;
  if(s.flags.relayTrapActive)return '청취 부스의 문이 잠겼다 · 방 안쪽의 기계식 비상 손잡이를 찾아 밖의 두드림이 멎을 때 당긴다';
  if(s.map==='relayYard'&&s.bag.includes('relayExport'))return '외부 마당 서쪽 산길·정류장 표지 · 증거를 가지고 떠난다';
  if(s.map==='relayYard'&&!s.flags.relayLastVoice)return '동쪽 현관 → 안내·접수동 · 인계대와 해린을 찾는다';
