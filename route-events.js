@@ -1,8 +1,8 @@
-import {hasOriginals} from './story.js?v=178ec9dc0c70';
-import {residentOutcome} from './npc-threat.js?v=178ec9dc0c70';
-import {familyEnding} from './haunt-causality.js?v=178ec9dc0c70';
-import {stormEndingBeat} from './story-flow.js?v=178ec9dc0c70';
-import {lowerLightForPickup} from './body.js?v=178ec9dc0c70';
+import {hasOriginals} from './story.js?v=0d94e6edc848';
+import {residentOutcome} from './npc-threat.js?v=0d94e6edc848';
+import {familyEnding} from './haunt-causality.js?v=0d94e6edc848';
+import {stormEndingBeat} from './story-flow.js?v=0d94e6edc848';
+import {lowerLightForPickup} from './body.js?v=0d94e6edc848';
 export const TRAP_DOORS=['relay-quiet-inner-door','relay-booth-door'];
 export function chooseRecordRoute(s,route){
  if(!s.bag.includes('relayCopy')||s.bag.includes('relayExport'))return false;

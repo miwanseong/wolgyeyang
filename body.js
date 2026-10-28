@@ -21,4 +21,5 @@ export function lowerLightForPickup(s){if(bodyState(s).arms===1&&s.flashlight){s
 export function captureConsequence(s,kind,random=Math.random){return kind==='jeongwoo'?{fatal:true,kind}:{...loseLimb(s,random),kind};}
 
 export function pickupBlocked(s){return bodyState(s).arms===1&&((s.bag.includes('flashlight')&&!s.flags.lightStowed)||s.flags.temporaryLighter||s.flags.temporaryPhone);}
-export function stowLight(s,stowed){s.flags.lightStowed=stowed;s.flashlight=!stowed&&s.bag.includes('flashlight')&&!s.flags.flashlightBroken&&canHoldLight(s);if(stowed){s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;}return stowed;}
+export function stowLight(s,stowed){if(stowed)s.flags.lightWasOn=!!s.flashlight;s.flags.lightStowed=stowed;s.flashlight=!stowed&&(s.flags.lightWasOn??true)&&s.bag.includes('flashlight')&&!s.flags.flashlightBroken&&canHoldLight(s);if(stowed){s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;}return stowed;}
+export function toggleLightPower(s){if(s.flags.lightStowed||!s.bag.includes('flashlight')||!canHoldLight(s)||s.flags.flashlightBroken)return false;s.flashlight=!s.flashlight;return true;}

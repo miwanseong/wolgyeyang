@@ -1,10 +1,10 @@
-import {prepareExploration,explorationObjective} from './exploration.js?v=178ec9dc0c70';
-import {learnFamilyBinding} from './haunt-causality.js?v=178ec9dc0c70';
-import {prepareStoryFlow,storyObjective} from './story-flow.js?v=178ec9dc0c70';
-import {bodyState,pickupBlocked} from './body.js?v=178ec9dc0c70';
-import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=178ec9dc0c70";
-import { MAPS, sight, worldFor } from "./world.js?v=178ec9dc0c70";
-import { take, note } from "./state.js?v=178ec9dc0c70";
+import {prepareExploration,explorationObjective} from './exploration.js?v=0d94e6edc848';
+import {learnFamilyBinding} from './haunt-causality.js?v=0d94e6edc848';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=0d94e6edc848';
+import {bodyState,pickupBlocked} from './body.js?v=0d94e6edc848';
+import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=0d94e6edc848";
+import { MAPS, sight, worldFor } from "./world.js?v=0d94e6edc848";
+import { take, note } from "./state.js?v=0d94e6edc848";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
  if(!s.flags.chapter2&&s.ending==='return'&&!canSeekOriginal(s)){s.ending=null;s.flags.denial=false;if(!s.notes.some(n=>n.id==='104-route-needed'))s.notes.push({id:'104-route-needed',text:'원격 기록을 확인하러 가기 전에104호 점검 사진 원본부터 확보한다. 녹음만 제출하고 진술하는 경로는 열려 있다.'});}
@@ -103,7 +103,7 @@ export const records={
 function result(title,text,extra={}){return {title,text,...extra};}
 export function relayAction(s,o,choice=null){
  if(!s.flags.chapter2||!MAPS[s.map]?.objects.includes(o)||!o.chapterAction||Math.hypot(s.x-o.x,s.y-o.y)>=70||!sight(worldFor(s),s,o))return null;
- const action=o.chapterAction;if(['register','incoming','compare','wheel','lastVoice','export'].includes(action)&&pickupBlocked(s))return result('서하','남은 손이 비지 않는다. F로 손전등을 내려놓고 집어야 해.');
+ const action=o.chapterAction;if(['register','incoming','compare','wheel','lastVoice','export'].includes(action)&&pickupBlocked(s))return result('서하','남은 손이 비지 않는다. R로 손전등을 내려놓고 집어야 해.');
  if(action==='lastVoice'&&choice==='collectOriginal'&&s.flags.relayLastVoice){take(s,'relayExport');s.flags.relayExported=true;s.flags.relayRedacted=false;s.flags.routeA=true;s.flags.routeB=false;s.bag=s.bag.filter(k=>k!=='editPass');note(s,'relay-export','23:44 통화 원본과 복원 시각·파일 번호를 함께 보존했다. 서하의 종료 조작도 빠짐없이 저장했다.');return result('원본 녹음 확보','재생한 원본 통화와 파일 번호를 저장 매체에 옮겨 봉투에 넣었다.\n내 목소리도… 이번에는 끝까지 남겼다. 이제 이걸 가지고 밖으로 나가자.',{exported:true,sound:'item'});}
  if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다.');
  if(action==='lastVoice'&&!s.flags.relayLastVoice&&!s.flags.relaySync)return result(o.name,'두 복제 신호가 어긋나 말소리가 묻힌다. 기준 펄스를 먼저 대조해야 한다.',{puzzle:'sync'});
