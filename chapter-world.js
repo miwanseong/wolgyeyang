@@ -19,7 +19,7 @@ export function addRelayChapter(M,map,prop,door){
  function wall(m,id,index,x,y,name,description,extra={}){return detail(m,id,index,x,y,name,description,{mount:true,solid:false,facing:'north',...extra,...(extra.decor!==undefined?{details:undefined}:{})});}
  function furniture(m,id,kind,x,y,name,description,extra={}){return put(m,id,kind,x,y,name,{description,...extra});}
  function action(m,id,kind,x,y,name,chapterAction,description,extra={}){return furniture(m,id,kind,x,y,name,description,{chapterAction,...extra});}
- function hide(m,x,y){const vent=m==='relayPlant'||m==='relaySignal';furniture(m,m+'-hide',vent?'cabinet':'desk',x,y,vent?'정비용 환풍구':'가림판이 있는 작업 책상',vent?'나사 두 개가 풀린 점검 덮개. 안쪽 통로는 몸 하나가 겨우 들어간다. 누가 보는 앞에서 들어가면 덮개를 열고 따라올 것이다.':'책상 아래 가림판 뒤로 몸을 낮출 수 있다. 시선을 끊고 들어가야 한다.',{hide:true,hideKind:vent?'vent':'desk',w:vent?24:38,back:vent?20:26,front:12});}
+ function hide(m,x,y){const vent=m==='relayPlant'||m==='relaySignal';furniture(m,m+'-hide',vent?'cabinet':'desk',x,y,vent?'정비용 환풍구':'가림판이 있는 작업 책상',vent?'나사 두 개가 풀린 점검 덮개. 안쪽 통로는 몸 하나가 겨우 들어간다. 누가 보는 앞에서 들어가면 덮개를 열고 따라올 것이다.':'책상 아래 가림판 뒤로 몸을 낮출 수 있다. 시선을 끊고 들어가야 한다.',{hide:true,hideKind:vent?'vent':'desk',w:vent?15:28,back:vent?10:22,front:vent?9:10});}
  function shelf(m,id,x,y,col=0){furniture(m,id,'shelf',x,y,'번호별 기록 서가','사건 번호별로 정리된 문서. 통로를 비워 두고 벽을 따라 배치했다.',{regional:7,w:28,back:28,front:10});}
  furniture('relayEntry','relay-inspection-lens','desk',36,18,'당직실 검사 도구함','검사용 확대경과 열쇠 점검표.',{equipment:'lens',w:24,back:20,front:10});
  furniture('relayPlant','relay-circuit-tester','desk',42,17,'절연 공구 트레이','도현의 비접촉 회로 시험기. 측정 도구를 빌릴 수 있다.',{equipment:'tester',w:24,back:20,front:10});

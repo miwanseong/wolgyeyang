@@ -1,7 +1,7 @@
-import {bodyState} from './body.js?v=908ea1317401';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=908ea1317401";
-import { MAPS, sight, worldFor } from "./world.js?v=908ea1317401";
-import { take, note } from "./state.js?v=908ea1317401";
+import {bodyState} from './body.js?v=78bf240a0fe9';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=78bf240a0fe9";
+import { MAPS, sight, worldFor } from "./world.js?v=78bf240a0fe9";
+import { take, note } from "./state.js?v=78bf240a0fe9";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
@@ -28,6 +28,7 @@ export function enterChapterTwo(s){
  return true;
 }
 export function relayObjective(s){
+ if(s.flags.relayTrapActive)return '청취 부스의 문이 잠겼다 · 방 안쪽의 기계식 비상 손잡이를 찾아 밖의 두드림이 멎을 때 당긴다';
  if(s.map==='relayYard'&&s.bag.includes('relayExport'))return '외부 마당 서쪽 산길·정류장 표지 · 증거를 가지고 떠난다';
  if(s.map==='relayYard'&&!s.flags.relayLastVoice)return '동쪽 현관 → 안내·접수동 · 인계대와 해린을 찾는다';
  if(s.flags.relayComplete)return '제출된 기록';
@@ -36,8 +37,10 @@ export function relayObjective(s){
  if(!s.flags.relayIncoming||!s.flags.relayCancel||!s.flags.relayOverride)return '내 취소가 문 개방을 뜻했는지 확인한다 · 기록동 접수 원본·취소 녹음·잠금 회신을 조사한다';
  if(!s.bag.includes('relayCopy')&&!s.flags.relaySlide&&s.flags.relayIncoming&&s.flags.relayCancel&&s.flags.relayOverride)return '잘린 구간의 파일 번호를 찾는다 · 기록동 원본 색인 단말을 복원한다';
  if(!s.bag.includes('relayCopy'))return '누락된 통화의 파일 번호를 조회한다 · 기록동 원본 색인 단말';
+ if(s.flags.relayLastVoice&&!s.bag.includes('relayExport'))return '원본 통화를 확인했다 · 같은 데크에서 저장 매체를 챙긴 뒤 건물 밖으로 나간다';
+ if(s.flags.routeB&&!s.bag.includes('relayExport'))return 'B루트 · 접수동 북쪽 관리카드 연결문으로 송출층 편집 단말에 간다. 원본을 확인하려면 봉인대에서 경로를 바꿀 수 있다';
  if(!s.flags.relayErasure&&!s.bag.includes('auditMemo'))return '잘린 구간의 수정 전 목록을 구한다 · 해린에게 사본을 요청하거나 기록동 수정 이력을 확인한다';
- if(!s.flags.relayCooling)return s.bag.includes('relayWheel')?'설비동 서쪽 순환실 · 수동 핸들을 빈 냉각 밸브 축에 연결한다':'통화 원본 데크를 켜야 한다 · 도현에게 전원 복구를 묻고 설비동 냉각 핸들을 찾는다';
+ if(!s.flags.relayCooling)return s.bag.includes('relayWheel')?'설비동 서쪽 순환실 · 수동 핸들을 빈 냉각 밸브 축에 연결한다':'통화 원본 데크의 전원을 켠다 · 도현에게 복구를 부탁하거나 직접 설비를 점검한다';
  if(!s.flags.relayIsolated)return '설비동 동쪽 절체실 · 기존 입력 분리 스위치를 내린다';
  if(!s.flags.relayPower)return '설비동 동쪽 절체실 · 냉각·분리 확인 후 비상 회선을 투입한다';
  if(!s.flags.relayLastVoice)return '취소 뒤 동생이 다시 전화했는지 확인한다 · 송출층 원본 데크에서 누락 구간을 재생한다';
@@ -96,12 +99,13 @@ function result(title,text,extra={}){return {title,text,...extra};}
 export function relayAction(s,o,choice=null){
  if(!s.flags.chapter2||!MAPS[s.map]?.objects.includes(o)||!o.chapterAction||Math.hypot(s.x-o.x,s.y-o.y)>=70||!sight(worldFor(s),s,o))return null;
  const action=o.chapterAction;
+ if(action==='lastVoice'&&choice==='collectOriginal'&&s.flags.relayLastVoice){take(s,'relayExport');s.flags.relayExported=true;s.flags.relayRedacted=false;s.flags.routeA=true;s.flags.routeB=false;s.bag=s.bag.filter(k=>k!=='editPass');note(s,'relay-export','23:44 통화 원본과 복원 시각·파일 번호를 함께 보존했다. 서하의 종료 조작도 빠짐없이 저장했다.');return result('원본 녹음 확보','재생한 원본 통화와 파일 번호를 저장 매체에 옮겨 봉투에 넣었다.\n내 목소리도… 이번에는 끝까지 남겼다. 이제 이걸 가지고 밖으로 나가자.',{exported:true,sound:'item'});}
  if(action==='lastVoice'&&!s.flags.relayPower)return result(o.name,'원본 복원 데크의 전원이 꺼져 있다. 전용 회선은 냉각을 복구한 뒤에만 켤 수 있다.');
  if(action==='lastVoice'&&!s.flags.relayLastVoice&&!s.flags.relaySync)return result(o.name,'두 복제 신호가 어긋나 말소리가 묻힌다. 기준 펄스를 먼저 대조해야 한다.',{puzzle:'sync'});
  if(records[action]){
   const [flag,title,text]=records[action];const first=!s.flags[flag];s.flags[flag]=true;note(s,o.id,text);
   if(action==='register')take(s,'relayBadge');
-  return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'drawer',haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
+  return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'drawer',choices:action==='lastVoice'&&!s.bag.includes('relayExport')?[['내 목소리까지 포함한 통화 원본을 챙긴다','collectOriginal']]:undefined,haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
  }
  if(action==='compare'){
   if(s.bag.includes('relayCopy'))return result(o.name,'파일 번호를 조회한 출력 사본은 이미 챙겼다. 비어 있는 번호는 수정 전 목록과 대조해야 한다.');
@@ -143,6 +147,7 @@ export function relayAction(s,o,choice=null){
   if(s.bag.includes('relayExport'))return result(o.name,'대조 기록과 23:44 통화를 증거 매체로 내보냈다.');
   if(!s.flags.relayPower||!s.bag.includes('relayCopy')||!s.flags.relayLastVoice)return result(o.name,'대조 사본, 비상 회선, 마지막 회신 청취가 모두 필요하다. 서쪽 청취실에서 서윤의 목소리를 끝까지 듣자.');
   if(!s.flags.relayErasure)return result(o.name,'대조 사본에 지워진 문장의 출처가 없다. 기록동 동쪽 청취실의 「해린의 수정 이력 서랍」을 확인해야 한다.');
+  if(s.flags.routeA){if(choice==='redact')return result(o.name,'봉인한 전체 원본에서 내 통화만 골라 빼지 않기로 했다.');s.flags.relayProofTimeline=true;s.flags.relayProofAccount=true;}
   if(!s.flags.relayProofTimeline){
    if(choice==='proof-time'){s.flags.relayProofTimeline=true;note(s,'relay-proof-time','신고 취소가 문을 연 것이 아니다. 취소 이후에도 정우가 잠금을 유지했다.');}
    else return result('최종 대조 1 · 취소와 개방','기록에 없는 내용을 덧붙이지 않는다. 접수 취소 뒤 방화문은 어떻게 되었는가?',{choices:[['취소와 함께 문이 열렸다','wrong-proof'],['23:47에 잠금 유지 회신이 남았다','proof-time']]});
@@ -151,7 +156,7 @@ export function relayAction(s,o,choice=null){
    if(choice==='proof-account'){s.flags.relayProofAccount=true;note(s,'relay-proof-account','23:44 수신자 서하의 종료 조작과 23:47 정우의 잠금 유지를 함께 보존한다. 취소 뒤에도 나는 문이 안 열렸다는 말을 들었다.');choice=null;}
    else return result('최종 대조 2 · 수신 기록','삭제 전 원본에는 어떤 행동이 함께 기록되어 있는가?',{choices:[['23:44 내 재통화 종료와 23:47 정우의 잠금 유지','proof-account'],['정우의 잠금 유지뿐이고 내 재통화는 없다','wrong-proof']]});
   }
-  if(choice===null)return result(o.name,s.flags.originalKept?'가져온 원본과 중계소 사본이 일치한다. 누구의 이름도 지우지 않고 전송할 수 있다.':'확보하지 못한 원본이 있다. 이곳에서 복원한 사본이라는 사실을 밝혀야 한다. 나의 증언만으로 빈 줄을 채울 수는 없다.',{choices:[[s.flags.originalKept?'내 재통화까지 포함한 전체 기록을 증거 매체로 내보낸다':'복원 사본임을 표시하고 전체 기록을 내보낸다','send'],['내 재통화와 취소 이력은 빼고 내보낸다','redact'],['아직 내보내지 않는다','back']]});
+  if(choice===null)return result(o.name,s.flags.originalKept?'가져온 원본과 중계소 사본이 일치한다. 누구의 이름도 지우지 않고 전송할 수 있다.':'확보하지 못한 원본이 있다. 이곳에서 복원한 사본이라는 사실을 밝혀야 한다. 나의 증언만으로 빈 줄을 채울 수는 없다.',{choices:[[s.flags.originalKept?'내 재통화까지 포함한 전체 기록을 증거 매체로 내보낸다':'복원 사본임을 표시하고 전체 기록을 내보낸다','send'],...(s.flags.routeA?[]:[['내 재통화와 취소 이력은 빼고 내보낸다','redact']]),['아직 내보내지 않는다','back']]});
   if(choice==='back')return result(o.name,'손을 뗐다. 기록은 남아 있다. 아직 조사하지 않은 수첩과 수정 이력을 돌아볼 수 있다.');
   if(!['send','redact'].includes(choice))return null;
   s.flags.relayRedacted=choice==='redact';s.flags.relayExported=true;take(s,'relayExport');
@@ -160,3 +165,5 @@ export function relayAction(s,o,choice=null){
  }
  return null;
 }
+
+export function acquireRelayMap(s){if(s.flags.relayMap)return false;s.flags.relayMap=true;return true;}

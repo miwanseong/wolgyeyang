@@ -1451,3 +1451,5 @@ button:active:not(:disabled) {
 
 #mirror-modal .encounter-card{width:min(96vw,1000px);padding:12px;animation:none}#mirror-modal .encounter-card h2{margin:8px 0;font-size:18px}#mirror-modal .encounter-card>p{display:none}#mirror-view{display:block;width:min(80vh,100%);height:auto;max-height:none;margin:auto}#mirror-modal .encounter-card button{min-height:44px;margin:10px;padding:10px 24px}
 #mirror-modal{padding:8px}#mirror-view{aspect-ratio:1}
+
+.comparison-card{margin:16px 0;padding:16px 18px;border-left:2px solid #81796e;background:#202327}.comparison-card h3{margin:0 0 8px;font-size:14px;color:#d5c8b6}.comparison-card p{margin:0;white-space:pre-line}.comparison-confirm{display:block;width:100%;margin:16px 0!important}.reasoning-body nav button[aria-pressed=true]{border-color:#c3b394;background:#38342f}

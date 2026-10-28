@@ -1,13 +1,14 @@
-import {canPreserve} from './chapter1-route.js?v=908ea1317401';
-import {bodyState,validBody} from './body.js?v=908ea1317401';
-import {validInvestigation} from './investigation.js?v=908ea1317401';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=908ea1317401';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=908ea1317401";
-import { STORY, canSurrender } from "./story.js?v=908ea1317401";
+import {MEMENTOS} from './mementos.js?v=78bf240a0fe9';
+import {canPreserve} from './chapter1-route.js?v=78bf240a0fe9';
+import {bodyState,validBody} from './body.js?v=78bf240a0fe9';
+import {validInvestigation} from './investigation.js?v=78bf240a0fe9';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=78bf240a0fe9';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=78bf240a0fe9";
+import { STORY, canSurrender } from "./story.js?v=78bf240a0fe9";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 13,
+  layout: 14,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -25,6 +26,8 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+  ...Object.fromEntries(Object.entries(MEMENTOS).map(([id,m])=>[id,m.name])),
+  editPass:'부분 사본 편집 관리카드',
   restoredRoster:'복원한 야간 근무·인계표 원본',
   serviceKey:'관리인 공용 마스터키',unit104Key:'104호 출입 열쇠',archiveKey:'서윤의 봉투 보관함 열쇠',lighter:'라이터',rosterScrap:'찢어진 근무표 조각',inspectionPhotos:'104호 점검 사진 원본과 촬영 일지',
   knotThread:"매듭실",
@@ -55,6 +58,7 @@ export function restore(raw) {
   let s = JSON.parse(raw);
   // Migrate our earlier numeric omen counters out of the boolean story flags.
   if(s?.flags&&typeof s.flags==='object'&&!Array.isArray(s.flags))for(const key of Object.keys(s.flags))if(key.startsWith('room_omens_')&&Number.isInteger(s.flags[key])&&s.flags[key]>=0){s.omenVisits={...s.omenVisits,[key.slice(11)]:s.flags[key]};delete s.flags[key];}
+  if(s?.relayTrapElapsed!==undefined&&(!Number.isFinite(s.relayTrapElapsed)||s.relayTrapElapsed<0||s.relayTrapElapsed>60))throw Error('유효하지 않은 잠금 이벤트');
   if(s?.npcScreamAt!==undefined&&(!Number.isFinite(s.npcScreamAt)||s.npcScreamAt<0||s.npcScreamAt>86400))throw Error('유효하지 않은 비명 기록');
   if(s?.relayExposure!==undefined&&(!Number.isFinite(s.relayExposure)||s.relayExposure<0||s.relayExposure>86400))throw Error('유효하지 않은 체류 시간');
   if(!validBody(s?.body))throw Error('유효하지 않은 신체 상태');
@@ -102,7 +106,7 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===13)throw Error("가구 내부의 저장 위치");
+    if(s.layout===14)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -112,7 +116,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:13, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:14, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

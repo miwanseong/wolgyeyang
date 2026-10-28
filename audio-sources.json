@@ -1,0 +1,207 @@
+[
+  {
+    "file": "cc0_step_wood_0.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_wood_000.ogg",
+    "sha256": "0aff1323576ea319bb50a2d536f8449fbf7512bd4ae0adbf022be284babf74a2"
+  },
+  {
+    "file": "cc0_step_wood_1.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_wood_001.ogg",
+    "sha256": "da1d0badd164edb3763cb0df9ce052b7517fee944f05f75c12ad05fe681622a1"
+  },
+  {
+    "file": "cc0_step_wood_2.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_wood_002.ogg",
+    "sha256": "4b758d58d0b7f58cb91ad707e636f0c25d8918b1369476d1e822ff163f98ab54"
+  },
+  {
+    "file": "cc0_step_wood_3.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_wood_003.ogg",
+    "sha256": "c14c9427c151ee3df49dd072fc5beac33956cccc6e9bc787af32ad704373ebfe"
+  },
+  {
+    "file": "cc0_step_concrete_0.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_concrete_000.ogg",
+    "sha256": "3037b8f8e3cc3f9bbbe2b6a06e1ce979c966796a61c1403c09733e7c54fcee09"
+  },
+  {
+    "file": "cc0_step_concrete_1.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_concrete_001.ogg",
+    "sha256": "173cd3e561f7576210601d018187a0fcb26ba877272b1a9e4a272e2a521e2de7"
+  },
+  {
+    "file": "cc0_step_concrete_2.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_concrete_002.ogg",
+    "sha256": "742e44ac307540754d2928497b88d974412c6212db7de48013215c8ce86e4170"
+  },
+  {
+    "file": "cc0_step_concrete_3.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_concrete_003.ogg",
+    "sha256": "b5a43371d5ac3f115cdd8d7325d82271d4540265acd95d62a8f23828d1012c9b"
+  },
+  {
+    "file": "cc0_step_carpet_0.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_carpet_000.ogg",
+    "sha256": "fa3873026d0a28532f78b1412819bfb418022c55e072dfc9eda1410f10c55918"
+  },
+  {
+    "file": "cc0_step_carpet_1.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_carpet_001.ogg",
+    "sha256": "171e78ca2ad78dbeb3258c2b508e655d32e40e37b798f6326e93a729cc686845"
+  },
+  {
+    "file": "cc0_step_carpet_2.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_carpet_002.ogg",
+    "sha256": "171e78ca2ad78dbeb3258c2b508e655d32e40e37b798f6326e93a729cc686845"
+  },
+  {
+    "file": "cc0_step_carpet_3.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/footstep_carpet_003.ogg",
+    "sha256": "47afaeeeab8424dd0fbd3626a6a52763ebfd0670a74fa7391365c2ba8f907497"
+  },
+  {
+    "file": "cc0_step_water_0.wav",
+    "pack": "Peludo / Water Splash and Sand Footsteps",
+    "source": "oga/splash1.wav",
+    "sha256": "a488902cd421d85d65a6a13cf6395cdc76c24f4d41d4bd5082f0558954247043"
+  },
+  {
+    "file": "cc0_step_water_1.wav",
+    "pack": "Peludo / Water Splash and Sand Footsteps",
+    "source": "oga/splash2.wav",
+    "sha256": "7ddbee2f8cdf3c8f03e5a44e727b8bd12bb8b4146568a347946463cf74b1ee46"
+  },
+  {
+    "file": "cc0_door_open.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/doorOpen_1.ogg",
+    "sha256": "18f10b422d2a23dfcb4a5573a654b736c0948bdced49a43118b7bc32a3318bef"
+  },
+  {
+    "file": "cc0_door_close.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/doorClose_1.ogg",
+    "sha256": "2ec3a127716cff71abb0cf0a1c4b22830b7b751b28964bb460e0cdae74333879"
+  },
+  {
+    "file": "cc0_paper.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/bookFlip1.ogg",
+    "sha256": "c54bbd7d65ebe9d27352bc40a43ee14937be1315acc864c322c9f76de9d24931"
+  },
+  {
+    "file": "cc0_paper_alt.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/bookFlip2.ogg",
+    "sha256": "07f480929d31504d2ca00f0ff204f31452a8336d4e3dc32345569813e222184d"
+  },
+  {
+    "file": "cc0_latch.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/metalLatch.ogg",
+    "sha256": "31efc5c0606e3815c5aab461ed94b99d72641db2668841cb8766e7777259b58e"
+  },
+  {
+    "file": "cc0_switch.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/metalClick.ogg",
+    "sha256": "4212ecbae56048c98f2bc665650e767ad956ef87f196ae31d43f2ad1e1e2ca92"
+  },
+  {
+    "file": "cc0_creak.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/creak2.ogg",
+    "sha256": "e500faa3b195b4592e6ba06686f1fd71b3ecabfdac390a12da23012000266670"
+  },
+  {
+    "file": "cc0_cloth.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/cloth4.ogg",
+    "sha256": "86551bb0dd70641e0be4e127752b6c4fc1e441d08f25c45b17516cbb40f484f1"
+  },
+  {
+    "file": "cc0_item.wav",
+    "pack": "Kenney RPG Audio",
+    "source": "rpg-audio/Audio/bookPlace1.ogg",
+    "sha256": "1e4dd71dcac114f2e3948922a88236f4ed67d843e3199a88d62bc72b023d0191"
+  },
+  {
+    "file": "cc0_dice_0.wav",
+    "pack": "Kenney Casino Audio",
+    "source": "casino-audio/Audio/dice-throw-1.ogg",
+    "sha256": "0e1dfc2cf52ba07b01bbff9f628f665acd5515b397de91d5c8260ee662395dc8"
+  },
+  {
+    "file": "cc0_dice_1.wav",
+    "pack": "Kenney Casino Audio",
+    "source": "casino-audio/Audio/dice-throw-2.ogg",
+    "sha256": "d56e486d11fd8fa383cdf3f9a22c2d35acf2e9c0ace15be50952101962c075ca"
+  },
+  {
+    "file": "cc0_dice_2.wav",
+    "pack": "Kenney Casino Audio",
+    "source": "casino-audio/Audio/dice-throw-3.ogg",
+    "sha256": "f3cf52bd9e194070f22ff0875ad1243818693a3e7006a4e202424a240c95d701"
+  },
+  {
+    "file": "cc0_knock.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/impactWood_medium_000.ogg",
+    "sha256": "485c29bbbd140fd2e65ac6af1e606df434b02858ef9b27268d54613bb1d3b15c"
+  },
+  {
+    "file": "cc0_metal_hit.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/impactMetal_heavy_000.ogg",
+    "sha256": "97c265118df63a135707d37104a67de77920d5a26fd8d46147903bb3d37874b8"
+  },
+  {
+    "file": "cc0_thud.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/impactWood_heavy_001.ogg",
+    "sha256": "32c673a10db61e620856daeaf675e5714613d32bbc552213c62c4e22812a0145"
+  },
+  {
+    "file": "cc0_soft_hit.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "impact-sounds/Audio/impactSoft_heavy_000.ogg",
+    "sha256": "8a8bdae1c952aea282e83d7d45c9e39e9f4cb4b37589071037a10d4fee9a7507"
+  },
+  {
+    "file": "cc0_ghost_breath.wav",
+    "pack": "qubodup / Ghost breath",
+    "source": "oga/ghostbreath.flac",
+    "sha256": "7576303c1e36109a6e7f6e694ad8f2e0b55f3b345fac5fa38b15443f535f39f8"
+  },
+  {
+    "file": "cc0_heartbeat.wav",
+    "pack": "OpenGameArt / Heartbeat (single sound)",
+    "source": "oga/heartbeat-source",
+    "sha256": "0a4a5d75bff9f66bd886109e58eb87017e3202b1ac506eb6e9c844a9e711879f"
+  },
+  {
+    "file": "cc0_three_knocks.wav",
+    "pack": "Kenney Impact Sounds",
+    "source": "Three timed copies of cc0_knock.wav; no oscillator",
+    "sha256": "16d01bd984f8b21d58b7313c986c8096a8ebf8de71e16a132e62469058f43543"
+  },
+  {
+    "file": "cc0_cackle.wav",
+    "pack": "AuraVoice / Evil Cackle Laugh 1",
+    "source": "https://opengameart.org/sites/default/files/evil_cackle_laugh_1.ogg",
+    "license": "CC0",
+    "sha256": "22b5644217896112c62c48956cb8ab79ab49cc49b3b5fdbd34e94683438da34e"
+  }
+]

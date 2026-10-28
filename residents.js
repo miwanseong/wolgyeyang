@@ -1,6 +1,6 @@
-import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=908ea1317401';
-import {advanceGait,actorStride} from './gait.js?v=908ea1317401';
-import {canMove,findPath,sight} from './world.js?v=908ea1317401';
+import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=78bf240a0fe9';
+import {advanceGait,actorStride} from './gait.js?v=78bf240a0fe9';
+import {canMove,findPath,sight} from './world.js?v=78bf240a0fe9';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
@@ -13,7 +13,7 @@ export class Residents{
  update(map,s,dt,allowed=true,threat=null){
   const phase=residentPhase(s),definitions=RESIDENTS.filter(n=>(phase===3?'relayYard':n.map)===map.id);
   if(this.map!==map.id||this.phase!==phase){this.map=map.id;this.phase=phase;this.actors=definitions.map(n=>{const route=phase===3?n.outside:n.route;return{...n,npc:true,phase,route,x:route[0][0]*32,y:route[0][1]*32,target:1,wait:1,path:[],repath:0,walk:0,direction:0,moving:false};});}
-  for(const n of this.actors){n.corruption=npcCorruption(s);n.panic=Math.max(0,(n.panic||0)-dt);if(threat?.active&&Math.hypot(threat.x-n.x,threat.y-n.y)<420&&sight(map,n,threat)){n.panic=3;n.direction=Math.abs(threat.x-n.x)>Math.abs(threat.y-n.y)?threat.x>n.x?2:1:threat.y<n.y?3:0;n.reactionLine=FEAR_LINES[n.id];}if(n.panic)n.moving=false;}
+  for(const n of this.actors){n.corruption=npcCorruption(s);n.panic=Math.max(0,(n.panic||0)-dt);if(threat?.active&&Math.hypot(threat.x-n.x,threat.y-n.y)<420&&sight(map,n,threat)){s.flags['witnessed_ghost_'+n.id]=true;s.flags['witnessed_'+threat.kind+'_'+n.id]=true;n.panic=3;n.direction=Math.abs(threat.x-n.x)>Math.abs(threat.y-n.y)?threat.x>n.x?2:1:threat.y<n.y?3:0;n.reactionLine=FEAR_LINES[n.id];}if(n.panic)n.moving=false;}
   if(!allowed){for(const n of this.actors)n.moving=false;return this.actors;}
   for(const n of this.actors){
    n.moving=false;if(n.panic)continue;n.wait=Math.max(0,n.wait-dt);
@@ -32,7 +32,7 @@ export class Residents{
  }
  nearest(map,s){return this.actors.filter(n=>Math.hypot(n.x-s.x,n.y-s.y)<(n.id==='haerin'&&map.id==='relayEntry'?110:64)&&sight(map,s,n)).sort((a,b)=>Math.hypot(a.x-s.x,a.y-s.y)-Math.hypot(b.x-s.x,b.y-s.y))[0]||null;}
 }
-export function residentDialogue(s,n){const reaction=corruptionReply(s,n);const answer=residentAccount(s,n);return reaction?reaction+'\n\n'+answer:answer;}
+export function residentDialogue(s,n){const reaction=corruptionReply(s,n),witness=s.flags['witnessed_ghost_'+n.id]?({haerin:'서하 씨도 봤죠? 같은 방에 있던 저 형체요. 제가 화면을 잘못 본 게 아니에요. 출입문 쪽을 계속 보고 있어 주세요.',mijeong:'나도 봤어. 네 뒤로 오던 그거… 사람 발걸음이 아니었어. 혼자 보고 있다고 생각하지 마. 나도 여기 있었어.',dohyun:'저도 같은 곳에서 봤습니다. 장비 그림자라고 생각했는데, 저쪽이 움직일 때 제 그림자는 그대로였어요.'})[n.id]:'';const answer=residentAccount(s,n);const lead=[witness,reaction].filter(Boolean).join('\n');return lead?lead+'\n\n'+answer:answer;}
 function residentAccount(s,n){
  if(s.flags['deduced_'+n.id])return ({haerin:'23:44 수신 행을 보셨군요. 그 줄은 제가 화면에서 숨겼어요. 통화 내용을 바꾼 건 아니지만 없었다고 적은 건 제 거짓말입니다. 수정 이력도 함께 가져가 주세요.',mijeong:'정우가 쓴 요약은 내가 확인한 내용과 달라. 나는 열쇠가 돌아간 것과 문이 안 움직인 것만 봤어. 화면을 누가 고쳤는지는 몰라. 그건 내 증언으로 채우면 안 돼.',dohyun:'운전표에 정지가 남아 있네요. 펌프 소리라고 적은 제 보고는 틀렸습니다. 직접 확인하지 않았고, 정우가 책임을 묻겠다고 하자 진술을 바꿨습니다.'})[n.id];
  if(n.id==='haerin'&&(s.flags.relayErasure||s.investigation?.rolls.haerin?.success))return '숨긴 행이 원본에는 남아 있었죠. 제가 원본을 지운 건 아니지만, 취소 뒤 수신이 없었다고 인계한 건 잘못입니다. 수정 이력을 원본 통화와 같이 보존해 주세요.';

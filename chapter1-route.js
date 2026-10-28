@@ -13,7 +13,7 @@ export class ArrivalScene{
  constructor(){this.active=false;}
  start(enemy){enemy.intro=true;this.active=true;this.time=0;this.origin={x:enemy.x,y:enemy.y};this.travel=0;}
  update(enemy,map,s,dt){
-  if(!this.active)return false;this.time+=dt;enemy.age+=dt;enemy.grace=Math.max(enemy.grace,4);
+  if(!this.active)return false;enemy.walking=false;this.time+=dt;enemy.age+=dt;enemy.grace=Math.max(enemy.grace,4);
   enemy.motion='crawl';enemy.mode='search';enemy.rush=0;enemy.windup=0;
   if(this.time>1.3&&this.time<4.6&&Math.hypot(enemy.x-s.x,enemy.y-s.y)>150){const before={x:enemy.x,y:enemy.y};enemy.navigate(enemy.kind==='redlight'&&enemy.arena?.grid?{...map,grid:enemy.arena.grid}:map,s,dt,28);this.travel+=Math.hypot(enemy.x-before.x,enemy.y-before.y);}
   if(this.time>=6){this.active=false;enemy.intro=false;enemy.grace=4;return false;}return true;

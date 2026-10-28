@@ -1,5 +1,7 @@
-import { STORY } from "./story.js?v=908ea1317401";
-import { addRelayChapter } from "./chapter-world.js?v=908ea1317401";
+import {MEMENTOS} from './mementos.js?v=78bf240a0fe9';
+import {applyArchitecture} from './architecture.js?v=78bf240a0fe9';
+import { STORY } from "./story.js?v=78bf240a0fe9";
+import { addRelayChapter } from "./chapter-world.js?v=78bf240a0fe9";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -529,6 +531,8 @@ placeUnit('unit102','unit102-bed',7,9);placeUnit('unit102','unit102-kitchen',20.
 M.unit102.objects.push(prop('102-tea-table','side-table',24,12,'주방 옆 다과상',{decor:5,w:16,back:20,front:10,description:'식사 뒤 차를 마시던 작은 탁자. 접이식 의자가 옆에 붙어 있다.'}),prop('102-kitchen-stool','stool',22.5,13,'다과상 옆 낮은 의자',{decor:7,w:12,back:12,front:8,description:'낮은 의자는 탁자 쪽을 향해 놓여 있다.'}),prop('102-bedroom-cabinet','cabinet',11.5,12,'침실 옷장',{w:23,back:24,front:12,hide:true,description:'대피하며 옷을 꺼낸 옷장. 남은 옷걸이 사이에 몸을 숨길 공간이 있다.'}));
 placeUnit('unit103','unit103-bed',11,10,{description:'순찰 사이에 쉬던 침대. 침구가 발치 쪽으로 밀려 있다.'});placeUnit('unit103','unit103-kitchen',24.5,7);placeUnit('unit103','unit103-sink',22.5,7);placeUnit('unit103','unit103-bath',7.5,23);placeUnit('unit103','103-keybox',6,7);placeUnit('unit103','103-duty-desk',22,20);
 M.unit103.objects.push(prop('103-duty-chair','chair',22,22,'순찰 책상 앞 회전 의자',{swivel:true,w:13,back:13,front:8,description:'서류를 보던 회전 의자. 책상 앞으로 당겨 놓았다.'}),prop('103-moving-tools','crates',15,19,'묶어 둔 작업용품 상자',{supply:0,w:24,back:26,front:12,description:'작업용품을 담고 테이프로 묶은 상자. 좁은 통로를 막지 않게 벽 쪽에 모아 두었다.'}),prop('103-coat-rack','detail',6,12,'작업복 외투 걸이',{details:0,w:12,back:20,front:8,description:'순찰할 때 입던 외투를 걸어 두는 자리. 침대와는 반대편 벽에 붙였다.'}));
+applyArchitecture(M,prop);
+for(const[id,m]of Object.entries(MEMENTOS)){const o=M[m.map].objects.find(o=>o.id===m.object);if(o)o.memento=id;}
 // Every fixture has a single explicit semantic action; plain props remain inspection only.
 for(const m of Object.values(M))for(const o of m.objects){o.fixture??=o.collectible?'document':o.internalDoor?'door':o.hide?'hide':'inspect';}
 // Single-leaf doors occupy one 32px opening; never stretch a leaf across two tiles.

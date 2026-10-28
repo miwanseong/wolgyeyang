@@ -1,8 +1,8 @@
-import {hollowStage} from './hollow-art.js?v=908ea1317401';
-import {isRelayGhost,relayGhostUpdate} from './relay-ghosts.js?v=908ea1317401';
-import {redLightUpdate} from './encounters.js?v=908ea1317401';
-import {bodyState} from './body.js?v=908ea1317401';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=908ea1317401";
+import {hollowStage} from './hollow-art.js?v=78bf240a0fe9';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=78bf240a0fe9';
+import {redLightUpdate} from './encounters.js?v=78bf240a0fe9';
+import {bodyState} from './body.js?v=78bf240a0fe9';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=78bf240a0fe9";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -61,7 +61,7 @@ export class Pursuer {
   }
   reset() {
     this.active = false;
-    this.hollowStage=0;this.hiddenTime=0;this.kind="jeongwoo";this.arena=null;this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
+    this.walkDistance=0;this.walking=false;this.hollowStage=0;this.hiddenTime=0;this.kind="jeongwoo";this.arena=null;this.intro=false;this.hollowTime=0;this.doorWait=null;this.doorEvent=null;this.phaseTime=0;this.signal=null;this.punish=0;this.lastPlayer=null;
     this.x = 0;
     this.y = 0;
     this.path = [];
@@ -126,6 +126,7 @@ export class Pursuer {
       this.facing=Math.atan2(dy,dx);this.x=point.x;this.y=point.y;distance-=step;moved+=step;
       if(step>=d-.001){this.path.shift();break;}
     }
+    this.walking=moved>.001;this.walkDistance=(this.walkDistance||0)+moved;
     return moved;
   }
   pressureDoor(map,s,dt){
@@ -149,7 +150,7 @@ export class Pursuer {
   }
   update(map, s, dt) {
     if (!this.active) return null;
-    this.age+=dt;
+    this.walking=false;this.age+=dt;
     this.hiddenTime=s.hidden&&!s.hideSpot?.witnessed?(this.hiddenTime||0)+dt:0;
     if(this.hiddenTime>=6){this.active=false;this.mode='gone';return 'escaped';}
     if(this.kind==='redlight')return redLightUpdate(this,map,s,dt,clearSegment);
@@ -184,6 +185,7 @@ export class Pursuer {
         return "escaped";
       }
     }
+    if(this.kind==='hollow'&&this.mode!=='chase'&&(!this.target||Math.hypot(this.x-this.target.x,this.y-this.target.y)<18))this.target=nextPatrolTarget(this,map);
     if(this.pressureDoor(map,s,dt))return null;
     this.windup=Math.max(0,this.windup-dt);this.rush=Math.max(0,this.rush-dt);
     if(this.motion==='windup'&&!this.windup)this.rush=.65;
@@ -193,7 +195,7 @@ export class Pursuer {
     }else{this.rushClock=4.5;this.windup=0;this.rush=0;}
     this.motion=this.age<1.2&&this.grace>0?'rise':this.windup>0?'windup':this.rush>0?'lunge':this.mode==='chase'?'crawl':'search';
     if(this.target){
-      const speed=this.kind==='hollow'?(bodyState(s).legs===2?48:bodyState(s).leg?92:118):this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
+      const speed=this.kind==='hollow'?(this.mode!=='chase'?38:bodyState(s).legs===2?48:bodyState(s).leg?92:118):this.motion==='rise'?25:this.motion==='windup'?12:this.motion==='lunge'?170:this.mode==='chase'?125:85;
       this.navigate(map,this.target,dt,speed);
     }
     if (!this.grace && !s.hidden && Math.hypot(s.x - this.x, s.y - this.y) < 20 && clearSegment(map,this,s))

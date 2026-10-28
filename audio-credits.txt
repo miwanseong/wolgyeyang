@@ -1,0 +1,40 @@
+잔류 — 외부 효과음 출처
+
+2026-10-28 확인. 아래 외부 효과음은 CC0(퍼블릭 도메인 기증) 자료에서 가져왔습니다.
+
+Kenney / Impact Sounds
+https://kenney.nl/assets/impact-sounds
+발소리(나무/콘크리트/카펫), 나무·금속·부드러운 충격.
+
+Kenney Vleugels / RPG Audio
+https://kenney.nl/assets/rpg-audio
+문 열기·닫기, 종이 넘김, 금속 잠금쇠, 스위치, 삐걱임, 천 마찰.
+
+Kenney Vleugels / Casino Audio
+https://kenney.nl/assets/casino-audio
+실제 주사위 굴림 효과.
+
+Peludo / Water Splash and Sand Footsteps
+https://opengameart.org/content/water-splash-and-sand-footsteps
+https://rnan.itch.io
+https://opengameart.org/sites/default/files/splash1_0.wav
+https://opengameart.org/sites/default/files/splash2_0.wav
+물 튀김 녹음을 짧게 편집해 젖은 바닥·젖은 흔적에 사용.
+
+qubodup / Ghost breath
+https://opengameart.org/content/ghost-breath
+https://opengameart.org/sites/default/files/ghostbreath.flac
+
+Independent.nu / Heartbeat (single sound)
+https://opengameart.org/content/heartbeat-single-sound
+https://opengameart.org/sites/default/files/heartbeat.mp3_.flac
+
+CC0: https://creativecommons.org/publicdomain/zero/1.0/
+편집: 무음 앞부분 정리, 짧은 구간 추출, 음량 조절, PCM WAV 변환. 문 두드림은 나무 충격 녹음3회를 시간차로 배치했습니다.
+사용 파일과 해시는 audio-sources.json, 원문 라이선스는 licenses/ 폴더에 있습니다.
+기존 사용자 제공 비명·속삭임·라이터·음악은 이번 CC0 자료 목록과 구분합니다.
+
+AuraVoice / Evil Cackle Laugh 1 (CC0)
+https://opengameart.org/content/evil-cackle-laugh-1
+https://opengameart.org/sites/default/files/evil_cackle_laugh_1.ogg
+성우가 공개한 웃음 녹음의 짧은 구간 사용. 음높이를 합성하거나 변경하지 않았습니다.
