@@ -1,4 +1,4 @@
-import {rememberedHides} from './haunting.js?v=54ec5e85cbbf';
+import {rememberedHides} from './haunting.js?v=41bf9cbd9f4b';
 // Photograph-derived floor plan and procedural weather. No story objectives leak here.
 export class Atmosphere{
  constructor(sound){this.sound=sound;this.lastStorm=0;this.flash=0;this.rain=null;this.reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;}

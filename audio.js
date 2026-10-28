@@ -1,3 +1,5 @@
+export const DOOR_OPEN_SECONDS=3.395918;
+export function doorMotionSeconds(o,opening=true){return opening?(o?.doorType==='fire'?.8:DOOR_OPEN_SECONDS):.675;}
 export function travelSound(portal){return portal?.kind==='stairs'?null:'door';}
 export const TRACKS = {
   main: "user_creepy_soundscape.mp3",
@@ -52,7 +54,7 @@ export const EFFECTS = {
   glass: "sfx_glass_breaking.mp3",
 };
 const EFFECT_VARIANTS={paper:['paper','paperAlt'],dice:['dice','diceAlt1','diceAlt2']};
-export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},door:{gain:.8,duration:1.8,fade:.08},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
+export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;
@@ -186,7 +188,7 @@ export class AudioDirector {
       if(mix?.fade)gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(0,duration-mix.fade),mix.fade/4);
       if(mix?.duck){this.ducks.set(s,mix.duck);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.04);}
       s.onended=()=>{if(mix?.duck){this.ducks.delete(s);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.25);}stereo?.disconnect();gain.disconnect();s.disconnect();if(this.doorSource===s)this.doorSource=null;};
-      if(['door','doorClose','fireDoor','fireDoorClose'].includes(name)){this.doorSource?.stop();this.doorSource=s;gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(.05,duration-.08),.03);s.start(0,0,Math.min(2.6,duration));}else if(mix)s.start(0,0,duration);else s.start();
+      if(['door','doorClose','fireDoor','fireDoorClose'].includes(name)){this.doorSource?.stop();this.doorSource=s;if(name!=='door')gain.gain.setTargetAtTime(0,this.ctx.currentTime+Math.max(.05,duration-.08),.03);if(name==='door')s.start();else s.start(0,0,duration);}else if(mix)s.start(0,0,duration);else s.start();
       this.playedEffects++;
     } catch {
       this.error("효과음을 불러오지 못했습니다: " + name);

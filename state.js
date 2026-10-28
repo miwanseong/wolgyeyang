@@ -1,10 +1,10 @@
-import {MEMENTOS} from './mementos.js?v=54ec5e85cbbf';
-import {canPreserve} from './chapter1-route.js?v=54ec5e85cbbf';
-import {bodyState,validBody} from './body.js?v=54ec5e85cbbf';
-import {validInvestigation} from './investigation.js?v=54ec5e85cbbf';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=54ec5e85cbbf';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=54ec5e85cbbf";
-import { STORY, canSurrender } from "./story.js?v=54ec5e85cbbf";
+import {MEMENTOS} from './mementos.js?v=41bf9cbd9f4b';
+import {canPreserve} from './chapter1-route.js?v=41bf9cbd9f4b';
+import {bodyState,validBody} from './body.js?v=41bf9cbd9f4b';
+import {validInvestigation} from './investigation.js?v=41bf9cbd9f4b';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=41bf9cbd9f4b';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=41bf9cbd9f4b";
+import { STORY, canSurrender } from "./story.js?v=41bf9cbd9f4b";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
