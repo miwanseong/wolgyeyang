@@ -47,12 +47,12 @@ export const EFFECTS = {
   drawer: "cc0_creak.wav",
   save: "cc0_switch.wav",
   capture: "cc0_soft_hit.wav",
-  door: "cc0_door_creak.wav",
+  door: "cc0_door_open.wav",
   thud: "cc0_thud.wav",
   glass: "sfx_glass_breaking.mp3",
 };
 const EFFECT_VARIANTS={paper:['paper','paperAlt'],dice:['dice','diceAlt1','diceAlt2']};
-export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},door:{gain:.8,duration:2.6,fade:.08},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
+export const EFFECT_MIX={mirrorLaugh:{gain:.65,duration:1.8,fade:.1,cooldown:15,duck:.6},giggle:{gain:.4,duration:1.1,fade:.1,cooldown:45},door:{gain:.8,duration:1.8,fade:.08},doorClose:{gain:.8,duration:1.8,fade:.08},fireDoor:{gain:.7,duration:1,fade:.06},fireDoorClose:{gain:.65,duration:1,fade:.08},heartbeat:{gain:.65,duration:1,cooldown:.95},apparition:{gain:.65,duration:3,fade:.25,cooldown:12,duck:.75},rush:{gain:.7,duration:.7,fade:.06,cooldown:.6},scrape:{gain:.6,duration:.7,fade:.05,cooldown:.25},bloodDrip:{gain:.55,duration:.4,fade:.05,cooldown:.3},scream:{gain:.42,duration:2.4,fade:.2,cooldown:8,duck:.38},screamAlt:{gain:.55,duration:2.4,fade:.2,cooldown:8,duck:.38},whisper:{gain:.38,duration:4.8,fade:.3,cooldown:45,duck:.65},lighter:{gain:.8,duration:.6,cooldown:.65}};
 export class AudioDirector {
   constructor(onError = () => {}) {
     this.ctx = null;
