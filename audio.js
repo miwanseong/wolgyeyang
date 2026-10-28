@@ -1,5 +1,3 @@
-export const DOOR_OPEN_SECONDS=3.395918;
-export function doorMotionSeconds(o,opening=true){return opening?(o?.doorType==='fire'?.8:DOOR_OPEN_SECONDS):.675;}
 export function travelSound(portal){return portal?.kind==='stairs'?null:'door';}
 export const TRACKS = {
   main: "user_creepy_soundscape.mp3",

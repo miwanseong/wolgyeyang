@@ -1,7 +1,7 @@
-import {isRelayGhost,RELAY_POSES} from './relay-ghosts.js?v=41bf9cbd9f4b';
-import {WATCHER_POSES} from './watcher-art.js?v=41bf9cbd9f4b';
-import {HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=41bf9cbd9f4b';
-import { restore } from './state.js?v=41bf9cbd9f4b';
+import {isRelayGhost,RELAY_POSES} from './relay-ghosts.js?v=eb60cef005f5';
+import {WATCHER_POSES} from './watcher-art.js?v=eb60cef005f5';
+import {HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=eb60cef005f5';
+import { restore } from './state.js?v=eb60cef005f5';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -25,10 +25,10 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=41bf9cbd9f4b';
-    this.relay=new Image();this.relay.src='assets/relay-ghosts.png?v=41bf9cbd9f4b';
-    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=41bf9cbd9f4b';
-    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=41bf9cbd9f4b';this.ready=Promise.all([this.relay.decode().catch(()=>{}),this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=eb60cef005f5';
+    this.relay=new Image();this.relay.src='assets/relay-ghosts.png?v=eb60cef005f5';
+    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=eb60cef005f5';
+    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=eb60cef005f5';this.ready=Promise.all([this.relay.decode().catch(()=>{}),this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
   }
   reset(kind="jeongwoo",stage=0){this.time=0;this.kind=kind;this.stage=stage;}
   draw(dt,reduced=false){
