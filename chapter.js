@@ -1,8 +1,10 @@
-import {bodyState} from './body.js?v=fa18be954288';
-import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=fa18be954288";
-import { MAPS, sight, worldFor } from "./world.js?v=fa18be954288";
-import { take, note } from "./state.js?v=fa18be954288";
-export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal'];
+import {learnFamilyBinding} from './haunt-causality.js?v=fa5ea17edd12';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=fa5ea17edd12';
+import {bodyState} from './body.js?v=fa5ea17edd12';
+import { hasOriginals, CINEMATICS, STORY } from "./story.js?v=fa5ea17edd12";
+import { MAPS, sight, worldFor } from "./world.js?v=fa5ea17edd12";
+import { take, note } from "./state.js?v=fa5ea17edd12";
+export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
  const replacements={receipt:STORY.receipt,records:STORY.records,tape:STORY.firstTape};
  const ids={register:'relay-register',dutyNote:'relay-duty-note',incoming:'relay-incoming',cancel:'relay-cancel',override:'relay-override',erasure:'relay-erasure',pressure:'relay-pressure',lastVoice:'relay-last-voice',names:'relay-six-names'};
@@ -17,7 +19,7 @@ export function migrateStorySave(s){
  if(s.bag.includes('relayCopy'))s.flags.relaySlide=true;
  if(s.bag.includes('relayWheel')||s.flags.relayCooling)s.flags.relayLogic=true;
  if(s.flags.relayCooling)s.flags.relayPipes=true;
- s.flags.storyV3=true;return s;
+ prepareStoryFlow(s);if(s.flags.relayLastVoice&&s.flags.storyVoiceReaction)learnFamilyBinding(s);s.flags.storyV3=true;return s;
 }
 export function enterChapterTwo(s){
  if(s.ending!=='return'||!s.flags.denial||s.flags.chapter2)return false;
@@ -28,6 +30,7 @@ export function enterChapterTwo(s){
  return true;
 }
 export function relayObjective(s){
+ const urgent=storyObjective(s);if(urgent)return urgent;
  if(s.flags.relayTrapActive)return '청취 부스의 문이 잠겼다 · 방 안쪽의 기계식 비상 손잡이를 찾아 밖의 두드림이 멎을 때 당긴다';
  if(s.map==='relayYard'&&s.bag.includes('relayExport'))return '외부 마당 서쪽 산길·정류장 표지 · 증거를 가지고 떠난다';
  if(s.map==='relayYard'&&!s.flags.relayLastVoice)return '동쪽 현관 → 안내·접수동 · 인계대와 해린을 찾는다';
@@ -39,7 +42,7 @@ export function relayObjective(s){
  if(!s.bag.includes('relayCopy'))return '누락된 통화의 파일 번호를 조회한다 · 기록동 원본 색인 단말';
  if(s.flags.relayLastVoice&&!s.bag.includes('relayExport'))return '원본 통화를 확인했다 · 같은 데크에서 저장 매체를 챙긴 뒤 건물 밖으로 나간다';
  if(s.flags.routeB&&!s.bag.includes('relayExport'))return 'B루트 · 접수동 북쪽 관리카드 연결문으로 송출층 편집 단말에 간다. 원본을 확인하려면 봉인대에서 경로를 바꿀 수 있다';
- if(!s.flags.relayErasure&&!s.bag.includes('auditMemo'))return '잘린 구간의 수정 전 목록을 구한다 · 해린에게 사본을 요청하거나 기록동 수정 이력을 확인한다';
+
  if(!s.flags.relayCooling)return s.bag.includes('relayWheel')?'설비동 서쪽 순환실 · 수동 핸들을 빈 냉각 밸브 축에 연결한다':'통화 원본 데크의 전원을 켠다 · 도현에게 복구를 부탁하거나 직접 설비를 점검한다';
  if(!s.flags.relayIsolated)return '설비동 동쪽 절체실 · 기존 입력 분리 스위치를 내린다';
  if(!s.flags.relayPower)return '설비동 동쪽 절체실 · 냉각·분리 확인 후 비상 회선을 투입한다';
@@ -105,6 +108,7 @@ export function relayAction(s,o,choice=null){
  if(records[action]){
   const [flag,title,text]=records[action];const first=!s.flags[flag];s.flags[flag]=true;note(s,o.id,text);
   if(action==='register')take(s,'relayBadge');
+  if(action==='incoming'&&first){take(s,'relayAuditKey');}
   return result(title,text,{sound:['cancel','override','lastVoice'].includes(action)?'scrape':'paper',choices:action==='lastVoice'&&!s.bag.includes('relayExport')?[['내 목소리까지 포함한 통화 원본을 챙긴다','collectOriginal']]:undefined,haunt:first&&action==='lastVoice'?'이번에는 끝까지 들어':null});
  }
  if(action==='compare'){

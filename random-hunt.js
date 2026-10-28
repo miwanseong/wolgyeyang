@@ -1,6 +1,7 @@
-import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=fa18be954288';
-import {bindWatcher} from './encounters.js?v=fa18be954288';
-import {canMove,findPath} from './world.js?v=fa18be954288';
+import {hauntEligible} from './haunt-causality.js?v=fa5ea17edd12';
+import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=fa5ea17edd12';
+import {bindWatcher} from './encounters.js?v=fa5ea17edd12';
+import {canMove,findPath} from './world.js?v=fa5ea17edd12';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}
@@ -15,7 +16,8 @@ export class RandomHunt{
   if(!s.flags.chapter2&&!s.bag.includes('flashlight'))return false;
   this.delay-=dt;if(this.delay>0)return false;
   this.delay=110+this.random()*80;
+  const eligible=(s.flags.chapter2?['hollow','listener','usher']:['hollow','redlight','jeongwoo']).filter(k=>hauntEligible(s,k));if(!eligible.length)return false;
   if(!enemy.spawn(map,s)){this.delay=5;return false;}
-  const roll=this.random();enemy.kind=roll<(s.flags.power?.4:.5)?'hollow':roll<.8||!s.flags.power?'redlight':'jeongwoo';if(s.flags.chapter2)enemy.kind=chooseRelayHunter(roll,this.lastKind);if(!s.flags.chapter2&&enemy.kind===this.lastKind)enemy.kind=enemy.kind==='hollow'?'redlight':'hollow';if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';enemy.hollowStage=hollowStage(s);this.lastKind=enemy.kind;enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
+  const roll=this.random();enemy.kind=roll<(s.flags.power?.4:.5)?'hollow':roll<.8||!s.flags.power?'redlight':'jeongwoo';if(s.flags.chapter2)enemy.kind=chooseRelayHunter(roll,this.lastKind);if(!s.flags.chapter2&&enemy.kind===this.lastKind)enemy.kind=enemy.kind==='hollow'?'redlight':'hollow';if(!eligible.includes(enemy.kind))enemy.kind=eligible.filter(k=>k!==this.lastKind)[0]||eligible[0];if(enemy.kind==='redlight'&&!bindWatcher(map,s,enemy,canMove,findPath))enemy.kind='hollow';enemy.hollowStage=hollowStage(s);this.lastKind=enemy.kind;enemy.hollowTime=30+this.random()*16;enemy.grace=2.2;return true;
  }
 }

@@ -1,6 +1,7 @@
 // Space planning is shared by both chapters: circulation, wet rooms and service rooms
 // have distinct fixtures; furniture dimensions use one world scale.
 export const SPACE_PLANS={
+ relayDrain:{use:'기록동 하부 집수·배수 점검 공간',circulation:'낙하/점검계단→배수 연결로→수압 조작실→남쪽 우회로→안전계단',service:'수위차 우회 밸브와 수동 수문을 분리하고 배관은 벽에 고정'},
  lobby:{use:'공동주택 공용 현관',circulation:'접수대→중앙복도→세대 현관 / 동쪽 계단',service:'각 세대 욕실, 관리실·수변전실은 별실'},
  management:{use:'관리 업무·문서 보관',circulation:'방문자 대기→접수 책상→잠금 보관함',service:'문서장은 벽면, 업무 책상 뒤 작업 통로'},
  apartment:{use:'101호 자매의 집',circulation:'현관→거실→침실·주방·욕실',service:'주방·욕실은 생활 공간과 문으로 분리'},

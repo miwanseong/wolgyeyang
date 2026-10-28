@@ -1,6 +1,6 @@
 // A saved exploration clock ages the building; it never moves collision walls or exits.
 export function distortionStage(s){const n=s.flags?.chapter2?(s.relayExposure||0):0;return n>=900?3:n>=480?2:n>=180?1:0;}
-export function advanceDistortion(s,dt,allowed=true){if(!allowed||!s.flags.chapter2||s.ending||s.bag.includes('relayExport'))return;const before=distortionStage(s);s.relayExposure=Math.min(86400,(s.relayExposure||0)+Math.max(0,dt));return distortionStage(s)>before?distortionStage(s):null;}
+export function advanceDistortion(s,dt,allowed=true){if(!allowed||!s.flags.chapter2||!(s.flags.relayIncoming||s.flags.relayCancel)||s.ending||s.bag.includes('relayExport'))return;const before=distortionStage(s);s.relayExposure=Math.min(86400,(s.relayExposure||0)+Math.max(0,dt));return distortionStage(s)>before?distortionStage(s):null;}
 export function drawDistortion(c,map,s,t,reduced,atlas,art){
  const stage=distortionStage(s);if(!stage)return;
  const strength=Math.min(1,((s.relayExposure||0)-120)/780),seed=map.id.length*7;

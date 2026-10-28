@@ -1,14 +1,14 @@
-import {MEMENTOS} from './mementos.js?v=fa18be954288';
-import {canPreserve} from './chapter1-route.js?v=fa18be954288';
-import {bodyState,validBody} from './body.js?v=fa18be954288';
-import {validInvestigation} from './investigation.js?v=fa18be954288';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=fa18be954288';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=fa18be954288";
-import { STORY, canSurrender } from "./story.js?v=fa18be954288";
+import {MEMENTOS} from './mementos.js?v=fa5ea17edd12';
+import {canPreserve} from './chapter1-route.js?v=fa5ea17edd12';
+import {bodyState,validBody} from './body.js?v=fa5ea17edd12';
+import {validInvestigation} from './investigation.js?v=fa5ea17edd12';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=fa5ea17edd12';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=fa5ea17edd12";
+import { STORY, canSurrender } from "./story.js?v=fa5ea17edd12";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 15,
+  layout: 16,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -22,10 +22,12 @@ export const initial = () => ({
   hidden: false,
   bag: [],
   notes: [],
-  flags: {storyV3:true},
+  flags: {storyV3:true,storyFlowV1:true},
   ending: null,
 });
 export const ITEMS = {
+ spareLight:'방수 포장의 예비 작업등',
+ relayAuditKey:'원본 보관대의 대조실 비품 열쇠',
   knotThreadMemoryFirst:'매듭실 · 모아 둔 기억',knotThreadMemoryComplete:'매듭실 · 되찾은 일상',
   ...Object.fromEntries(Object.entries(MEMENTOS).map(([id,m])=>[id,m.name])),
   editPass:'부분 사본 편집 관리카드',
@@ -107,7 +109,7 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===15)throw Error("가구 내부의 저장 위치");
+    if(s.layout===16)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -117,7 +119,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:15, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:16, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";

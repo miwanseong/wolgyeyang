@@ -1,8 +1,9 @@
-import {hollowStage} from './hollow-art.js?v=fa18be954288';
-import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=fa18be954288';
-import {redLightUpdate} from './encounters.js?v=fa18be954288';
-import {bodyState} from './body.js?v=fa18be954288';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=fa18be954288";
+import {hauntEligible} from './haunt-causality.js?v=fa5ea17edd12';
+import {hollowStage} from './hollow-art.js?v=fa5ea17edd12';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=fa5ea17edd12';
+import {redLightUpdate} from './encounters.js?v=fa5ea17edd12';
+import {bodyState} from './body.js?v=fa5ea17edd12';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=fa5ea17edd12";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -100,7 +101,7 @@ export class Pursuer {
     possible.sort((a,b)=>a.score-b.score);
     const p=possible[0];
     Object.assign(this,{x:p.x,y:p.y,active:true,mode:'search',target:{x:s.x,y:s.y}});
-    if(s.flags.chapter2){this.kind='listener';this.hollowTime=40;this.target=null;}
+    if(s.flags.chapter2){const eligible=['listener','usher','hollow'].filter(k=>hauntEligible(s,k));if(!eligible.length){this.reset();return false;}this.kind=eligible[0];this.hollowTime=40;this.target=null;}else if(s.flags.power&&!s.flags.listened){this.kind='hollow';this.hollowTime=40;}
     return true;
   }
   follow(map,entry,s) {

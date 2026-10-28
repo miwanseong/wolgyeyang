@@ -1,6 +1,7 @@
-import {sight} from './world.js?v=fa18be954288';
+import {sight} from './world.js?v=fa5ea17edd12';
 // Installed luminaires, not a light permanently attached to the player.
 export const LAMPS={
+ relayDrain:[[9,8,125,'steady'],[21,12,85,'fault'],[31,12,130,'steady'],[31,24,100,'fault'],[8,22,110,'steady']],
  unit104:[[14.5,14,70,'fault']],
  relayEntry:[[14,10,190,'steady'],[35,11,155,'steady'],[38,19,140,'steady'],[12,26,180,'steady'],[32,26,185,'steady']],
  relayArchive:[[12,12,150,'steady'],[38,12,150,'fault'],[16,26,130,'steady'],[39,27,130,'steady']],
@@ -19,4 +20,4 @@ export function witnessesEntry(map,enemy,s){
 }
 export const PUDDLES=[[9,17.7,42,11],[18,20.1,55,14],[28,22.8,45,12],[32.8,15.2,36,10],[22,8.2,31,8]];
 
-export function inPuddle(s){return s.map==='relayYard'&&PUDDLES.some(([x,y,rx,ry])=>Math.pow((s.x-x*32)/rx,2)+Math.pow((s.y-y*32)/ry,2)<=1);}
+export function inPuddle(s){return s.map==='relayDrain'?s.x>12*32&&s.x<27*32&&s.y>=10*32&&s.y<=14*32:s.map==='relayYard'&&PUDDLES.some(([x,y,rx,ry])=>Math.pow((s.x-x*32)/rx,2)+Math.pow((s.y-y*32)/ry,2)<=1);}
