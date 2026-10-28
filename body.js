@@ -23,3 +23,6 @@ export function captureConsequence(s,kind,random=Math.random){return kind==='jeo
 export function pickupBlocked(s){return bodyState(s).arms===1&&((s.bag.includes('flashlight')&&!s.flags.lightStowed)||s.flags.temporaryLighter||s.flags.temporaryPhone);}
 export function stowLight(s,stowed){if(stowed)s.flags.lightWasOn=!!s.flashlight;s.flags.lightStowed=stowed;s.flashlight=!stowed&&(s.flags.lightWasOn??true)&&s.bag.includes('flashlight')&&!s.flags.flashlightBroken&&canHoldLight(s);if(stowed){s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;}return stowed;}
 export function toggleLightPower(s){if(s.flags.lightStowed||!s.bag.includes('flashlight')||!canHoldLight(s)||s.flags.flashlightBroken)return false;s.flashlight=!s.flashlight;return true;}
+
+export function activeHandLight(s){if(s.hidden||s.flags.lightStowed||!canHoldLight(s))return null;if(s.flashlight&&s.bag.includes('flashlight')&&!s.flags.flashlightBroken)return 'flashlight';if(s.flags.temporaryLighter)return 'lighter';if(s.flags.temporaryPhone)return 'phone';return null;}
+export function handLightRadius(s){return ({flashlight:86,lighter:65,phone:52})[activeHandLight(s)]||0;}

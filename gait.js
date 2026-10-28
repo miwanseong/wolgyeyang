@@ -1,4 +1,4 @@
-import {SIDE_POSES} from './side-art.js?v=0d94e6edc848';
+import {SIDE_POSES} from './side-art.js?v=e1adf368a597';
 export const PLAYER_STRIDE=72,NPC_STRIDE=40;
 export function actorStride(actor,running=false){return actor===0?(running?96:PLAYER_STRIDE):actor===2?32:NPC_STRIDE;}
 export function advanceGait(clock,distance,stride=PLAYER_STRIDE){return clock+Math.max(0,distance)/stride*4;}

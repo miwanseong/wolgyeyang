@@ -1,5 +1,5 @@
-import {canMove,findPath,sight} from './world.js?v=0d94e6edc848';
-import {advanceGait,actorStride} from './gait.js?v=0d94e6edc848';
+import {canMove,findPath,sight} from './world.js?v=e1adf368a597';
+import {advanceGait,actorStride} from './gait.js?v=e1adf368a597';
 // The hunter still has one player target; civilians actively seek cover instead of freezing.
 export function fleeActor(map,s,n,threat,dt){
  n.grabbed=Math.max(0,(n.grabbed||0)-dt);

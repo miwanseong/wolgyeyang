@@ -1,10 +1,10 @@
-import {MEMENTOS} from './mementos.js?v=0d94e6edc848';
-import {canPreserve} from './chapter1-route.js?v=0d94e6edc848';
-import {bodyState,validBody,pickupBlocked} from './body.js?v=0d94e6edc848';
-import {validInvestigation} from './investigation.js?v=0d94e6edc848';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=0d94e6edc848';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=0d94e6edc848";
-import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=0d94e6edc848";
+import {MEMENTOS} from './mementos.js?v=e1adf368a597';
+import {canPreserve} from './chapter1-route.js?v=e1adf368a597';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=e1adf368a597';
+import {validInvestigation} from './investigation.js?v=e1adf368a597';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=e1adf368a597';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=e1adf368a597";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=e1adf368a597";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -122,7 +122,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:17, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:17, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&!s.flags.lightStowed&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
