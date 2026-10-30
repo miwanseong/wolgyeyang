@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=1b5f6d415336';
+import {pickupBlocked} from './body.js?v=5f8fad69d09a';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){
@@ -8,7 +8,7 @@ export function addExploration(M,map,prop,door){
  make('rearCourt','외부 · 후면 건조 마당','concrete',[[4,5,24,18]],[[4,5,24,18,'배수로와 공동 건조 마당']]);M.rearCourt.outdoor=true;
  make('relayService','B1 · 정비 연결 복도','concrete',[[4,5,8,18],[10,15,18,5],[22,5,6,14]],[[4,5,8,10,'설비동 연결 전실'],[4,15,24,5,'정비 복도'],[22,5,6,10,'부품 보관 전실']],2);
  make('relayWorkshop','B1 · 통신 정비 작업실','concrete',[[4,5,23,14],[7,18,7,6]],[[4,5,12,14,'계측·커넥터 정비'],[16,5,11,14,'공구와 열쇠 관리'],[7,19,7,5,'작업실 전실']],2);
- make('relayStore','B1 · 밀봉 부품 보관실','wood',[[4,5,23,14],[7,18,7,6]],[[4,5,11,14,'방습 포장·인수 구역'],[15,5,12,14,'음성 회선 예비 부품'],[7,19,7,5,'보관실 전실']],2);
+ make('relayStore','B1 · 밀봉 부품 보관실','concrete',[[4,5,14,10],[7,14,7,10]],[[4,5,7,10,'방습 포장·인수 구역'],[11,5,7,10,'음성 회선 예비 부품'],[7,15,7,9,'보관실 전실']],2);
  const put=(m,id,kind,x,y,name,e={})=>M[m].objects.push(prop(id,kind,x,y,name,e));
  const link=(m,id,x,y,name,to,spawn,e={})=>M[m].objects.push(door(id,x,y,name,to,spawn,e));
  // Both ends of every connection are real wall doorways, not unmarked teleports.
@@ -26,7 +26,7 @@ export function addExploration(M,map,prop,door){
  link('relayStore','store-back',10,24,'정비 연결 복도로','relayService',[25,7]);
  put('serviceHall','service-duty-drawer','desk',7,6.5,'경비 인계 열쇠판',{exploreAction:'laundryKey',exploreArt:4,mount:true,facing:'north',solid:false});
  put('serviceHall','service-bench','bench',6,16,'작업화 교체 벤치',{exploreArt:5,w:26,back:14,front:7,description:'순찰 때 신던 고무 장화가 아래에 가지런히 들어 있다.'});
- put('serviceHall','service-cleaning','cabinet',11,9,'청소 비품함',{technical:2,w:12,description:'걸레와 중성 세제를 둔 함. 사건 서류를 보관하는 곳이 아니다.'});
+ put('serviceHall','service-cleaning','cabinet',12.5,10,'청소 비품함',{roomCabinet:'cleaning',facing:'west',w:11,description:'걸레와 중성 세제를 둔 함. 사건 서류를 보관하는 곳이 아니다.'});
  put('serviceHall','service-condemned','door',4.5,11,'폐쇄된 옛 보일러실',{sealed:true,architecture:2,exploreSealed:'천장 석면 철거 구역. 자물쇠 바깥을 철판으로 덧댔다. 열쇠를 구해도 이쪽으로는 들어갈 수 없어.'});
  for(const [i,id]of ['washer-7','washer-9','washer-11','washer-13','washer-15'].entries())put('laundry',id,'rack',6+i*1.2,8,'공동 세탁기 '+(i+1),{washer:true,exploreArt:0,w:17,back:18,front:8,description:'기계 옆면이 이어지도록 설치된 전면 투입식 세탁기. 뒤쪽 급수관과 배수관이 같은 벽을 따라간다.'});
  put('laundry','laundry-cart','rack',5.5,14,'젖은 세탁물 운반 카트',{exploreArt:1,w:19,back:18,front:8,description:'흰 시트 아래에서 물이 떨어진다. 세탁실 밖으로 옮길 때 쓰던 바퀴 달린 카트.'});
@@ -50,8 +50,15 @@ export function addExploration(M,map,prop,door){
  put('relayWorkshop','workshop-spares','rack',23,14,'반납 부품 상자',{exploreArt:6,w:23,back:18,front:8,description:'단선·부식된 부품을 빨간 반환 봉투에 분리해 두었다. 재생용 예비품과 섞지 않는다.'});
  put('relayWorkshop','workshop-hide','desk',8,15,'계측 책상 아래',{standardDesk:true,hide:true,hideKind:'desk',w:24,back:20,front:10,description:'전면 가림판 뒤에 몸을 숨길 수 있다.'});
  for(const [x,y]of [[7,7],[23,7],[23,13]])put('relayStore','parts-crate-'+x+'-'+y,'rack',x,y,'밀봉 회선 부품 상자',{exploreArt:6,w:24,back:19,front:9,description:'연식과 단자 형식별로 포장해 벽 쪽에 쌓아 두었다.'});
- put('relayStore','parts-coupler','desk',10,13,'원본 재생 데크용 어댑터 보관대',{exploreArt:3,exploreAction:'deckCoupler',w:25,back:20,front:10});
- put('relayStore','parts-return','cabinet',25,17,'미사용 반환 비품함',{technical:2,exploreAction:'storeThread',w:12,back:20,front:8});
+ put('relayStore','parts-coupler','desk',13.5,12,'원본 재생 데크용 어댑터 보관대',{standardDesk:true,exploreAction:'deckCoupler',w:25,back:20,front:10});
+ put('relayStore','parts-return','cabinet',15.5,5.6,'미사용 반환 비품함',{roomCabinet:'storage',facing:'north',exploreAction:'storeThread',w:12,back:20,front:8});
+
+ // Use cabinet sprites for cabinets: technical frame 2 is a full-size acoustic door.
+ for(const m of Object.values(M))for(const o of m.objects)if(o.kind==='cabinet'&&o.technical===2){o.roomCabinet=o.id==='court-key-cabinet'?'keys':'storage';delete o.technical;}
+ for(const [id,x,y,facing]of [['parts-crate-7-7',7,5.6,'north'],['parts-crate-23-7',12,5.6,'north'],['parts-crate-23-13',17.5,10.5,'west']]){const o=M.relayStore.objects.find(o=>o.id===id);Object.assign(o,{x:x*32,y:y*32,facing,roomCabinet:'parts',name:'밀봉 부품 분류 선반',w:facing==='north'?18:11,description:'봉인 포장의 회선 부품을 모델별 작은 칸에 나눠 둔 선반. 바닥 통로를 비우고 벽을 따라 설치했다.'});delete o.exploreArt;}
+ for(const [i,y]of [10,14].entries())put('relayStore','parts-side-shelf-'+i,'cabinet',4.5,y,'서쪽 벽 예비 비품 선반',{roomCabinet:'parts',facing:'east',w:11,back:19,front:8,description:'서쪽 벽에 등을 붙인 분류 선반. 측면에서 작은 부품함의 끝과 배선 꾸러미가 보인다.'});
+ const safety=M.relayDrain.objects.find(o=>o.id==='story-drain-supply');Object.assign(safety,{x:5.45*32,facing:'east',w:11});
+
  for(const id of EXPANSION_MAPS){const m=M[id],floor=m.grid.map(row=>row.map(v=>v===1));for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++)if(!floor[y][x]){let near=false;for(let dy=-3;dy<=3&&!near;dy++)for(let dx=-3;dx<=3;dx++)if(floor[y+dy]?.[x+dx]){near=true;break;}if(near)m.grid[y][x]=2;}m.utilityWall=true;}
 
 }
@@ -71,7 +78,7 @@ export function explorationBeat(s){prepareExploration(s);const f=s.flags;
  s.map==='rearCourt'?['courtWindow','court-pump-door','저 문 뒤로 그림자가 지나갔어. 안쪽은 무너져서 못 들어가는 곳인데… 문고리가 안에서 내려갔다.','doorClose']:
  s.map==='relayService'&&f.exploreTaken_deckCoupler?['returnShadow','service-danger-door','올 때는 없던 젖은 발자국이 앞서 가고 있어.\n고압실 문 아래에서 끝났어. 따라 들어가면 안 돼.','stepWater0']:
  s.map==='relayWorkshop'&&f.exploreTaken_partsKey?['toolKnock','workshop-tools','공구함 서랍이 안에서 밀렸어. 누가 열쇠를 돌려놓으라는 듯이…\n등 뒤에서 열쇠 고리가 한 번 더 울렸어.','omenKnock']:
- s.map==='relayStore'&&f.exploreTaken_deckCoupler?['crateEyes','parts-crate-23-7','상자 사이에 눈이 있었어. 내가 들고 있는 부품이 아니라… 내 얼굴을 보고 있었어.\n이걸 데크에 연결하고 원본을 들어야 해.','apparition']:null;
+ s.map==='relayStore'&&f.exploreTaken_deckCoupler?['crateEyes','parts-crate-23-7','분류함 칸 사이에 눈이 있었어. 내가 들고 있는 부품이 아니라… 내 얼굴을 보고 있었어.\n이걸 데크에 연결하고 원본을 들어야 해.','apparition']:null;
  if(!spec||f['exploreSeen_'+spec[0]])return null;
  return{kind:'explore_'+spec[0],focus:spec[1],line:spec[2],sound:spec[3],eyes:spec[0]==='crateEyes',washer:spec[0]==='washerTurn',shadow:spec[0]==='courtWindow'||spec[0]==='returnShadow'};
 }

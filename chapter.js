@@ -1,10 +1,10 @@
-import {prepareExploration,explorationObjective} from './exploration.js?v=1b5f6d415336';
-import {learnFamilyBinding} from './haunt-causality.js?v=1b5f6d415336';
-import {prepareStoryFlow,storyObjective} from './story-flow.js?v=1b5f6d415336';
-import {bodyState,pickupBlocked} from './body.js?v=1b5f6d415336';
-import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=1b5f6d415336";
-import { MAPS, sight, worldFor } from "./world.js?v=1b5f6d415336";
-import { take, note } from "./state.js?v=1b5f6d415336";
+import {prepareExploration,explorationObjective} from './exploration.js?v=5f8fad69d09a';
+import {learnFamilyBinding} from './haunt-causality.js?v=5f8fad69d09a';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=5f8fad69d09a';
+import {bodyState,pickupBlocked} from './body.js?v=5f8fad69d09a';
+import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=5f8fad69d09a";
+import { MAPS, sight, worldFor } from "./world.js?v=5f8fad69d09a";
+import { take, note } from "./state.js?v=5f8fad69d09a";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
  if(!s.flags.chapter2&&s.ending==='return'&&!canSeekOriginal(s)){s.ending=null;s.flags.denial=false;if(!s.notes.some(n=>n.id==='104-route-needed'))s.notes.push({id:'104-route-needed',text:'원격 기록을 확인하러 가기 전에104호 점검 사진 원본부터 확보한다. 녹음만 제출하고 진술하는 경로는 열려 있다.'});}

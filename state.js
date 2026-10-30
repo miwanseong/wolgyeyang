@@ -1,14 +1,14 @@
-import {MEMENTOS} from './mementos.js?v=1b5f6d415336';
-import {canPreserve} from './chapter1-route.js?v=1b5f6d415336';
-import {bodyState,validBody,pickupBlocked} from './body.js?v=1b5f6d415336';
-import {validInvestigation} from './investigation.js?v=1b5f6d415336';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=1b5f6d415336';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=1b5f6d415336";
-import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=1b5f6d415336";
+import {MEMENTOS} from './mementos.js?v=5f8fad69d09a';
+import {canPreserve} from './chapter1-route.js?v=5f8fad69d09a';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=5f8fad69d09a';
+import {validInvestigation} from './investigation.js?v=5f8fad69d09a';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=5f8fad69d09a';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=5f8fad69d09a";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=5f8fad69d09a";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 17,
+  layout: 18,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -112,17 +112,17 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===17)throw Error("가구 내부의 저장 위치");
+    if(s.layout===18)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
       const px=x*32+16,py=y*32+16,d=Math.hypot(px-s.x,py-s.y);
-      if(d<=160&&canMove(map,px,py)&&(!best||d<best.d))best={x:px,y:py,d};
+      if(d<=(s.map==='relayStore'?384:160)&&canMove(map,px,py)&&(!best||d<best.d))best={x:px,y:py,d};
     }
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:17, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&!s.flags.lightStowed&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:18, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&!s.flags.lightStowed&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
