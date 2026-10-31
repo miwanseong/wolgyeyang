@@ -1,9 +1,9 @@
-import {addExploration} from './exploration.js?v=999088c371b1';
-import {addStorySpaces} from './story-spaces.js?v=999088c371b1';
-import {MEMENTOS} from './mementos.js?v=999088c371b1';
-import {applyArchitecture} from './architecture.js?v=999088c371b1';
-import { STORY } from "./story.js?v=999088c371b1";
-import { addRelayChapter } from "./chapter-world.js?v=999088c371b1";
+import {addExploration} from './exploration.js?v=ae58b5091df2';
+import {addStorySpaces} from './story-spaces.js?v=ae58b5091df2';
+import {MEMENTOS} from './mementos.js?v=ae58b5091df2';
+import {applyArchitecture} from './architecture.js?v=ae58b5091df2';
+import { STORY } from "./story.js?v=ae58b5091df2";
+import { addRelayChapter } from "./chapter-world.js?v=ae58b5091df2";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {

@@ -11,16 +11,16 @@ export function validBody(b){
 }
 export function bodyState(s){const b=s.body||(s.body={leg:false,arm:false});b.legs??=+b.leg;b.arms??=+b.arm;b.captures??=Math.min(2,b.legs+b.arms);return b;}
 export function loseLimb(s,random=Math.random){const b=bodyState(s);if(b.captures>=2)return{fatal:true};const available=['leg','arm'].filter(k=>b[k+'s']<2),part=available[Math.min(available.length-1,Math.floor(random()*available.length))];if(part==='leg')b.legs=2;else b.arms++;b[part]=true;b.captures++;s.running=false;if(b.arms>=2)s.flashlight=false;return{fatal:false,part,count:b[part+'s']};}
-export function bodyDescription(s){const b=bodyState(s);return[b.leg?'다리를 딛을 수 없다. 팔로 바닥을 밀며 몸을 끈다.':null,b.arms===2?'두 소매가 비었다. 떨어진 빛을 붙잡을 수 없다.':b.arm?'남은 손으로 손전등을 쥔다. 물건을 집을 때는 내려놓아야 한다.':null].filter(Boolean).join(' / ');}
+export function bodyDescription(s){const b=bodyState(s);return[b.leg?'다리를 딛을 수 없다. 팔로 바닥을 밀며 몸을 끈다.':null,b.arms===2?'두 소매가 비었다. 떨어진 빛을 붙잡을 수 없다.':b.arm?(b.leg?'남은 팔로 몸을 끈다. 손전등은 입에 물 수 있다.':'남은 손으로 손전등을 쥔다. 물건을 집을 때는 내려놓아야 한다.'):null].filter(Boolean).join(' / ');}
 export function injuryRow(s){const b=bodyState(s);return b.leg&&b.arm?2:b.leg?0:b.arm?1:-1;}
 export function injuryDirection(d){return d<4?d:d===4||d===5?0:3;}
 export function recoverLimb(s,part,item='knotThread'){const b=bodyState(s);if(!isRecoveryItem(item)||!['leg','arm'].includes(part)||!b[part])return false;const index=s.bag.indexOf(item);if(index<0)return false;s.bag.splice(index,1);if(part==='leg')b.legs=0;else b.arms--;b[part]=b[part+'s']>0;s.running=false;return true;}
 export function canHoldLight(s){return bodyState(s).arms<2;}
-export function lowerLightForPickup(s){if(bodyState(s).arms===1&&s.flashlight){s.flashlight=false;return true;}return false;}
+export function lowerLightForPickup(s){if(bodyState(s).arms===1&&!bodyState(s).leg&&s.flashlight){s.flashlight=false;return true;}return false;}
 
 export function captureConsequence(s,kind,random=Math.random){return kind==='jeongwoo'?{fatal:true,kind}:{...loseLimb(s,random),kind};}
 
-export function pickupBlocked(s){return bodyState(s).arms===1&&((s.bag.includes('flashlight')&&!s.flags.lightStowed)||s.flags.temporaryLighter||s.flags.temporaryPhone);}
+export function pickupBlocked(s){return bodyState(s).arms===1&&((!bodyState(s).leg&&s.bag.includes('flashlight')&&!s.flags.lightStowed)||s.flags.temporaryLighter||s.flags.temporaryPhone);}
 export function stowLight(s,stowed){if(stowed)s.flags.lightWasOn=!!s.flashlight;s.flags.lightStowed=stowed;s.flashlight=!stowed&&(s.flags.lightWasOn??true)&&s.bag.includes('flashlight')&&!s.flags.flashlightBroken&&canHoldLight(s);if(stowed){s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;}return stowed;}
 export function toggleLightPower(s){if(s.flags.lightStowed||!s.bag.includes('flashlight')||!canHoldLight(s)||s.flags.flashlightBroken)return false;s.flashlight=!s.flashlight;return true;}
 

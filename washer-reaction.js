@@ -1,4 +1,4 @@
-import{canMove,clearSegment,findPath}from'./world.js?v=999088c371b1';
+import{canMove,clearSegment,findPath}from'./world.js?v=ae58b5091df2';
 export const washerLanding=o=>({x:o.x,y:o.y+26});
 export function planWasherRecoil(map,s,o){
  const start={x:s.x,y:s.y},head=washerLanding(o),away=Math.atan2(s.y-o.y,s.x-o.x);let best=null;

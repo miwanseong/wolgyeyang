@@ -1,9 +1,10 @@
-import {hauntEligible} from './haunt-causality.js?v=999088c371b1';
-import {hollowStage} from './hollow-art.js?v=999088c371b1';
-import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=999088c371b1';
-import {redLightUpdate} from './encounters.js?v=999088c371b1';
-import {bodyState} from './body.js?v=999088c371b1';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=999088c371b1";
+import {crawlSpeed} from './crawl-animation.js?v=ae58b5091df2';
+import {hauntEligible} from './haunt-causality.js?v=ae58b5091df2';
+import {hollowStage} from './hollow-art.js?v=ae58b5091df2';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=ae58b5091df2';
+import {redLightUpdate} from './encounters.js?v=ae58b5091df2';
+import {bodyState} from './body.js?v=ae58b5091df2';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=ae58b5091df2";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -42,7 +43,7 @@ export function locomotion(s, dx, dy, sprint, dt, map) {
     dx /= n;
     dy /= n;
     s.facing = Math.atan2(dy, dx);
-    const speed = bodyState(s).leg ? 42 : wantsRun ? 190 : 102;
+    const speed = bodyState(s).leg ? crawlSpeed(s) : wantsRun ? 190 : 102;
     if (canMove(map, s.x + dx * speed * dt, s.y)) s.x += dx * speed * dt;
     if (canMove(map, s.x, s.y + dy * speed * dt)) s.y += dy * speed * dt;
   }
