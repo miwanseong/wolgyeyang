@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=0551c272401d';
+import {pickupBlocked} from './body.js?v=a23df170895e';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){

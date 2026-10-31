@@ -1,4 +1,4 @@
-import {canMove,findPath} from './world.js?v=0551c272401d';
+import {canMove,findPath} from './world.js?v=a23df170895e';
 export const RELAY_KINDS=['listener','usher'];
 export const isRelayGhost=kind=>RELAY_KINDS.includes(kind);
 export const RELAY_POSES=[[67,12,241,442],[468,21,213,433],[815,11,274,443],[1192,19,330,437],[58,471,303,515],[434,471,275,515],[831,472,255,514],[1175,472,330,514]];

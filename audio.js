@@ -20,6 +20,7 @@ export const TRACKS = {
 };
 export const FOOTSTEP_GROUPS={wood:['stepWood0','stepWood1','stepWood2','stepWood3'],carpet:['stepCarpet0','stepCarpet1','stepCarpet2','stepCarpet3'],water:['stepWater0','stepWater1'],concrete:['stepConcrete0','stepConcrete1','stepConcrete2','stepConcrete3']};
 export const EFFECTS = {
+ threadWrap:'action_thread_wrap.wav',threadTie:'action_thread_tie.wav',headRoll:'action_head_roll.wav',
  rain:'cc0_rain_loop.ogg',shutter:'cc0_shutter.wav',wardrobe:'cc0_wardrobe.wav',ventCover:'cc0_vent_cover.wav',clothHide:'cc0_cloth.wav',valve:'cc0_vent_cover.wav',
   doorClose:'cc0_door_close.wav',fireDoor:'cc0_latch.wav',fireDoorClose:'cc0_metal_hit.wav',heartbeat:'cc0_heartbeat.wav',
   paperAlt:'cc0_paper_alt.wav',diceAlt1:'cc0_dice_1.wav',diceAlt2:'cc0_dice_2.wav',
@@ -67,7 +68,7 @@ export class AudioDirector {
     this.errors = onError;
     this.buffers = new Map();this.loadingBuffers=new Map();this.effectTimes=new Map();this.ducks=new Map();
     this.stepIndex = 0;this.clipVariants=new Map();
-    this.playedEffects = 0;
+    this.playedEffects = 0;this.motionLoops=new Map();
     this.lastError = "";this.doorRequestedAt=-Infinity;this.doorSource=null;
     this.token = 0;
   }
@@ -91,9 +92,10 @@ export class AudioDirector {
     this.enabled = true;
     this.apply();
     this.play(cue);
-    for(const name of ["scream","screamAlt","whisper","lighter","door","doorClose","paper","heartbeat","mirrorLaugh","giggle","apparition","omenKnock","dice","checkSuccess","checkFailure","rain","stepWater0","stepWater1",...Object.values(FOOTSTEP_GROUPS).flat()])this.loadEffect(name).catch(()=>{});
+    for(const name of ["threadWrap","threadTie","headRoll","scream","screamAlt","whisper","lighter","door","doorClose","paper","heartbeat","mirrorLaugh","giggle","apparition","omenKnock","dice","checkSuccess","checkFailure","rain","stepWater0","stepWater1",...Object.values(FOOTSTEP_GROUPS).flat()])this.loadEffect(name).catch(()=>{});
   }
   apply() {
+    if(!this.enabled)this.stopMotionLoops();
     if (this.master)
       this.master.gain.setTargetAtTime(
         this.enabled ? this.volume : 0,
@@ -178,6 +180,23 @@ export class AudioDirector {
     this.rainLoading=this.loadEffect('rain').then(buffer=>{
       const source=this.ctx.createBufferSource(),gain=this.ctx.createGain();source.buffer=buffer;source.loop=true;gain.gain.value=0;gain.gain.setTargetAtTime(this.rainTarget,this.ctx.currentTime,.8);source.connect(gain).connect(this.fxBus);source.start();this.rainSource=source;this.rainGain=gain;
     }).catch(()=>this.error('빗소리를 불러오지 못했습니다.')).finally(()=>this.rainLoading=null);
+  }
+  stopMotionLoop(name){
+    const entry=this.motionLoops.get(name);if(!entry)return;this.motionLoops.delete(name);entry.level=0;this.ducks.delete(entry);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.18);
+    if(entry.gain)entry.gain.gain.setTargetAtTime(0,this.ctx.currentTime,.012);
+    entry.source?.stop(this.ctx.currentTime+.05);
+  }
+  stopMotionLoops(){for(const name of [...this.motionLoops.keys()])this.stopMotionLoop(name);}
+  motionLoop(name,level=0,pan=0,rate=1){
+    if(!this.ctx||!this.enabled||!['threadWrap','headRoll'].includes(name))level=0;
+    level=Math.max(0,Math.min(1,level));if(!level){this.stopMotionLoop(name);return;}
+    let entry=this.motionLoops.get(name);if(entry){entry.level=level;entry.pan=pan;entry.rate=rate;if(entry.gain)entry.gain.gain.setTargetAtTime(level,this.ctx.currentTime,.035);if(entry.stereo)entry.stereo.pan.setTargetAtTime(Math.max(-.85,Math.min(.85,pan)),this.ctx.currentTime,.04);if(entry.source)entry.source.playbackRate.setTargetAtTime(Math.max(.8,Math.min(1.2,rate)),this.ctx.currentTime,.06);return;}
+    entry={level,pan,rate};this.motionLoops.set(name,entry);
+    this.loadEffect(name).then(buffer=>{
+      if(this.motionLoops.get(name)!==entry||!this.enabled)return;
+      const source=this.ctx.createBufferSource(),gain=this.ctx.createGain(),stereo=this.ctx.createStereoPanner?.();source.buffer=buffer;source.loop=true;source.playbackRate.value=Math.max(.8,Math.min(1.2,entry.rate));gain.gain.value=0;gain.gain.setTargetAtTime(entry.level,this.ctx.currentTime,.025);source.connect(gain);if(stereo){stereo.pan.value=Math.max(-.85,Math.min(.85,entry.pan));gain.connect(stereo).connect(this.fxBus);}else gain.connect(this.fxBus);
+      Object.assign(entry,{source,gain,stereo});this.ducks.set(entry,.55);this.musicBus?.gain.setTargetAtTime(this.musicLevel*Math.min(1,...this.ducks.values()),this.ctx.currentTime,.05);source.onended=()=>{source.disconnect();gain.disconnect();stereo?.disconnect();};source.start();this.playedEffects++;
+    }).catch(()=>{if(this.motionLoops.get(name)===entry)this.motionLoops.delete(name);this.error('동작 효과음을 불러오지 못했습니다: '+name);});
   }
   async effect(name, level=1,pan=0) {
     if (!this.ctx || !this.enabled || !EFFECTS[name]) return;

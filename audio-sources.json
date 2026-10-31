@@ -233,5 +233,34 @@
     "pack": "Kenney RPG Audio",
     "source": "https://kenney.nl/assets/rpg-audio",
     "sha256": "01363e08cf8c1ad2ef80693a76179afe7d6c3a28a2dd493471619fb968b3691f"
+  },
+  {
+    "file": "action_thread_wrap.wav",
+    "pack": "Game action mix derived from existing CC0 recordings",
+    "source": [
+      "cc0_cloth.wav"
+    ],
+    "license": "CC0-1.0",
+    "sha256": "8ed1f665a77cce757f06b54eafc85a90b0865c38836314c01cf468ccfc6b5398"
+  },
+  {
+    "file": "action_thread_tie.wav",
+    "pack": "Game action mix derived from existing CC0 recordings",
+    "source": [
+      "cc0_cloth.wav"
+    ],
+    "license": "CC0-1.0",
+    "sha256": "c0da89f89e3adc3f3cd6dad1149f0f1b6c4721767d8c456456f46d7d553154e8"
+  },
+  {
+    "file": "action_head_roll.wav",
+    "pack": "Game action mix derived from existing CC0 recordings",
+    "source": [
+      "cc0_thud.wav",
+      "cc0_step_water_1.wav",
+      "cc0_cloth.wav"
+    ],
+    "license": "CC0-1.0",
+    "sha256": "aeb1a145dd510efc3d940e28a954785c2095fd84b0e5a8084d1c11f199639660"
   }
 ]

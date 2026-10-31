@@ -1,4 +1,4 @@
-import {sight} from './world.js?v=0551c272401d';
+import {sight} from './world.js?v=a23df170895e';
 // Installed luminaires, not a light permanently attached to the player.
 export const LAMPS={
  serviceHall:[[8,9,100,'fault'],[24,14,90,'steady']],laundry:[[11,9,160,'fault'],[22,20,90,'steady']],rearCourt:[[8,20,140,'steady']],relayService:[[8,9,100,'steady'],[24,14,95,'fault']],relayWorkshop:[[10,10,150,'fault'],[23,14,90,'steady']],relayStore:[[10,10,130,'fault'],[24,14,90,'steady']],

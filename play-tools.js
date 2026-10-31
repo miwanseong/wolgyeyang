@@ -1,4 +1,4 @@
-import {bodyState,isRecoveryItem,pickupBlocked,recoverLimb} from './body.js?v=0551c272401d';
+import {bodyState,isRecoveryItem,pickupBlocked,recoverLimb} from './body.js?v=a23df170895e';
 export const threadCount=s=>s.bag.filter(isRecoveryItem).length;
 export const itemGroup=id=>isRecoveryItem(id)||['lighter','flashlight','spareLight'].includes(id)?'usable':'quest';
 export class ThreadWrap{
