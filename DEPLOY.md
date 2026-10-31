@@ -1,0 +1,1 @@
+Published60ba82a1936daa894bd4358679e89599cd2b900e; version25209e3f9bf5. Pages Actions41192580177 successful. Seven public files match final package SHA256. Original washer atlas unchanged. Six targeted regression checks and PC/mobile browser render/action QA passed. Source and build helpers are preserved in the published tree after restoring the absent game folder.
