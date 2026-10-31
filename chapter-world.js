@@ -21,12 +21,12 @@ export function addRelayChapter(M,map,prop,door){
  function action(m,id,kind,x,y,name,chapterAction,description,extra={}){return furniture(m,id,kind,x,y,name,description,{chapterAction,...extra});}
  function hide(m,x,y){const vent=m==='relayPlant'||m==='relaySignal';furniture(m,m+'-hide',vent?'cabinet':'desk',x,y,vent?'정비용 환풍구':'가림판이 있는 작업 책상',vent?'나사 두 개가 풀린 점검 덮개. 안쪽 통로는 몸 하나가 겨우 들어간다. 누가 보는 앞에서 들어가면 덮개를 열고 따라올 것이다.':'책상 아래 가림판 뒤로 몸을 낮출 수 있다. 시선을 끊고 들어가야 한다.',{hide:true,hideKind:vent?'vent':'desk',w:vent?15:28,back:vent?10:22,front:vent?9:10});}
  function shelf(m,id,x,y,col=0){furniture(m,id,'shelf',x,y,'번호별 기록 서가','사건 번호별로 정리된 문서. 통로를 비워 두고 벽을 따라 배치했다.',{regional:7,w:28,back:28,front:10});}
- furniture('relayEntry','relay-inspection-lens','desk',36,18,'당직실 검사 도구함','검사용 확대경과 열쇠 점검표.',{equipment:'lens',w:24,back:20,front:10});
- furniture('relayPlant','relay-circuit-tester','desk',42,17,'절연 공구 트레이','도현의 비접촉 회로 시험기. 측정 도구를 빌릴 수 있다.',{equipment:'tester',w:24,back:20,front:10});
+ furniture('relayEntry','relay-inspection-lens','desk',36,18,'당직실 검사 도구함','검사용 확대경과 열쇠 점검표.',{equipment:'lens',facilityFrame:7,w:24,back:20,front:10});
+ furniture('relayPlant','relay-circuit-tester','desk',42,17,'절연 공구 트레이','도현의 비접촉 회로 시험기. 측정 도구를 빌릴 수 있다.',{equipment:'tester',facilityFrame:5,w:24,back:20,front:10});
  for(const [i,label] of ['A','B','C'].entries())furniture('relayPlant','relay-test-'+label,'panel',33+i*2,21,'시험 접점 '+label,'복귀용 저전압 시험 접점.',{testContact:label,w:10,back:12,front:8});
  // Reception: two enclosed offices open onto a wide, furnished waiting corridor.
- leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');
- leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');
+ leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');M.relayEntry.objects.at(-1).doorType='fire';
+ leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');M.relayEntry.objects.at(-1).doorType='fire';
  // A private sleeping room is separated from the public duty/tea space.
  for(let x=25;x<=33;x++)M.relayEntry.grid[15][x]=2;
  for(let y=15;y<=21;y++)M.relayEntry.grid[y][33]=2;
@@ -54,9 +54,9 @@ export function addRelayChapter(M,map,prop,door){
  leaf('relayArchive','relay-audit-door',39,23,'대조 청취실 문');
  link('relayArchive','relay-archive-back',49,34,'연결 통로 · 접수동','relayEntry',[14,8]);
  for(const [x,y,col,id]of [[9,8,0,'a'],[13,8,1,'b'],[18,8,2,'c'],[9,17,0,'d'],[18,17,2,'e']])shelf('relayArchive','relay-shelf-'+id,x,y,col);
- action('relayArchive','relay-incoming','desk',13,12,'23:41 · 최초 접수지','incoming','서윤의 신고 원본. 방화문 개방 요청이 접수되었다.',{w:38,back:27,front:13});
+ action('relayArchive','relay-incoming','desk',13,12,'23:41 · 최초 접수지','incoming','서윤의 신고 원본. 방화문 개방 요청이 접수되었다.',{facilityFrame:2,w:29,back:27,front:13});
  wall('relayArchive','relay-raw-label',5,12,5.5,'접수 원본 분류표','원본은 접수 시각대로 분류한다. 통화 내용과 처리 결과를 같은 것으로 취급하지 말 것.');
- action('relayArchive','relay-cancel','player',33,10,'23:43 · 취소 통화 데크','cancel','서하의 음성이 담긴 취소 통화. 전화가 끝나도 회선은 닫히지 않았다.',{technical:6,w:46,back:30,front:16});
+ action('relayArchive','relay-cancel','player',33,10,'23:43 · 취소 통화 데크','cancel','서하의 음성이 담긴 취소 통화. 전화가 끝나도 회선은 닫히지 않았다.',{facilityFrame:3,w:31,back:30,front:16});
  action('relayArchive','relay-override','monitor',44,10,'23:47 · 원격 회신 단말','override','정우의 원격 잠금 유지 확인. 「취소」와 「잠금 유지」는 별개의 처리였다.',{regional:1,w:24,back:30,front:12});
  action('relayArchive','relay-compare','monitor',38,18,'원본 녹음 파일 색인 단말','compare','접수·취소·잠금 회신의 파일 번호를 조회하는 단말. 누락된 녹음의 저장 위치를 찾는다.',{regional:1,w:24,back:28,front:14});
  detail('relayArchive','relay-audit-printer',4,44,18,'대조 출력기','대조를 마친 기록만 복제한다. 지워진 줄도 여백에 함께 인쇄된다.');
@@ -85,7 +85,7 @@ export function addRelayChapter(M,map,prop,door){
  link('relaySignal','relay-signal-back',47,33,'계단 · 설비동','relayPlant',[39,8],{kind:'stairs',label:'설비동 ↓'});
  link('relaySignal','relay-shortcut-out',32,6,'비상 연결문 · 접수동','relayEntry',[41,8],{unlockShortcut:true});
  link('relayEntry','relay-shortcut-in',41,6,'안쪽에서 잠긴 송출층 연결문','relaySignal',[32,8],{requires:'relayShortcut'});
- action('relaySignal','relay-last-voice','player',13,13,'서윤의 마지막 회신','lastVoice','건물에서 들은 녹음 이후의 목소리. 서윤은 신고가 취소된 뒤에도 회신을 기다렸다.',{technical:6,w:46,back:30,front:16});
+ action('relaySignal','relay-last-voice','player',13,13,'서윤의 마지막 회신','lastVoice','건물에서 들은 녹음 이후의 목소리. 서윤은 신고가 취소된 뒤에도 회신을 기다렸다.',{facilityFrame:4,w:46,back:30,front:16});
  wall('relaySignal','relay-booth-curtain',0,13,6.5,'청취실 차음 커튼','문 밖의 소리를 가리기 위한 커튼. 안쪽 소리는 복도로 새고 있다.',{decor:0,fixture:'curtain'});
  furniture('relaySignal','relay-booth-chair','chair',13,16,'회신을 기다리는 의자','서윤이 앉았던 의자가 아니다. 서하가 앉을 자리다.',{swivel:true,w:12,h:10});
  detail('relaySignal','relay-mic-reel',7,18,19,'마이크 케이블','선은 제어실 벽 안쪽으로 이어진다.');
@@ -150,7 +150,7 @@ export function addRelayChapter(M,map,prop,door){
  // Reception has one joined counter, not three disconnected office desks.
  for(const [x,index]of [[12,0],[16,2]])furniture('relayEntry','relay-counter-'+index,'counter',x,12,'안내 카운터 연결 구간','한 줄로 이어진 방문객 응대 면. 인계 서랍은 중앙에 있다.',{counter:index,partOf:'relay-register',w:31,back:31,front:14});
  const receptionChair=M.relayEntry.objects.find(o=>o.id==='relay-entry-chair');Object.assign(receptionChair,{x:14*32,y:9*32,description:'카운터 뒤 직원 작업석의 회전 의자.'});
- Object.assign(M.relayYard.objects.find(o=>o.id==='relay-yard-bench'),{parkingBench:true,description:'야외 금속 슬랫 벤치. 좌석 오른쪽에는 뚜껑을 닫은 물병, 중앙에는 작업 장갑이 놓여 있다. 실제로 온 동행자들의 휴게 흔적이다.'});
+ Object.assign(M.relayYard.objects.find(o=>o.id==='relay-yard-bench'),{parkingBench:true,description:'야외 금속 슬랫 벤치. 좌석 오른쪽에는 뚜껑을 닫은 물병, 중앙에는 작업 장갑과 비품 확대경, 아래에는 접힌 공구 조끼 주머니가 있다.'});
  furniture('relayYard','relay-yard-barrier','barrier',7,17,'차량 진입 차단기와 인터폰','방문 차량의 진입을 관리하는 차단기. 오른쪽 보행 통로는 별도로 열려 있다.',{parkingBarrier:true,w:40,back:28,front:12,solid:false});
  for(const [m,id,patch]of [
  ['relayEntry','relay-register',{facility:undefined,counter:1,x:14*32,y:12*32,w:31,back:31,front:14,name:'안내 데스크 · 인계 서랍과 시설 지도'}],
@@ -196,9 +196,9 @@ export function addRelayChapter(M,map,prop,door){
  for(const id of ['relayArchive','relayPlant','relaySignal']){const grid=M[id].grid;for(let y=1;y<grid.length-1;y++)for(let x=1;x<grid[y].length-1;x++)if(grid[y][x]===0&&[[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>grid[y+dy][x+dx]===1))grid[y][x]=2;}
  Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-counter-2'),{partOf:undefined,covertDrawer:true,name:'안내 데스크 · 해린의 개인 인계 서랍'});
  Object.assign(M.relayEntry.objects.find(o=>o.id==='relay-reception-cabinet'),{lostbox:true,hide:false,fixture:'lost-property',w:24,back:18,front:10,name:'접수실 분실물 인수함',description:'인계 서류장 아래 칸의 분실물 함. 인수표와 함께 점검용 시계를 보관했다.'});
- furniture('relaySignal','relay-headset-drawer','desk',8,22,'청취 장비 보관대','서랍에 여분 청취 헤드셋이 있다.',{equipment:'headset',technical:6,w:25,back:22,front:10});
+ furniture('relaySignal','relay-headset-drawer','desk',8,22,'청취 장비 보관대','서랍에 여분 청취 헤드셋이 있다.',{equipment:'headset',standardDesk:true,w:25,back:22,front:10});
  detail('relayPlant','relay-work-vest',0,18,31,'정비용 조끼 걸이','안주머니가 있는 방음 작업 조끼.',{equipment:'vest'});
  detail('relayPlant','relay-pump-operation',5,16,15,'월계아파트 배수펌프 원격 운전 원장','2023.11.04 / B1 배수펌프23:40–23:50 정지. 중계소 자체 냉각펌프가 아니라 사고 현장의 원격 원장이다.',{pumpLog:true});
- furniture('relayArchive','relay-evidence-desk','desk',53,25,'복원 검토용 증거 탁자','사고 직후의 진술과 현재 확보한 증거를 펼쳐 대조하는 검토 자리.',{deductionStation:true,w:27,back:24,front:12});
+ furniture('relayArchive','relay-evidence-desk','desk',53,25,'복원 검토용 증거 탁자','기록물 봉투를 임시로 올려 두던 탁자. 기록은 휴대폰에 보관했다.',{w:27,back:24,front:12});
 
 }

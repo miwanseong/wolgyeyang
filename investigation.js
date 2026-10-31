@@ -1,11 +1,11 @@
 export const CHECKS={
- theft:{label:'수정 이력 봉투를 몰래 꺼낸다',skill:'손재주',stat:1,dc:5,success:'접힌 탄소 사본을 챙겼다. 숨김 전 목록에 23:44 수신 행이 남아 있다. 해린에게 출처를 숨긴 채 묻는다면 신뢰를 잃을 수도 있다.',failure:'봉투가 서랍 레일에 걸렸다. 해린이 돌아본다. 손을 뗐다. 이제 허락 없이 같은 서랍에 손대기는 어렵다.'},
- request:{label:'누락된 통화를 찾기 위해 수정 전 목록을 요청한다',skill:'설득',stat:1,dc:5,flag:'relayErasure',success:'…이 사본 가져가세요.23시44분, 취소 뒤에도 전화가 왔어요. 제가 그 행을 화면에서 숨겼어요.',failure:'지금 제 말만 믿고 넘어가면 안 돼요. 기록동의 원본 조작 이력을 먼저 봐 주세요. 그 뒤에도 물으신다면… 대답할게요.'},
- lostbox:{label:'분실물 함의 걸린 잠금쇠를 푼다',skill:'손재주',stat:1,dc:5,success:'걸린 잠금쇠를 풀었다. 안에는 인수표와 함께 보관된 점검용 손목시계가 있다.',failure:'작은 잠금쇠가 헛돈다. 억지로 돌리지 않고 손을 뗐다. 필수 증거가 보관된 함은 아니다.'},
- haerin:{label:'취소 기록을 근거로 되묻는다',skill:'통찰',stat:2,dc:6,flag:'relayCancel',success:'원본은 안 지웠어요. 취소 뒤 다시 걸려 온 줄을 화면에서 숨겼을 뿐이에요. …뿐이라고 말하면, 덜한 일이 되나요? 서랍의 수정 번호도 제 번호예요.',failure:'그건 제가 설명해도 믿지 않으실 거잖아요. 서랍을 직접 보세요. …지금은 더 말 못 하겠어요.'},
- mijeong:{label:'열쇠와 빗장의 차이를 대조한다',skill:'관찰',stat:1,dc:5,item:'receipt',success:'열쇠는 돌아갔지만 문은 안 움직였어. 덧댄 장치를 누가 조작했는지는 내가 못 봤어. 내 수첩에 적힌 관찰과 정우가 쓴 인수 요약을 따로 봐 줘.',failure:'잠깐, 손이 떨려서… 자국이 잘 안 보인다. 내가 기억하는 것보다 수첩에 적어 둔 게 정확할 거야. 말로 하면 또 핑계가 섞일 것 같아.'},
- dohyun:{label:'순환·분리·투입 순서를 함께 검증한다',skill:'기술',stat:0,dc:5,item:'relayCopy',success:'네, 그 순서가 맞습니다. 냉각부터요. 점검판의 아홉 관은 전부 이어져야 해요. 왼쪽 위 유입부터 왼쪽 아래 배출까지, 열린 끝 하나도 없이. 그건 제가 확인할게요. 이번에는 직접 보고요.',failure:'제가 너무 줄여 말했네요. 벽에 걸린 절체 순서가 제가 하는 말보다 정확해요. 모르면 손을 떼세요. 모른다고 하는 게 잘못된 건 아니니까요.'},
- parking:{label:'물병·장갑과 주차 흔적을 조사한다',skill:'관찰',stat:1,dc:5,success:'물병은 뚜껑이 닫혀 있고, 장갑과 벤치 좌석은 비에 젖어 있다. 세 대의 차량은 주차 구획 안에 있다. 사람이 오지 않는 폐건물이라는 생각은 맞지 않는다.',failure:'어두워 차가 들어온 순서까지는 알 수 없다. 다만 벤치의 물병과 장갑, 세 주차 차량은 눈앞에 분명히 있다.'}
+ theft:{label:'수정 이력 봉투를 몰래 꺼낸다',skill:'손재주',stat:1,dc:5,success:'[[숨김 전 수신 목록의 탄소 사본]]을 챙겼다. 숨김 전 목록에 23:44 수신 행이 남아 있다. 해린에게 출처를 숨긴 채 묻는다면 신뢰를 잃을 수도 있다.',failure:'봉투가 서랍 레일에 걸렸다. 해린이 돌아본다. 손을 뗐다. 이제 허락 없이 같은 서랍에 손대기는 어렵다.'},
+ request:{label:'누락된 통화를 찾기 위해 수정 전 목록을 요청한다',skill:'설득',stat:1,dc:5,flag:'relayErasure',success:'…이 사본 가져가세요.[[23시44분, 취소 뒤에도 전화가 왔어요]]. 제가 그 행을 화면에서 숨겼어요.',failure:'지금 제 말만 믿고 넘어가면 안 돼요. 기록동의 원본 조작 이력을 먼저 봐 주세요. 그 뒤에도 물으신다면… 대답할게요.'},
+ lostbox:{label:'분실물 함의 걸린 잠금쇠를 푼다',skill:'손재주',stat:1,dc:5,success:'걸린 잠금쇠를 풀었다. 안에는 인수표와 함께 보관된 [[점검용 손목시계]]가 있다.',failure:'작은 잠금쇠가 헛돈다. 억지로 돌리지 않고 손을 뗐다. 필수 증거가 보관된 함은 아니다.'},
+ haerin:{label:'취소 기록을 근거로 되묻는다',skill:'통찰',stat:2,dc:6,flag:'relayCancel',success:'[[숨김 전 수신 목록의 탄소 사본]]을 드릴게요. 원본은 안 지웠어요. [[취소 뒤 다시 걸려 온 줄을 화면에서 숨겼을 뿐이에요]]. …뿐이라고 말하면, 덜한 일이 되나요? 서랍의 수정 번호도 제 번호예요.',failure:'그건 제가 설명해도 믿지 않으실 거잖아요. 서랍을 직접 보세요. …지금은 더 말 못 하겠어요.'},
+ mijeong:{label:'열쇠와 빗장의 차이를 대조한다',skill:'관찰',stat:1,dc:5,item:'receipt',success:'[[빗장 위치를 그린 수첩 사본]]을 가져가. [[열쇠는 돌아갔지만 문은 안 움직였어]]. 덧댄 장치를 누가 조작했는지는 내가 못 봤어. 내 수첩에 적힌 관찰과 정우가 쓴 인수 요약을 따로 봐 줘.',failure:'잠깐, 손이 떨려서… 자국이 잘 안 보인다. 내가 기억하는 것보다 수첩에 적어 둔 게 정확할 거야. 말로 하면 또 핑계가 섞일 것 같아.'},
+ dohyun:{label:'순환·분리·투입 순서를 함께 검증한다',skill:'기술',stat:0,dc:5,item:'relayCopy',success:'네, 그 순서가 맞습니다. [[절연 회로 시험기]]를 가져가세요. 제가 트레이 잠금을 풀었습니다. [[밀봉 부품실 열쇠]]도 받으세요. 작업실에서 다시 찾지 않아도 됩니다. [[냉각부터요]]. 점검판의 아홉 관은 전부 이어져야 해요. 왼쪽 위 유입부터 왼쪽 아래 배출까지, 열린 끝 하나도 없이. 그건 제가 확인할게요. 이번에는 직접 보고요.',failure:'제가 너무 줄여 말했네요. 벽에 걸린 절체 순서가 제가 하는 말보다 정확해요. 모르면 손을 떼세요. 모른다고 하는 게 잘못된 건 아니니까요.'},
+ parking:{label:'물병·장갑과 주차 흔적을 조사한다',skill:'관찰',stat:1,dc:3,success:'벤치 아래 비품 주머니에서 [[공구 고정 작업 조끼]]를 찾았다. 안주머니에 도구를 넣으면 달그락거리지 않겠어. 물병은 뚜껑이 닫혀 있고, 장갑과 벤치 좌석은 비에 젖어 있다. 세 대의 차량은 주차 구획 안에 있다. 사람이 오지 않는 폐건물이라는 생각은 맞지 않는다.',failure:'어두워 차가 들어온 순서까지는 알 수 없다. 다만 벤치의 물병과 장갑, 세 주차 차량은 눈앞에 분명히 있다.'}
 };
 export const SLOTS={head:'머리',body:'몸통',accessory:'장신구',hand:'손'};
 export const EQUIPMENT={
@@ -21,7 +21,7 @@ export const CHARACTER={name:'서하',background:'전직 야간 관리 보조',t
 export function investigationState(s){const r=s.investigation??={stress:0,sanity:100,rolls:{}};r.gear??=['recorder'];if(r.equipped===undefined)r.equipped=r.gear[0]??null;
  r.slots??={head:null,body:null,accessory:null,hand:r.equipped&&EQUIPMENT[r.equipped]?.slot==='hand'?r.equipped:null};return r;}
 export function equip(s,id,slot=null){const r=investigationState(s);slot??=id?EQUIPMENT[id]?.slot:'hand';if(!Object.hasOwn(SLOTS,slot)||id!==null&&(!r.gear.includes(id)||EQUIPMENT[id]?.slot!==slot))return false;r.slots[slot]=id;if(slot==='hand')r.equipped=id;return true;}
-export function checkRewards(s,key,result){if(!result.success){if(key==='theft')s.flags.drawerSuspicion=true;return;}if(['theft','request'].includes(key)){if(!s.bag.includes('auditMemo'))s.bag.push('auditMemo');s.flags[key==='theft'?'memoStolen':'memoPermitted']=true;}if(key==='lostbox'){const r=investigationState(s);if(!r.gear.includes('watch'))r.gear.push('watch');}}
+export function checkRewards(s,key,result){if(!result.success){if(key==='theft')s.flags.drawerSuspicion=true;return;}if(['theft','request'].includes(key)){if(!s.bag.includes('auditMemo'))s.bag.push('auditMemo');s.flags[key==='theft'?'memoStolen':'memoPermitted']=true;}if(key==='haerin'){if(!s.bag.includes('auditMemo'))s.bag.push('auditMemo');s.flags.memoPermitted=true;}if(key==='mijeong'){if(!s.bag.includes('boltSketch'))s.bag.push('boltSketch');s.flags.relayDuty=true;}if(key==='dohyun'){const r=investigationState(s);if(!r.gear.includes('tester'))r.gear.push('tester');s.flags.relayTesterUnlocked=true;if(!s.bag.includes('partsKey'))s.bag.push('partsKey');}if(key==='parking'){const r=investigationState(s);if(!r.gear.includes('vest'))r.gear.push('vest');}if(key==='lostbox'){const r=investigationState(s);if(!r.gear.includes('watch'))r.gear.push('watch');}}
 export function validInvestigation(r){
  if(r===undefined)return true;
  if(!r||typeof r!=='object'||Array.isArray(r)||!Number.isInteger(r.stress)||r.stress<0||r.stress>4||!r.rolls||typeof r.rolls!=='object'||Array.isArray(r.rolls))return false;
@@ -39,4 +39,4 @@ export function resolveCheck(s,key,_legacy=false,random=Math.random){
  const die=1+Math.floor(value*6),total=die+c.stat+c.bonus+c.gear,success=total>=c.dc;
  const result={die,bonus:c.bonus,gear:c.gear,total,success};r.rolls[key]=result;r.stress=Math.min(4,r.stress+(success?0:1));checkRewards(s,key,result);return result;
 }
-export function checkText(s,key,r){const c=CHECKS[key];return `주사위 ${r.die} + ${c.skill} ${c.stat} + 증거 ${r.bonus} + 장비 ${r.gear??r.spent*2} = ${r.total} / 난도 ${c.dc}\n${r.success?'성공':'실패'}\n\n${r.success?c.success:c.failure}`;}
+export function checkText(s,key,r){const c=CHECKS[key];return `주사위 ${r.die} + ${c.skill} ${c.stat} + 증거 ${r.bonus} + 장비 ${r.gear??r.spent*2} = ${r.total} / 난도 ${c.dc}\n${r.success?'성공':'실패'}\n\n${r.success?c.success:c.failure}`.replace(/\[\[|\]\]/g,'');}

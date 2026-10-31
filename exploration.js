@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=4b012a2040d0';
+import {pickupBlocked} from './body.js?v=0551c272401d';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){
@@ -42,10 +42,10 @@ export function addExploration(M,map,prop,door){
  put('rearCourt','court-bench','bench',7,7,'접힌 우비를 둔 벤치',{exploreArt:5,w:25,back:12,front:8,exploreAction:'courtMemory'});
  put('rearCourt','court-pump-door','door',27.5,12,'침하로 폐쇄된 펌프실',{doorType:'fire',exploreSealed:'문틀 아래가 가라앉고 봉인 볼트가 박혀 있어. 안쪽은 침하 조사 구역이다. 힘으로 열면 무너질 수 있어.'});
  put('rearCourt','court-crates','rack',25,18,'덮개를 씌운 주민 보관 상자',{exploreArt:6,w:22,back:18,front:8});
- put('relayService','service-parts-board','detail',7,4.5,'정비동 배치도',{details:6,mount:true,facing:'north',solid:false,description:'서쪽 작업실: 계측·비품 열쇠. 동쪽 보관실: 밀봉된 커넥터. 송출층 데크는 같은 모델의 회선 어댑터만 사용할 것.'});
+ put('relayService','service-parts-board','detail',5.5,4.5,'정비동 배치도',{facilityFrame:6,mount:true,facing:'north',solid:false,description:'서쪽 작업실: 계측·비품 열쇠. 동쪽 보관실: 밀봉된 커넥터. 송출층 데크는 같은 모델의 회선 어댑터만 사용할 것.'});
  put('relayService','service-toolcart','rack',25,16,'폐기 공구 운반함',{exploreArt:2,w:20,back:17,front:8});
  put('relayService','service-danger-door','door',4.5,11,'침수된 고압실',{doorType:'fire',exploreSealed:'고압 전기실. 바닥에 물이 찼고 안전 잠금이 내려와 있다. 도현의 작업 구역 밖이야. 들어가면 안 돼.'});
- put('relayWorkshop','workshop-testbench','desk',9,7,'회선 커넥터 계측 작업대',{exploreArt:3,exploreAction:'partsKey',w:25,back:20,front:10});
+ put('relayWorkshop','workshop-testbench','desk',9,7,'회선 커넥터 계측 작업대',{facilityFrame:5,exploreAction:'partsKey',w:25,back:20,front:10});
  put('relayWorkshop','workshop-tools','rack',23,7,'정비 공구함',{exploreArt:2,w:20,back:20,front:10});
  put('relayWorkshop','workshop-spares','rack',23,14,'반납 부품 상자',{exploreArt:6,w:23,back:18,front:8,description:'단선·부식된 부품을 빨간 반환 봉투에 분리해 두었다. 재생용 예비품과 섞지 않는다.'});
  put('relayWorkshop','workshop-hide','desk',8,15,'계측 책상 아래',{standardDesk:true,hide:true,hideKind:'desk',w:24,back:20,front:10,description:'전면 가림판 뒤에 몸을 숨길 수 있다.'});
@@ -66,6 +66,7 @@ export function prepareExploration(s){if(s.flags.explorationV1)return;s.flags.ex
 export function explorationGate(s,o){if(!o.exploreGate)return null;return s.bag.includes(o.exploreGate)?null:o.lockedLine;}
 export function explorationAction(s,o){
  const a=o.exploreAction;if(!a)return null;if(a!=='laundryDrain'&&pickupBlocked(s))return{line:'남은 손에 손전등을 쥐고 있어. R로 내려놓고 집어야 해.'};
+ if(a==='partsKey'&&s.bag.includes('partsKey'))return{line:'도현 씨에게 받은 열쇠의 비품 인수표야. 정비동 동쪽 밀봉 부품실이라고 적혀 있어.'};
  if(a==='laundryDrain'){if(s.flags.laundryDrained)return{line:'배수관을 따라 물이 빠지고 있다.'};s.flags.laundryDrained=true;return{line:'밸브를 열자 분실물 선반 아래까지 차 있던 물이 내려갔다.\n세탁기는 꺼져 있는데… 뒤에서 한 바퀴 돌아가는 소리가 났어.',sound:'valve'};}
  if(a==='rearKey'&&!s.flags.laundryDrained)return{line:'선반 아래에 배수가 역류했어. 전선이 물에 잠겨 있어… 먼저 벽의 우회 밸브로 물을 빼야 해.'};
  if(a==='unit104Key'&&!s.bag.includes('serviceKey'))return{line:'공용 관리 열쇠로 여는 인계함이야. 관리실 비품 열쇠부터 챙겨야겠어.'};

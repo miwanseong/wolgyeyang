@@ -1,10 +1,10 @@
-import {MEMENTOS} from './mementos.js?v=4b012a2040d0';
-import {canPreserve} from './chapter1-route.js?v=4b012a2040d0';
-import {bodyState,validBody,pickupBlocked} from './body.js?v=4b012a2040d0';
-import {validInvestigation} from './investigation.js?v=4b012a2040d0';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=4b012a2040d0';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=4b012a2040d0";
-import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=4b012a2040d0";
+import {MEMENTOS} from './mementos.js?v=0551c272401d';
+import {canPreserve} from './chapter1-route.js?v=0551c272401d';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=0551c272401d';
+import {validInvestigation} from './investigation.js?v=0551c272401d';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=0551c272401d';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=0551c272401d";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=0551c272401d";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
@@ -26,6 +26,7 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+ boltSketch:'미정의 빗장 위치 스케치',
  spareLight:'방수 포장의 예비 작업등',
  laundryKey:'공동 세탁실 열쇠',rearKey:'후면 현관 열쇠',partsKey:'밀봉 부품실 열쇠',deckCoupler:'원본 데크용 회선 어댑터',courtSlip:'서윤의 세탁 인수표',knotThreadService:'매듭실 · 반환 비품함',
  relayAuditKey:'원본 보관대의 대조실 비품 열쇠',
