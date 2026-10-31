@@ -1,9 +1,9 @@
-import {addExploration} from './exploration.js?v=5f8fad69d09a';
-import {addStorySpaces} from './story-spaces.js?v=5f8fad69d09a';
-import {MEMENTOS} from './mementos.js?v=5f8fad69d09a';
-import {applyArchitecture} from './architecture.js?v=5f8fad69d09a';
-import { STORY } from "./story.js?v=5f8fad69d09a";
-import { addRelayChapter } from "./chapter-world.js?v=5f8fad69d09a";
+import {addExploration} from './exploration.js?v=4b012a2040d0';
+import {addStorySpaces} from './story-spaces.js?v=4b012a2040d0';
+import {MEMENTOS} from './mementos.js?v=4b012a2040d0';
+import {applyArchitecture} from './architecture.js?v=4b012a2040d0';
+import { STORY } from "./story.js?v=4b012a2040d0";
+import { addRelayChapter } from "./chapter-world.js?v=4b012a2040d0";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {
@@ -411,7 +411,7 @@ M.basement.objects.find(o=>o.id==='utility-hide').description='분전반 옆의 
 // Settle the sink/worktop/stove as different modules, rather than repeating a sink sprite.
 const kitchenKinds=[['kitchen-cabinet',0,'가스레인지와 환풍 후드','가스 밸브가 잠겨 있다. 버너 위에 맞춰 달린 환풍 후드의 스위치를 눌러도 팬이 돌지 않는다.'],['kitchen-counter-a',1,'주방 조리대','칼자국이 남은 빈 조리대. 식탁과 싱크 사이에 조리할 공간이 확보돼 있다.'],['kitchen-sink',2,'주방 싱크대','수전 하나와 개수대 하나. 배수구 안에는 아무것도 없다.'],['kitchen-counter-b',1,'주방 서랍장','수저와 행주가 용도별로 나뉘어 있다.'],['kitchen-rack',3,'식기 건조대','컵 두 개가 엎어져 있다. 컵 바닥의 물때가 말라 있다.']];
 for(const [id,index,name,description]of kitchenKinds){const o=M.apartment.objects.find(o=>o.id===id);delete o.module;Object.assign(o,{kitchenTile:index,artRole:'kitchen-'+index,name,description,w:31,back:36,front:14});}
-Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{routeAction:'lighter',description:'조리대 뒤쪽의 작은 금속 라이터. 서윤이 방수 봉투의 밀랍을 데울 때 쓰던 것이다. 옆 메모에는 「종이에 불을 대지 말 것」이라고 적혀 있다.'});
+Object.assign(M.apartment.objects.find(o=>o.id==='kitchen-counter-a'),{routeAction:'lighter',description:'조리대에 놓인 은색 금속 라이터. 뚜껑과 점화 바퀴가 보인다.'});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-tv'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='living-bench'),{x:26.5*32});
 Object.assign(M.apartment.objects.find(o=>o.id==='kitchen'),{w:46,back:24,front:20});

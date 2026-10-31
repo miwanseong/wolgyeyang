@@ -1,9 +1,9 @@
-import {hauntEligible} from './haunt-causality.js?v=5f8fad69d09a';
-import {hollowStage} from './hollow-art.js?v=5f8fad69d09a';
-import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=5f8fad69d09a';
-import {redLightUpdate} from './encounters.js?v=5f8fad69d09a';
-import {bodyState} from './body.js?v=5f8fad69d09a';
-import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=5f8fad69d09a";
+import {hauntEligible} from './haunt-causality.js?v=4b012a2040d0';
+import {hollowStage} from './hollow-art.js?v=4b012a2040d0';
+import {isRelayGhost,relayGhostUpdate,nextPatrolTarget} from './relay-ghosts.js?v=4b012a2040d0';
+import {redLightUpdate} from './encounters.js?v=4b012a2040d0';
+import {bodyState} from './body.js?v=4b012a2040d0';
+import { canMove, sight, findPath, clearSegment, doorOpen } from "./world.js?v=4b012a2040d0";
 export class StillnessHaunt {
   constructor(){this.reset();}
   reset(){this.map=null;this.still=0;this.cooldown=0;this.warned=false;this.active=0;this.origin=null;}
@@ -154,6 +154,7 @@ export class Pursuer {
     this.walking=false;this.age+=dt;
     this.hiddenTime=s.hidden&&!s.hideSpot?.witnessed?(this.hiddenTime||0)+dt:0;
     if(this.hiddenTime>=6){this.active=false;this.mode='gone';return 'escaped';}
+    if(this.kind==='washer'){this.grace=Math.max(0,this.grace-dt);this.target={x:s.x,y:s.y};this.mode='chase';this.motion='crawl';if(this.pressureDoor(map,s,dt))return null;this.navigate(map,this.target,dt,245);if(!this.grace&&!s.hidden&&Math.hypot(this.x-s.x,this.y-s.y)<22&&clearSegment(map,this,s))return 'caught';if(this.age>24){this.active=false;return 'escaped';}return null;}
     if(this.kind==='redlight')return redLightUpdate(this,map,s,dt,clearSegment);
     if(this.kind==='hollow'){this.hollowStage=hollowStage(s);this.hollowTime-=dt;if(this.hollowTime<=0){this.active=false;this.mode='gone';return 'escaped';}}
     if(s.hidden&&s.flags.chapter2&&s.hideSpot?.witnessed){

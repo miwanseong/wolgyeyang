@@ -1,4 +1,4 @@
-import {lowerLightForPickup,pickupBlocked} from './body.js?v=5f8fad69d09a';
+import {lowerLightForPickup,pickupBlocked} from './body.js?v=4b012a2040d0';
 export const MEMENTOS={
  memoryMeal:{name:'접힌 식사 약속',map:'apartment',object:'home-books-a',text:'책갈피 대신 접힌 종이. 서윤의 글씨: 「다음 쉬는 날은 언니가 고르기. 지난번엔 내가 고른 집이 너무 매웠으니까.」 뒷면에는 내가 적은 가게 이름 세 개가 지워졌다 다시 쓰여 있다.'},
  memoryOrange:{name:'102호 장보기 메모',map:'unit102',object:'102-tea-table',text:'미정의 장보기 목록 아래 「101호에 귤 봉지 돌려주기」. 봉지에 붙였던 서윤의 작은 웃는 얼굴 스티커가 종이 끝에 남아 있다.'},

@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=5f8fad69d09a';
+import {pickupBlocked} from './body.js?v=4b012a2040d0';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){
@@ -73,9 +73,8 @@ export function explorationAction(s,o){
  const [item,line]=supply[a]||[];if(!item)return null;const flag='exploreTaken_'+a;if(s.flags[flag])return{line:'비어 있는 인수 자리와 떼어 낸 봉인만 남았다.'};s.flags[flag]=true;return{item,line,sound:'paper'};
 }
 export function explorationBeat(s){prepareExploration(s);const f=s.flags;
- const spec=s.map==='serviceHall'?['hallKnock','service-condemned','닫힌 보일러실 안에서, 내 발걸음보다 한 번 늦게 세 번 두드렸어. 전원도 끊긴 방인데.','omenKnock']:
- s.map==='laundry'&&f.exploreTaken_rearKey?['washerTurn','washer-11','열쇠를 꺼내자 가운데 세탁기 안에서… 사람 얼굴이 같이 돌고 있어.\n다가가니 아무것도 없어. 뒤쪽 문으로 가자.','scrape']:
- s.map==='rearCourt'?['courtWindow','court-pump-door','저 문 뒤로 그림자가 지나갔어. 안쪽은 무너져서 못 들어가는 곳인데… 문고리가 안에서 내려갔다.','doorClose']:
+ const spec=s.map==='serviceHall'?['hallKnock','service-condemned','걸음을 멈췄는데도 소리가 났어. 보일러실 안에서… 똑, 똑, 똑. 누가 문을 두드리고 있어.','omenKnock']:
+ s.map==='rearCourt'?['courtWindow','court-key-cabinet','시트 사이로 지나간 그림자가 저 열쇠함 앞에서 멈췄어. 바닥에 젖은 자국이 남아 있어.','stepWater0']:
  s.map==='relayService'&&f.exploreTaken_deckCoupler?['returnShadow','service-danger-door','올 때는 없던 젖은 발자국이 앞서 가고 있어.\n고압실 문 아래에서 끝났어. 따라 들어가면 안 돼.','stepWater0']:
  s.map==='relayWorkshop'&&f.exploreTaken_partsKey?['toolKnock','workshop-tools','공구함 서랍이 안에서 밀렸어. 누가 열쇠를 돌려놓으라는 듯이…\n등 뒤에서 열쇠 고리가 한 번 더 울렸어.','omenKnock']:
  s.map==='relayStore'&&f.exploreTaken_deckCoupler?['crateEyes','parts-crate-23-7','분류함 칸 사이에 눈이 있었어. 내가 들고 있는 부품이 아니라… 내 얼굴을 보고 있었어.\n이걸 데크에 연결하고 원본을 들어야 해.','apparition']:null;
@@ -91,3 +90,12 @@ export function explorationObjective(s){
 
 export function washerFrame(time,reduced=false,horror=false){return (horror?4:0)+(reduced?0:Math.floor(time/(horror?140:220))%4);}
 export function shadowWalkFrame(age){return Math.floor(age*8)%8;}
+
+// The change persists silently; investigating it is the only attack trigger.
+const washerDwell=new WeakMap();
+export function tickWasher(s,dt,allowed=true){
+ if(s.map!=='laundry'||!allowed||s.flags.washerReleased)return;
+ const age=(washerDwell.get(s)||0)+dt;washerDwell.set(s,age);
+ if(age>=12)s.flags.washerChanged=true;
+}
+export function canReleaseWasher(s,o,busy=false){return o.id==='washer-11'&&s.flags.washerChanged&&!s.flags.washerReleased&&!busy;}

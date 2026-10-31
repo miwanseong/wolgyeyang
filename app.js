@@ -1,42 +1,42 @@
-import {callFor} from './phone-calls.js?v=5f8fad69d09a';
-import {assistResident} from './npc-threat.js?v=5f8fad69d09a';
-import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective} from './exploration.js?v=5f8fad69d09a';
-import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=5f8fad69d09a';
-import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=5f8fad69d09a';
-import {ensureRun,recordDeathReturn} from './return-memory.js?v=5f8fad69d09a';
-import {ThresholdHorror} from './threshold-horror.js?v=5f8fad69d09a';
-import {MEMENTOS,MEMENTO_MONOLOGUES,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=5f8fad69d09a';
-import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=5f8fad69d09a';
-import {acquireRelayMap} from './chapter.js?v=5f8fad69d09a';
-import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=5f8fad69d09a';
-import {advanceDistortion} from './distortion.js?v=5f8fad69d09a';
-import {hollowStage} from './hollow-art.js?v=5f8fad69d09a';
-import {isRelayGhost} from './relay-ghosts.js?v=5f8fad69d09a';
-import {collectRecovery,discoverThread} from './body.js?v=5f8fad69d09a';
-import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=5f8fad69d09a';
-import {MirrorView} from './mirror.js?v=5f8fad69d09a';
-import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=5f8fad69d09a';
-import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem,pickupBlocked,stowLight,toggleLightPower} from './body.js?v=5f8fad69d09a';
-import {RandomHunt} from './random-hunt.js?v=5f8fad69d09a';
-import {RoomHaunts,rememberHide} from './haunting.js?v=5f8fad69d09a';
-import {travelSound} from './audio.js?v=5f8fad69d09a';
-import {footContacts} from './gait.js?v=5f8fad69d09a';
-import {Inventory,itemIcon,itemDescription} from './inventory.js?v=5f8fad69d09a';
-import {ReasoningPanel,comparisonView} from './reasoning.js?v=5f8fad69d09a';
-import {inPuddle,witnessesEntry} from './facility.js?v=5f8fad69d09a';
-import {sanity,strain,Hallucinations} from './mental.js?v=5f8fad69d09a';
-import {Atmosphere} from './atmosphere.js?v=5f8fad69d09a';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=5f8fad69d09a';
-import {Crowd} from './crowd.js?v=5f8fad69d09a';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=5f8fad69d09a';
-import { PuzzlePanel } from './puzzles.js?v=5f8fad69d09a';
-import { CaptureAnimation, checkpoints } from './capture.js?v=5f8fad69d09a';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender,canSeekOriginal } from "./story.js?v=5f8fad69d09a";
-import { Scene, facingDirection } from "./scene.js?v=5f8fad69d09a";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=5f8fad69d09a";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=5f8fad69d09a";
-import { enterChapterTwo,arrivalBodyLine, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=5f8fad69d09a";
-import { AudioDirector, TRACKS } from "./audio.js?v=5f8fad69d09a";
+import {callFor} from './phone-calls.js?v=4b012a2040d0';
+import {assistResident} from './npc-threat.js?v=4b012a2040d0';
+import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective,tickWasher,canReleaseWasher} from './exploration.js?v=4b012a2040d0';
+import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=4b012a2040d0';
+import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=4b012a2040d0';
+import {ensureRun,recordDeathReturn} from './return-memory.js?v=4b012a2040d0';
+import {ThresholdHorror} from './threshold-horror.js?v=4b012a2040d0';
+import {MEMENTOS,MEMENTO_MONOLOGUES,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=4b012a2040d0';
+import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=4b012a2040d0';
+import {acquireRelayMap} from './chapter.js?v=4b012a2040d0';
+import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=4b012a2040d0';
+import {advanceDistortion} from './distortion.js?v=4b012a2040d0';
+import {hollowStage} from './hollow-art.js?v=4b012a2040d0';
+import {isRelayGhost} from './relay-ghosts.js?v=4b012a2040d0';
+import {collectRecovery,discoverThread} from './body.js?v=4b012a2040d0';
+import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=4b012a2040d0';
+import {MirrorView} from './mirror.js?v=4b012a2040d0';
+import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=4b012a2040d0';
+import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem,pickupBlocked,stowLight,toggleLightPower} from './body.js?v=4b012a2040d0';
+import {RandomHunt} from './random-hunt.js?v=4b012a2040d0';
+import {RoomHaunts,rememberHide} from './haunting.js?v=4b012a2040d0';
+import {travelSound} from './audio.js?v=4b012a2040d0';
+import {footContacts} from './gait.js?v=4b012a2040d0';
+import {Inventory,itemIcon,itemDescription} from './inventory.js?v=4b012a2040d0';
+import {ReasoningPanel,comparisonView} from './reasoning.js?v=4b012a2040d0';
+import {inPuddle,witnessesEntry} from './facility.js?v=4b012a2040d0';
+import {sanity,strain,Hallucinations} from './mental.js?v=4b012a2040d0';
+import {Atmosphere} from './atmosphere.js?v=4b012a2040d0';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,resolveCheck,checkText,investigationState} from './investigation.js?v=4b012a2040d0';
+import {Crowd} from './crowd.js?v=4b012a2040d0';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=4b012a2040d0';
+import { PuzzlePanel } from './puzzles.js?v=4b012a2040d0';
+import { CaptureAnimation, checkpoints } from './capture.js?v=4b012a2040d0';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender,canSeekOriginal } from "./story.js?v=4b012a2040d0";
+import { Scene, facingDirection } from "./scene.js?v=4b012a2040d0";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=4b012a2040d0";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=4b012a2040d0";
+import { enterChapterTwo,arrivalBodyLine, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=4b012a2040d0";
+import { AudioDirector, TRACKS } from "./audio.js?v=4b012a2040d0";
 import {
   initial,
   ITEMS,
@@ -48,7 +48,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=5f8fad69d09a";
+} from "./state.js?v=4b012a2040d0";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -195,7 +195,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=5f8fad69d09a')":"url('assets/resident-portraits.png?v=5f8fad69d09a')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=4b012a2040d0')":"url('assets/resident-portraits.png?v=4b012a2040d0')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
   typeText(text);
   $("dialog-actions").replaceChildren();
   for (const [label, fn] of actions) {
@@ -406,7 +406,7 @@ function routeInteract(o){
  if(enemy.active&&enemy.mode==='chase'&&!action.startsWith('entry')){toast('지금은 살필 틈이 없다.');return;}
  if(action==='roster'){if(state.bag.includes('rosterScrap')){state.flags.rosterRestored=true;addNote('night-roster',ROSTER_FOOT);}showRoster();return;}
  if(action.startsWith('entry')){if(!state.bag.includes('serviceKey')&&!state.flags['entered_'+action.slice(5)]){say('서하','잠겼네… 공용 열쇠가 있었지.\n마지막으로 누가 가지고 있었더라…');return;}state.flags['entered_'+action.slice(5)]=true;state.flags['seen_'+o.id]=true;closeDialog();transition('unit'+action.slice(5),[19,22],o);return;}
- if(action==='lighter'){if(!state.bag.includes('lighter'))pickup('lighter');say('서하','서윤이 방수 봉투의 밀랍을 떼던 라이터.\n종이는 태우지 않고, 밀랍만 살짝 데웠었지.');return;}
+ if(action==='lighter'){if(!state.bag.includes('lighter'))pickup('lighter');say('서하','아직 불이 붙네. 무언가를 녹이거나 태울 수 있겠어.\n어두울 때 가까운 곳을 비추는 데도 쓸 수 있을 것 같아.');return;}
  if(action==='rosterPiece'){if(!state.bag.includes('rosterScrap'))pickup('rosterScrap');say('미정의 인계 봉투','「서하: 전화 접수. 미정: 동문 순찰 및 예비 열쇠 인계. 정우: 지하 순찰 및 비상 대응.」\n관리실 야간 근무표와 같은 격자와 찢긴 가장자리. 게시판의 빈 모서리에 맞을 것 같다.');return;}
  if(action==='keybox'){if(o.id==='103-keybox'&&!state.bag.includes('unit104Key')){addNote('104-transfer','철거 비품 이관표:104호 열쇠는 후면 건조 마당 열쇠 인계함으로 이동. 공동 세탁실 뒤 출입문을 이용. 관리인 공용 열쇠로 인계함 개방.');say('서하','열쇠는 없어. 대신 철거 준비 때 옮긴 이관표가 있어.\n후면 관리 복도에서 세탁실을 지나 건조 마당으로… 그쪽 인계함에104호 열쇠를 모아 뒀구나.');return;}if(!routeGate(state,action)){say('서하','작은 열쇠 구멍… 이 비품함도 잠가 뒀구나.\n예전에 공용 열쇠로 열었던 것 같은데…');return;}if(!state.bag.includes('unit104Key'))pickup('unit104Key');say('104호 열쇠 표찰','「임시 문서실104호. 11월3일 사용 후 관리인에게 반납.」\n함께 접힌 문서실 인수표: 이용자 서윤(주간 서무 보조), 용도 점검 사진·입주민 민원 자료 정리.\n서윤이 서류를 정리하던 방이야. 관리실 열쇠와 달리 이 열쇠는 퇴근할 때 반납했구나. 자료가 남아 있다면, 왜 거기에 있는지도 알 수 있어.');return;}
  if(action==='wax'){if(state.flags.hiddenWaxOpen){say(o.name,'떼어 낸 밀랍과 서명이 이어지는 봉투. 보관함 열쇠는 이미 챙겼다.');return;}if(!routeGate(state,action)){say(o.name,o.description+'\n굳은 밀랍을 잡아당기면 봉투와 서명도 찢어질 것 같다.');return;}
@@ -436,6 +436,7 @@ function interact() {
     id = o.id;
   if(['entry-intercom','relay-duty-intercom'].includes(o.id)&&callFor(state,o.id)){answerPhone(o);return;}
   const handling=o.memento||o.recoveryItem||o.routeAction&&!o.routeAction.startsWith('entry')&&o.routeAction!=='roster'||o.recordRoute||o.partialExport||o.pumpLog||o.lostbox||o.fixture==='fuse-source'||o.exploreAction&&o.exploreAction!=='laundryDrain'||o.storySupply||o.hiddenClue||['lighter','rosterPiece','keybox','wax'].includes(o.routeAction)||o.collectible||['locker','flashlight','fuse','archive','shoe','desk','archive-original'].includes(o.id);if(handling&&pickupBlocked(state)){say('서하','남은 손에 손전등을 쥐고 있어. R로 내려놓고 집어야 해.');return;}
+  if(canReleaseWasher(state,o,enemy.active||!!pursuerTrail)){state.flags.washerReleased=true;closeDialog();startExplorationShot({kind:'washerRelease',focus:o.id,line:'문이… 안에서 열렸어. 저게 나왔어. 뛰어!',sound:'scrape',washerRelease:true});return;}
   if(o.exploreSealed){say('서하',o.exploreSealed);return;}
   if(o.exploreAction){const r=explorationAction(state,o);if(r){if(r.item)pickup(r.item);if(r.sound)sound.effect(r.sound);if(r.item==='courtSlip')addNote('courtSlip',r.line);say('서하',r.item&&isRecoveryItem(r.item)?discoverThread(state)||r.line:r.line);}return;}
   if(o.storySupply){
@@ -1046,7 +1047,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=5f8fad69d09a", memory: "assets/event-memory.png?v=5f8fad69d09a"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=4b012a2040d0", memory: "assets/event-memory.png?v=4b012a2040d0"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;
@@ -1068,7 +1069,7 @@ function caught(kind="jeongwoo") {
   sound.effect(kind==='hollow'?"screamAlt":"scream",.9);sound.effect("capture",.2);
   updateSound();
 }
-function handleCapture(kind=enemy.kind){if(eventActive)return;const result=captureConsequence(state,kind);if(result.fatal){caught(kind);return;}injuredCapture(kind,result);}
+function handleCapture(kind=enemy.kind){if(eventActive)return;const result=kind==='washer'?captureConsequence(state,kind,()=>0):captureConsequence(state,kind);if(result.fatal){caught(kind);return;}injuredCapture(kind,result);}
 function injuredCapture(kind,result){
   eventActive=true;keys.clear();state.running=false;state.hidden=false;state.hideSpot=null;
   enemy.reset();pursuerTrail=null;huntDelay=0;huntCooldown=100;randomHunt.spare(100);stillness.reset();
@@ -1094,7 +1095,7 @@ function renderDeathSlots(){
 }
 $("death-new").onclick=()=>{deathCheckpoint=null;recoverAfterCapture();};
 let returnTimer;
-function clearReturnEffect(){storyShot=null;scene.cinematicFocus=null;scene.storyFalling=0;scene.storyVerifier=null;scene.storyLightFailure=false;scene.explorationShadow=null;scene.washerHorror=false;clearTimeout(returnTimer);$('play-screen').classList.remove('returning-memory');$('play-screen').removeAttribute('data-return-stage');}
+function clearReturnEffect(){storyShot=null;scene.cinematicFocus=null;scene.storyFalling=0;scene.storyVerifier=null;scene.storyLightFailure=false;scene.explorationShadow=null;scene.washerHorror=false;scene.washerRelease=0;clearTimeout(returnTimer);$('play-screen').classList.remove('returning-memory');$('play-screen').removeAttribute('data-return-stage');}
 function reactToDeathReturn(){
  let storage;try{storage=localStorage;}catch{}const reaction=recordDeathReturn(state,storage);
  strain(state,reaction.sanityLoss);clearReturnEffect();$('play-screen').dataset.returnStage=String(reaction.stage);$('play-screen').classList.add('returning-memory');returnTimer=setTimeout(clearReturnEffect,reaction.duration);
@@ -1149,6 +1150,7 @@ function finishStoryShot(kind){
  const exploration=storyShot?.exploration;
 
  eventActive=false;storyShot=null;scene.cinematicFocus=null;scene.storyFalling=0;scene.storyVerifier=null;scene.storyLightFailure=false;forcedCue=null;keys.clear();
+ if(exploration?.washerRelease){scene.washerHorror=false;const o=worldFor(state).objects.find(o=>o.id==='washer-11');enemy.reset();Object.assign(enemy,{active:true,kind:'washer',x:o.x,y:o.y+32,mode:'chase',target:{x:state.x,y:state.y},grace:1.6});state.flags.met_washer=true;scene.washerRelease=0;say('서하',exploration.line);return;}
  if(exploration){scene.washerHorror=false;scene.explorationShadow=null;scene.storyLightFailure=false;say('서하',exploration.line);return;}
  if(kind==='lightAccident'){
   const options=state.bag.includes('spareLight')?[['챙겨 둔 예비 작업등으로 교체한다',()=>{replaceWetLight(state);sound.effect('flashlightOn');say('서하','포장 안은 말라 있어. 켜졌다… 여기서는 발밑부터 보자.');}],['벽의 비상등을 따라 안전함으로 돌아간다',closeDialog]]:[['벽의 비상등을 따라 작업 안전함을 찾는다',closeDialog]];
@@ -1180,7 +1182,7 @@ function finishStoryShot(kind){
 }
 function updateStoryShot(t,dt){
  const shot=storyShot;shot.elapsed+=dt;
- if(shot.exploration){const e=shot.exploration;scene.storyLightFailure=shot.elapsed*1000+1;scene.storyVerifier=e.eyes&&shot.elapsed>.8&&shot.elapsed<1.05?{x:shot.focus.x,y:shot.focus.y+40,hollowStage:0,age:4,target:state}:null;scene.washerHorror=e.washer;scene.explorationShadow=e.shadow?{age:shot.elapsed,x:shot.focus.x-40+shot.elapsed*32,y:shot.focus.y+24,opacity:Math.sin(Math.min(1,shot.elapsed/2.4)*Math.PI)}:null;if(!scene.reduced)scene.shake=shot.elapsed>.8&&shot.elapsed<1.1?.18:0;}
+ if(shot.exploration){const e=shot.exploration;scene.storyLightFailure=shot.elapsed*1000+1;scene.storyVerifier=e.eyes&&shot.elapsed>.8&&shot.elapsed<1.05?{x:shot.focus.x,y:shot.focus.y+40,hollowStage:0,age:4,target:state}:null;scene.washerHorror=e.washer;scene.washerRelease=e.washerRelease?Math.min(1,shot.elapsed/2.4):0;scene.explorationShadow=e.shadow?{age:shot.elapsed,x:shot.focus.x-40+shot.elapsed*32,y:shot.focus.y+24,opacity:Math.sin(Math.min(1,shot.elapsed/2.4)*Math.PI)}:null;if(!scene.reduced)scene.shake=shot.elapsed>.8&&shot.elapsed<1.1?.18:0;}
 
  if(shot.kind==='lightAccident'){scene.storyLightFailure=true;scene.storyVerifier=shot.elapsed>.7&&shot.elapsed<.9?{x:shot.focus.x,y:shot.focus.y+55,hollowStage:0,age:4,target:state}:null;} scene.cinematicFocus=shot.focus;
  if(shot.kind==='floorFall'){scene.storyFalling=Math.min(1,shot.elapsed/shot.duration);if(!scene.reduced)scene.shake=.12;}
@@ -1220,6 +1222,7 @@ function render(t) {
   if(!$('injury-screen').hidden){const pose=injuryAnimation.draw(dt*2,scene.reduced);if(pose.done&&!injuryFinished){injuryFinished=true;$('injury-result').hidden=false;$('injury-resume').disabled=false;$('injury-resume').focus();}return;}
   if(mirrorView.active){const m=mirrorView.draw(dt,scene.reduced);if(m.laugh)sound.effect('mirrorLaugh',.5);if(m.closable&&$('mirror-close').disabled){$('mirror-close').disabled=false;$('mirror-close').focus();}return;}
   if(storyShot){updateStoryShot(t,dt);return;}
+  tickWasher(state,dt,!eventActive&&!dialog&&!phone&&!traveling&&!enemy.active);
   if(!eventActive&&!dialog&&!phone&&!traveling){const beat=nextStoryBeat(state)||(!enemy.active&&!pursuerTrail?explorationBeat(state)?.kind:null);if(beat){startStoryShot(beat);if(storyShot)updateStoryShot(t,dt);return;}}
   if(arrivalScene.active){arrivalScene.update(enemy,worldFor(state),state,dt);scene.cinematicFocus=arrivalScene.focus(enemy,state);scene.draw(state,t,dt,null,false,enemy);atmosphere.update(state,worldFor(state),enemy,t,dt,false);if(!arrivalScene.active){scene.cinematicFocus=null;eventActive=false;forcedCue=null;keys.clear();canvas.focus();}return;}
   if(lockCinematic>0){lockCinematic=Math.max(0,lockCinematic-dt);scene.draw(state,t,dt,null,false,enemy);if(!lockCinematic){eventActive=false;scene.cinematicFocus=null;say('서하','문이 닫혔어… 종이를 꺼낸 것뿐인데.\n밖에서 누가 두드리고 있어. 숨을 죽이자.');scene.focus=MAPS.relaySignal.objects.find(o=>o.id==='relay-quiet-inner-door');}return;}

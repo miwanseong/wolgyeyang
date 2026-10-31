@@ -1,7 +1,7 @@
-import {fleeActor} from './npc-threat.js?v=5f8fad69d09a';
-import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=5f8fad69d09a';
-import {advanceGait,actorStride} from './gait.js?v=5f8fad69d09a';
-import {canMove,findPath,sight} from './world.js?v=5f8fad69d09a';
+import {fleeActor} from './npc-threat.js?v=4b012a2040d0';
+import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=4b012a2040d0';
+import {advanceGait,actorStride} from './gait.js?v=4b012a2040d0';
+import {canMove,findPath,sight} from './world.js?v=4b012a2040d0';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
