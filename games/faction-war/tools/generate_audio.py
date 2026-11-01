@@ -21,3 +21,6 @@ write('charge_loop',1,lambda t,i,n:(.08*math.sin(2*math.pi*110*t)+.045*math.sin(
 write('ambience_loop',8,lambda t,i,n:sum(a*math.sin(2*math.pi*f*t+.3) for f,a in [(55,.04),(82.5,.025),(110,.015),(165,.01)])*(.85+.15*math.cos(2*math.pi*t/8)))
 filtered=[sum(noise[(i-j)%len(noise)] for j in range(12))/12 for i in range(len(noise))]
 write('rain_loop',8,lambda t,i,n:filtered[i]*.13)
+write('step_snow',.16,lambda t,i,n:env(t,.16)*(.065*noise[i]+.04*math.sin(2*math.pi*75*t))*math.exp(-t*6))
+write('step_mud',.18,lambda t,i,n:env(t,.18)*(.05*noise[i]+.055*math.sin(2*math.pi*(90*t-35*t*t))))
+write('underwater_loop',8,lambda t,i,n:sum(a*math.sin(2*math.pi*f*t) for f,a in [(36,.045),(54,.025),(72,.015)])*(.8+.2*math.cos(2*math.pi*t/8)))
