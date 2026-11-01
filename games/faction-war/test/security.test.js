@@ -1,0 +1,28 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
+import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+test('private access, cookies, CSRF, payload limits, movement and save secrecy',async()=>{
+ const dir=await mkdtemp(path.join(os.tmpdir(),'fw-sec-'));
+ const child=spawn(process.execPath,['server.js'],{env:{...process.env,PORT:'3197',DATA_DIR:dir,INVITE_CODE:'integration-test-invite'},stdio:['ignore','pipe','inherit']});
+ try{await once(child.stdout,'data');const base='http://127.0.0.1:3197';
+ const post=(route,body,cookie,extra={})=>fetch(base+route,{method:'POST',headers:{'Content-Type':'application/json',...(cookie?{Cookie:cookie}:{}),...extra},body:typeof body==='string'?body:JSON.stringify(body)});
+ assert.equal((await post('/api/join',{name:'侵入者'})).status,403);
+ assert.equal((await fetch(base+'/api/events?token=__proto__')).status,401);
+ assert.equal((await post('/api/action',{type:'buy'})).status,401);
+ assert.equal((await post('/api/join',{invite:'integration-test-invite' },null,{Origin:'https://evil.example'})).status,403);
+ assert.equal((await post('/api/join','x'.repeat(3000))).status,413);
+ const r=await post('/api/join',{name:'<script>alert(1)</script>',invite:'integration-test-invite'});assert.equal(r.status,200);
+ const set=r.headers.get('set-cookie');assert.match(set,/HttpOnly/);assert.match(set,/SameSite=Strict/);const cookie=set.split(';')[0];const b=await r.json();assert(!b.token);
+ assert.equal((await post('/api/action',{type:'move',dx:1,dy:0},cookie,{Origin:'https://evil.example'})).status,403);
+ assert.equal((await post('/api/action',{type:'move',dx:1,dy:0},cookie)).status,200);
+ assert.equal((await post('/api/action',{type:'move',dx:1,dy:0},cookie)).status,429);
+ assert.equal((await post('/api/action',{type:'move',dx:'1',dy:0},cookie)).status,400);
+ assert.equal((await post('/api/action','null',cookie)).status,400);
+ const page=await fetch(base+'/');assert.match(page.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert.equal((await fetch(base+'/data/world.json')).status,404);
+ child.kill('SIGTERM');await once(child,'exit');const saved=await readFile(path.join(dir,'world.json'),'utf8');assert(!saved.includes(cookie.split('=')[1]));
+ }finally{if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}await rm(dir,{recursive:true,force:true});}
+});
