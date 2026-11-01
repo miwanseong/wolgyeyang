@@ -1,0 +1,5 @@
+import {terrainBlocked} from './layout.js';
+export const WALK_SPEED=5.9;
+export function validIntent(a){if(!Number.isInteger(a.seq)||a.seq<1||a.seq>Number.MAX_SAFE_INTEGER||!Number.isFinite(a.dx)||!Number.isFinite(a.dy)||Math.hypot(a.dx,a.dy)>1.001||typeof a.run!=='boolean')throw Error('잘못된 이동 입력입니다.');return {seq:a.seq,dx:a.dx,dy:a.dy,run:a.run};}
+export function stepMotion(p,input,seconds,bounds){const dt=Math.max(0,Math.min(.2,seconds)),running=input.run&&!p.charging&&(p.stamina??100)>2,speed=WALK_SPEED*(p.charging?.55:running?1.35:1),distance=speed*dt,steps=Math.max(1,Math.ceil(distance/.12)),dx=input.dx*distance/steps,dy=input.dy*distance/steps;let x=p.x,y=p.y;const valid=(x,y)=>x>=1&&x<=bounds.width-2&&y>=2&&y<=bounds.height-2&&!terrainBlocked(p.region,x,y);for(let i=0;i<steps;i++){if(valid(x+dx,y+dy)){x+=dx;y+=dy;}else{if(dx&&valid(x+dx,y))x+=dx;if(dy&&valid(x,y+dy))y+=dy;}}return {x,y,running,speed};}
+export function facing(dx,dy,old='south'){return dx&&dy?(dy<0?'north':'south')+(dx<0?'west':'east'):dy?dy<0?'north':'south':dx?dx<0?'west':'east':old;}

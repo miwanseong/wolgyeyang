@@ -1,0 +1,2 @@
+export function downPlayer(p,now=Date.now()){if(p.hp>0||p.downUntil)return;p.hp=0;p.downUntil=now+1200;p.hurtUntil=now+1200;p.charging=null;p.activity=null;if(p.cooking){p.cooking.job=null;p.cooking.eating=null;}if(p.attackMotion)p.attackMotion.endsAt=now;}
+export function resolveDeaths(world,now=Date.now()){for(const p of Object.values(world.players))if(p.downUntil&&now>=p.downUntil){p.downUntil=0;p.hp=p.maxHp;p.region='village';p.x=74;p.y=56;p.gold=Math.max(0,(p.gold||0)-10);p.stamina=50;p.charging=null;p.bleedingUntil=0;p.recoveryUntil=now+300;}}
