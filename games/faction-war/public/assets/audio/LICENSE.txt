@@ -1,0 +1,1 @@
+These 13 WAV files are original procedural sound effects generated for this project by tools/generate_audio.py. No third-party audio samples are included. They may be used, modified and redistributed with this project under its applicable license. The generation script is included for reproducibility.

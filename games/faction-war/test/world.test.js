@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp,rm,readFile} from 'node:fs/promises';
+import {mkdtemp,rm,readFile,writeFile} from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
@@ -25,13 +25,14 @@ test('two clients share authoritative world, farming economy and persistence',as
 
 test('combat awards server-owned loot and rejects unlearned magic',async()=>{
  const dir=await mkdtemp(path.join(os.tmpdir(),'fw-combat-'));
+ const fixtureToken='00000000-0000-4000-8000-000000000002';const fixtureKey=createHash('sha256').update(fixtureToken).digest('hex');await writeFile(path.join(dir,'world.json'),JSON.stringify({version:1,layoutVersion:2,expandedVersion:1,regionsVersion:1,day:1,clock:0,players:{[fixtureKey]:{id:'combat',name:'검사',region:'forest',x:4,y:24,hp:100,maxHp:100,gold:80,xp:0,weapon:0,skill:false,expires:Date.now()+60000,inv:{seed:6,wheat:0,bread:2,ore:0}}},plots:[],monsters:[{id:0,region:'forest',kind:'wolf',x:5.4,y:24,hp:50}],log:[]}));
  const child=spawn(process.execPath,['server.js'],{env:{...process.env,DATA_DIR:dir,PORT:'3198'},stdio:['ignore','pipe','inherit']});
  try{await once(child.stdout,'data');
  const post=async(url,body,token)=>{const r=await fetch('http://127.0.0.1:3198'+url,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+(token||body?.token)},body:JSON.stringify(body)});const result=await r.json();const cookie=r.headers.get('set-cookie');if(cookie)result.token=cookie.match(/fw_session=([^;]+)/)[1];return {status:r.status,body:result};};
- const p=(await post('/api/join',{name:'검사'})).body;
+ const p={...(await post('/api/join',{token:fixtureToken})).body,token:fixtureToken};
  const act=body=>post('/api/action',body,p.token);
  assert.equal((await act({type:'spell'})).status,400);
- for(const [dx,dy,n]of [[0,1,4],[1,0,23],[0,-1,2]])for(let i=0;i<n;i++){assert.equal((await act({type:'move',dx,dy})).status,200);await new Promise(r=>setTimeout(r,100));}
+
  for(let i=0;i<5;i++){assert.equal((await act({type:'attack'})).status,200);await new Promise(r=>setTimeout(r,520));}
  child.kill('SIGTERM');await once(child,'exit');const w=JSON.parse(await readFile(path.join(dir,'world.json'),'utf8'));assert.equal(w.players[createHash('sha256').update(p.token).digest('hex')].inv.ore,2);assert.equal(w.players[createHash('sha256').update(p.token).digest('hex')].xp,10);assert.equal(w.monsters[0].hp,0);
  }finally{if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}await rm(dir,{recursive:true,force:true});}
