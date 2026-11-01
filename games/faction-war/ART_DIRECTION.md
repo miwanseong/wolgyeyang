@@ -23,3 +23,10 @@ High-quality 8-bit pixel art with a consistent cartoon / cel-shaded aesthetic, d
 ## 작업 연속성
 
 다음 시각 작업을 시작하기 전에 이 문서를 읽는다. 기존 프로젝트 체크아웃을 사용하고, 사용자의 요청 없이 Git worktree를 만들지 않는다. 새 스타일 제안이 이 고정 기준과 충돌하면 임의로 바꾸지 않는다.
+
+## 적용한 UI 자산
+
+- public/assets/borderland-pixel.png: 황혼의 변경 마을, 폐성, 밀밭과 숲을 표현한 도트 배경. 로그인 화면과 사이트 배경에 사용.
+- public/assets/panel-pixel.png: 짙은 남색과 오래된 금색의 도트 패널. nine-slice 프레임으로 사용해 모서리와 텍스트가 겹치지 않도록 구성.
+- 두 이미지는 이번 프로젝트용으로 생성한 환경/UI 이미지이며 기존 인물의 공식 디자인을 대체하지 않는다.
+- PC 1440px 및 모바일 390px Chromium에서 이미지 응답, 수평 넘침, 가입·게임 진입·로그아웃을 확인했다. 실제 게임 지도와 캐릭터는 아직 임시 도형이다.
