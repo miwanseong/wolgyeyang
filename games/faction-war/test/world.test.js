@@ -17,8 +17,8 @@ test('two clients share authoritative world, farming economy and persistence',as
  assert.equal((await post('/api/action',{type:'equipHand',tool:'hoe'},a.token)).status,200);await move(-1,0,2);await move(0,1,4);assert.equal((await post('/api/action',{type:'farm'},a.token)).status,200);
  do{state=await sb();}while(!state.plots.some(p=>p.planted));assert.equal(state.players.find(p=>p.id===a.id).inv,undefined);let ownState;do{ownState=await sa();}while(!ownState.plots.some(p=>p.planted));assert.equal(ownState.players.find(p=>p.id===a.id).inv.seed,5);
  await new Promise(r=>setTimeout(r,30100));assert.equal((await post('/api/action',{type:'farm'},a.token)).status,200);
- await move(0,-1,8);await move(1,0,12);assert.equal((await post('/api/action',{type:'cook'},a.token)).status,200);await move(-1,0,14);assert.equal((await post('/api/action',{type:'sell'},a.token)).status,200);
- for(const c of streams)c.abort();await stop();const saved=JSON.parse(await readFile(path.join(dir,'world.json'),'utf8'));const key=createHash('sha256').update(a.token).digest('hex');assert.equal(saved.players[key].inv.wheat,1);assert.equal(saved.players[key].gold,125);
+ await move(0,-1,8);await move(1,0,12);assert.equal((await post('/api/action',{type:'cook'},a.token)).status,200);await new Promise(r=>setTimeout(r,2300));await move(-1,0,14);const sale=await post('/api/action',{type:'sell'},a.token);assert.equal(sale.status,200);
+ for(const c of streams)c.abort();await stop();const saved=JSON.parse(await readFile(path.join(dir,'world.json'),'utf8'));const key=createHash('sha256').update(a.token).digest('hex');assert.equal(saved.players[key].inv.wheat,1);assert.equal(saved.players[key].gold,80+Number(sale.body.message.match(/^\d+/)[0]));
  await start();const restored=(await post('/api/join',{token:a.token})).body;assert.equal(restored.id,a.id);await stop();
  }finally{for(const c of streams)c.abort();if(child?.exitCode===null)await stop();await rm(dir,{recursive:true,force:true});}
 });

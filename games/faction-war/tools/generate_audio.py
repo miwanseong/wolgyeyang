@@ -31,3 +31,5 @@ write('fish_snap',.22,lambda t,i,n:env(t,.22)*(.18*noise[i]*math.exp(-t*20)+.08*
 write('reel_loop',1,lambda t,i,n:.035*math.sin(2*math.pi*96*t)*(.4+.6*math.cos(2*math.pi*12*t)**8)+.015*math.sin(2*math.pi*240*t))
 write('soil_hoe',.25,lambda t,i,n:env(t,.25)*(.12*noise[i]+.09*math.sin(2*math.pi*70*t)))
 write('net_swish',.3,lambda t,i,n:env(t,.3)*(.07*noise[i]+.04*math.sin(2*math.pi*(200*t-70*t*t))))
+# Four-second periodic harmonics and crackle pulses meet at the loop boundary.
+write('campfire_loop',4,lambda t,i,n:sum(.003*math.sin(2*math.pi*(k*.25)*t+k*.71) for k in range(45,110))*(.6+.4*math.sin(2*math.pi*.5*t)**2)+.025*math.sin(2*math.pi*57*t)*max(0,math.sin(2*math.pi*3*t+.6))**28)
