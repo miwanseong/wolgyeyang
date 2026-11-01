@@ -1,0 +1,158 @@
+[
+  {
+    "file": "bgm_deduction.mp3",
+    "duration": 191.208,
+    "bytes": 4552380,
+    "sha256": "3117070a7be0c11610d29b467f84ed35f0be29c6e0741f2c11e7877de49690da"
+  },
+  {
+    "file": "audiobgm_urban_pulse.mp3",
+    "duration": 148.44,
+    "bytes": 3595343,
+    "sha256": "45a5d3be032956bd505c8ab7fe22f744eca8a6e6eb5b4f9e8ef43bb23f12914e"
+  },
+  {
+    "file": "audiobgm_missing_key.mp3",
+    "duration": 168.12,
+    "bytes": 3984930,
+    "sha256": "9dcb1924e20a23baf2b067bff5e154012d7a6590ffc6a3470f35ea05fb6fedba"
+  },
+  {
+    "file": "back.wav",
+    "duration": 0.1,
+    "bytes": 8864,
+    "sha256": "243e87eda7f9462c0d8bd7003dae266057a405f28bd9f6ad73d3b0ddc268a2e7"
+  },
+  {
+    "file": "lockon.wav",
+    "duration": 0.18,
+    "bytes": 15920,
+    "sha256": "ebdeef019197537eabf9630a9687ac8bd3e04e9c21315de6d3f0bc6271d9736e"
+  },
+  {
+    "file": "bgm_relief.mp3",
+    "duration": 158.04,
+    "bytes": 4088917,
+    "sha256": "7af3197e985e1f1519b21e125c5665be1356e8a899ec8982dfb98d0b939da493"
+  },
+  {
+    "file": "bgm_warm_memory.mp3",
+    "duration": 164.04,
+    "bytes": 3947493,
+    "sha256": "81b103c8ee95641d6d04cc8aef0f2f25c9df8187318c3d89adb97aee5dbd8783"
+  },
+  {
+    "file": "bgm_memory.mp3",
+    "duration": 134.448,
+    "bytes": 3083659,
+    "sha256": "41f8a688b3b0c071a0d6c1b371c2ff2afa145c3b92064ddb87311758cfbfb107"
+  },
+  {
+    "file": "bgm_uncanny.mp3",
+    "duration": 153.24,
+    "bytes": 3599619,
+    "sha256": "2aba8b0d465e81d8287d525879291aae356077de220f02c4d99c88ba3d2a8126"
+  },
+  {
+    "file": "bgm_unease.mp3",
+    "duration": 198.0,
+    "bytes": 4533786,
+    "sha256": "166d56fec4c672970ab9071b779d2bdfc08220f4f09545d4e47e1c6eadbe7aaa"
+  },
+  {
+    "file": "bgm_cabin.mp3",
+    "duration": 202.008,
+    "bytes": 4748394,
+    "sha256": "7bc299546107ed71773002ca1fdb3c449e3480b837cbbdf95bc9fa21923256d6"
+  },
+  {
+    "file": "sfx_camera_shutter.mp3",
+    "duration": 0.72,
+    "bytes": 23853,
+    "sha256": "a1ca2c54e3b7913f07011b23fa17ed2f8ba257a3051145f36e7481c6645fbef7"
+  },
+  {
+    "file": "miss.wav",
+    "duration": 0.24,
+    "bytes": 21212,
+    "sha256": "e8177678b7591cbd9b2a4d6a79fb1ff53719036e57a7e4149d5ea10e407de1db"
+  },
+  {
+    "file": "sfx_glass_breaking.mp3",
+    "duration": 2.116,
+    "bytes": 67709,
+    "sha256": "67727ff80246f231d99ee883f2ef409da0fee62e1a58dd2148d86305286833d3"
+  },
+  {
+    "file": "bgm_violin_dread.mp3",
+    "duration": 161.856,
+    "bytes": 3715026,
+    "sha256": "a2f27df1e80f0570a1dce69e2197c5ce5826c31056a225b4ceec2b5a1a3e62e7"
+  },
+  {
+    "file": "audiosfx_thud.mp3",
+    "duration": 1.824,
+    "bytes": 37004,
+    "sha256": "f0a759f32879c1992d587dc142dd24f892e87a6d48b026636ac7d6dca137cada"
+  },
+  {
+    "file": "bgm_evidence.mp3",
+    "duration": 189.96,
+    "bytes": 4325668,
+    "sha256": "c5efe0f3a00eaa16bd6b7ac5cec143a17660b4a51f3e2217c5ff4a0a3010af79"
+  },
+  {
+    "file": "break.wav",
+    "duration": 0.36,
+    "bytes": 31796,
+    "sha256": "15f9d20221d516640c6c3822555f1ef4a1f2bd91a5be49585d8eb6cb1c13c334"
+  },
+  {
+    "file": "bgm_main.mp3",
+    "duration": 174.336,
+    "bytes": 4016480,
+    "sha256": "327d8231d0af6d722f62a6610f2f7372d6875223f4bb1f4f67f17a20290e97cd"
+  },
+  {
+    "file": "press.wav",
+    "duration": 0.12,
+    "bytes": 10628,
+    "sha256": "a9e5846c2ced795f31a8529bfd4c83a9688f61a33bce87dc97aff3932fe97c98"
+  },
+  {
+    "file": "audiosfx_door_open.mp3",
+    "duration": 3.396,
+    "bytes": 109549,
+    "sha256": "1bdc71304725cb8333013838ba4c3d1ba0ef3613f9fb6d1173da6ae38ff5fb42"
+  },
+  {
+    "file": "evidence.wav",
+    "duration": 0.24,
+    "bytes": 21212,
+    "sha256": "22587a3fed771ded0fa46ab540308b312e556c6be04e5e990e5f053d8e93cae7"
+  },
+  {
+    "file": "bgm_flustered.mp3",
+    "duration": 199.416,
+    "bytes": 4787158,
+    "sha256": "b0a7bbd0ed54abe265bed096691ea37d658fe076c92ad494fb6ce107446d13e3"
+  },
+  {
+    "file": "audiobgm_uncanny_motif.mp3",
+    "duration": 182.04,
+    "bytes": 4534336,
+    "sha256": "4abe2e809c3659c0e64a0c96f69069c6aba777a5f30e3d5fc80fd5eb838e82af"
+  },
+  {
+    "file": "bgm_atfermath.mp3",
+    "duration": 202.92,
+    "bytes": 4660307,
+    "sha256": "6d8fec8442926a68bce1c3ccde573014c275e9436c2b73522a12b33182ed23ea"
+  },
+  {
+    "file": "bgm_relief_alt.mp3",
+    "duration": 158.616,
+    "bytes": 4047129,
+    "sha256": "f0140cb85989598ededb7f926813002a2f34143742fe01651ce80c905b902e87"
+  }
+]

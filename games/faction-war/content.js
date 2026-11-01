@@ -7,13 +7,13 @@ export const crops={wheat:{name:'밀',seed:'seed',harvest:'wheat',seconds:30},ca
 export const recipes={bread:{name:'빵 굽기',station:'kitchen',need:{wheat:2},give:{bread:1}},ingot:{name:'철 주괴 제련',station:'forge',need:{ore:2},give:{ingot:1}},potion:{name:'치유 물약 달이기',station:'clinic',need:{herb:3},give:{potion:1}},stew:{name:'변경 스튜 끓이기',station:'kitchen',need:{potato:2,carrot:1,meat:1,salt:1},give:{stew:1}},leather:{name:'가죽 손질',station:'forge',need:{meat:2,salt:1},give:{leather:1}},mana:{name:'마나 물약 달이기',station:'clinic',need:{herb:2,apple:1},give:{mana:1}}};
 export const gatherNodes=[...Array.from({length:8},(_,i)=>({id:'wood'+i,region:'village',x:55+(i%4)*3,y:65+Math.floor(i/4)*4,item:'timber',amount:2,prop:'logs'})),...Array.from({length:6},(_,i)=>({id:'stone'+i,region:'village',x:102+(i%3)*3,y:98+Math.floor(i/3)*3,item:'stone',amount:2,prop:'pillar'})),...Array.from({length:10},(_,i)=>({id:'herb'+i,region:'forest',x:8+(i%5)*6,y:30+Math.floor(i/5)*5,item:'herb',amount:1,prop:'herbs'}))];
 export const villagers=[
-{id:'merchant',name:'잡화상',role:'시장 거래',x:72,y:54,sprite:3,dialogue:'제국 통화 요드는 브론즈부터 센다네. 씨앗과 소금은 여기서 구하고, 남는 음식은 팔게.',need:{bread:3},reward:{seed:6},gold:25},
-{id:'smith',name:'대장장이',role:'제련·장비',x:79,y:54,sprite:3,dialogue:'광석만 들고 있어서는 칼이 되지 않아. 화덕에서 주괴를 제련해 보게.',need:{ingot:2},reward:{ore:3},gold:40},
-{id:'innkeeper',name:'여관지기',role:'조리·식량',x:83,y:54,sprite:3,dialogue:'스튜 한 솥이면 원정대도 버티지. 감자와 고기를 가져오면 식사를 나눠 주겠어.',need:{potato:3,meat:1},reward:{stew:2},gold:20},
-{id:'farmer',name:'농장 관리인',role:'농사',x:68,y:61,sprite:2,dialogue:'밀만 심을 필요는 없어. 씨앗을 골라 당근과 감자도 길러 봐.',need:{carrot:3},reward:{potato_seed:3},gold:25},
-{id:'healer',name:'약초사',role:'치료·물약',x:100,y:87,sprite:1,dialogue:'숲의 약초를 함부로 씹지 마. 달이는 법과 쓰는 양이 중요하지.',need:{herb:4},reward:{potion:2},gold:0},
-{id:'archivist',name:'기록관',role:'세계관 기록',x:136,y:55,sprite:1,dialogue:'기록은 승자의 시선이지 전지적 진실이 아니야. 진영전쟁의 역사도 그렇게 읽어야 해.'},
-{id:'cleric',name:'예배당 관리인',role:'쉼터',x:116,y:71,sprite:1,dialogue:'이곳은 작은 변경 쉼터야. 누군가의 신앙을 보고 그 사람의 전부를 안다고 여기지는 말게.'}];
+{id:'merchant',name:'잡화상 베른',role:'시장 거래',x:72,y:54,sprite:0,dialogue:'제국 통화 요드는 브론즈부터 센다네. 씨앗과 소금은 여기서 구하고, 남는 음식은 팔게.',need:{bread:3},reward:{seed:6},gold:25},
+{id:'smith',name:'대장장이 로안',role:'제련·장비',x:79,y:54,sprite:1,dialogue:'광석만 들고 있어서는 칼이 되지 않아. 화덕에서 주괴를 제련해 보게.',need:{ingot:2},reward:{ore:3},gold:40},
+{id:'innkeeper',name:'여관주인 미레느',role:'조리·식량',x:83,y:54,sprite:2,dialogue:'스튜 한 솥이면 원정대도 버티지. 감자와 고기를 가져오면 식사를 나눠 주겠어.',need:{potato:3,meat:1},reward:{stew:2},gold:20},
+{id:'farmer',name:'농부 올란',role:'농사',x:68,y:61,sprite:3,dialogue:'밀만 심을 필요는 없어. 씨앗을 골라 당근과 감자도 길러 봐.',need:{carrot:3},reward:{potato_seed:3},gold:25},
+{id:'healer',name:'약초사 세실',role:'치료·물약',x:100,y:87,sprite:4,dialogue:'숲의 약초를 함부로 씹지 마. 달이는 법과 쓰는 양이 중요하지.',need:{herb:4},reward:{potion:2},gold:0},
+{id:'archivist',name:'기록관 아델문',role:'세계관 기록',x:136,y:55,sprite:5,dialogue:'기록은 승자의 시선이지 전지적 진실이 아니야. 진영전쟁의 역사도 그렇게 읽어야 해.'},
+{id:'cleric',name:'사제 루시엔',role:'쉼터',x:116,y:71,sprite:6,dialogue:'이곳은 작은 변경 쉼터야. 누군가의 신앙을 보고 그 사람의 전부를 안다고 여기지는 말게.'}];
 export const canonCharacters=[
 {name:'블랙 디 크라이스',role:'블랙 진영 수장 · 소드마스터',art:'얼굴 도트 방향 확인 / 전신·목 비율 보완 중',detail:'여성, 29세, 179/70. 검은 머리와 보라색 안쪽 머리, 흰 와이셔츠·검은 바지·복대·초커·보라색 연지. 무기 묵혈검. 크라이스류 검술.'},
 {name:'트와일라잇',role:'마법학교 교사 · 과거 용병 조커',art:'원작 참고 확보 / 새 얼굴·전신 미완성',detail:'여성, 26세, 170/62. 노란 머리·머리 위 검은 선글라스·검은 양복·흡연. 고유 마법 카드 뽑기: J 제스트라 에반슨, K 카타르시스 오브 체인, Q 쿼드 세크리파이스, A 에퀴즈 오버도즈.'},
@@ -42,3 +42,7 @@ gatherNodes.push({id:'iron-quarry',region:'village',x:108,y:99,item:'ore',amount
 for(const [icon,id,name,price,description]of [[0,'rod','손매듭 낚싯대',30,'목재와 밧줄로 만든 낚싯대. 다리와 해안에서 낚시한다.'],[1,'riverfish','은비늘 송어',18,'맑은 강에서 잡히는 은빛 물고기. 소금구이 재료.'],[2,'deepfish','푸른잔광 어류',35,'해안 깊은 물에서 올라오는 발광 어류. 차가운 빛을 낸다.'],[3,'moonpearl','월광 진주',120,'해안에서 드물게 얻는 진주. 룬 나침반의 감응 핵.'],[4,'lavendertea','달향 약초차',38,'갈증과 체력을 조금 회복하고 2분간 마나 회복을 돕는다.'],[5,'honey','숲벌 꿀',22,'숲벌이 남긴 꿀. 약초차에 은은한 단맛을 더한다.'],[6,'wildberry','진홍 들딸기',10,'숲 가장자리에 자라는 새콤한 요리 재료.'],[7,'runecompass','잔광 룬 나침반',180,'가까운 숨겨진 흔적을 미니맵에 표시하는 제국식 마도 도구.']])items[id]={name,icon,atlas:'life',price,description};
 Object.assign(recipes,{rod:{name:'낚싯대 엮기',station:'forge',need:{timber:3,rope:1},give:{rod:1}},fishmeal:{name:'강물 소금구이',station:'kitchen',need:{riverfish:2,salt:1},give:{ration:2}},lavendertea:{name:'달향 약초차 우리기',station:'kitchen',need:{moonherb:1,honey:1,herb:1},give:{lavendertea:2}},runecompass:{name:'잔광 나침반 조율',station:'forge',need:{ingot:3,moonpearl:1,resin:2},give:{runecompass:1}}});
 gatherNodes.push({id:'redberries',region:'forest',x:40,y:27,item:'wildberry',amount:2,prop:'herbs'},{id:'foresthoney',region:'forest',x:60,y:27,item:'honey',amount:1,prop:'herbs'});
+for(const [id,name,icon,price,description]of [['hoe','낡은 철제 괭이',0,25,'손에 장착한 뒤 E로 파종·수확한다.'],['wateringcan','구리 물뿌리개',1,35,'손에 장착한 뒤 E로 가까운 밭에 물을 준다. 물은 우물에서 채운다.'],['net','린넨 곤충채집망',2,25,'손에 장착한 뒤 E로 가까운 곤충을 관찰·채집한다.']])items[id]={name,icon,atlas:'farming',price,description};
+Object.assign(recipes,{hoe:{name:'괭이 만들기',station:'forge',need:{timber:2,ingot:1},give:{hoe:1}},wateringcan:{name:'물뿌리개 만들기',station:'forge',need:{ingot:1,resin:1},give:{wateringcan:1}},net:{name:'채집망 엮기',station:'forge',need:{timber:1,rope:2},give:{net:1}}});
+
+items.riverfish.name='민물 생선살';items.riverfish.description='보관한 민물고기를 화덕에서 손질한 요리 재료.';items.deepfish.name='바다 생선살';items.deepfish.description='보관한 바닷고기를 화덕에서 손질한 요리 재료.';
