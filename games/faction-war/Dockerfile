@@ -1,6 +1,6 @@
 FROM node:24-alpine
 WORKDIR /app
-COPY --chown=node:node package.json server.js auth.js game.js ./
+COPY --chown=node:node package.json server.js auth.js game.js layout.js ./
 COPY --chown=node:node public ./public
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
