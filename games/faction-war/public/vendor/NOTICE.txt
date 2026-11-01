@@ -1,0 +1,4 @@
+Three.js 0.180.0 — https://threejs.org — MIT license, see THREE-LICENSE.txt.
+The build modules and Reflector originate from the npm three@0.180.0 package.
+Local Reflector changes: relative import path; general inverse-projection oblique clipping and camera flags for orthographic projection.
+Original copyright notices are retained. No application credentials are included.
