@@ -2,6 +2,7 @@
 services:
   - type: web
     name: faction-war-test
+    branch: game/faction-war-free-test
     rootDir: games/faction-war
     runtime: docker
     plan: free
