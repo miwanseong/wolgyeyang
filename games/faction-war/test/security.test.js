@@ -22,6 +22,8 @@ test('private access, cookies, CSRF, payload limits, movement and save secrecy',
  assert.equal((await post('/api/action',{type:'move',dx:1,dy:0},cookie)).status,429);
  assert.equal((await post('/api/action',{type:'move',dx:'1',dy:0},cookie)).status,400);
  assert.equal((await post('/api/action','null',cookie)).status,400);
+ const navigation=await fetch(base+'/',{headers:{'Sec-Fetch-Site':'cross-site','Sec-Fetch-Mode':'navigate'}});assert.equal(navigation.status,200);assert.match(await navigation.text(),/진영전쟁/);
+ assert.equal((await fetch(base+'/api/auth/me',{headers:{'Sec-Fetch-Site':'cross-site'}})).status,403);
  const page=await fetch(base+'/');assert.match(page.headers.get('content-security-policy'),/frame-ancestors 'none'/);assert.equal((await fetch(base+'/data/world.json')).status,404);
  child.kill('SIGTERM');await once(child,'exit');const saved=await readFile(path.join(dir,'world.json'),'utf8');assert(!saved.includes(cookie.split('=')[1]));
  }finally{if(child.exitCode===null){child.kill('SIGTERM');await once(child,'exit');}await rm(dir,{recursive:true,force:true});}

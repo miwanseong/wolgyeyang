@@ -58,7 +58,9 @@ const server=http.createServer({maxHeaderSize:8192,requestTimeout:10000,headersT
  res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
  res.setHeader('X-Frame-Options','DENY');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('Permissions-Policy','camera=(), microphone=(), geolocation=()');
  if(production)res.setHeader('Strict-Transport-Security','max-age=31536000');
- const u=new URL(req.url,'http://local');checkOrigin(req);
+ const u=new URL(req.url,'http://local');
+ // Public document navigation may originate from another site; authenticated APIs may not.
+ if(u.pathname.startsWith('/api/')||!['GET','HEAD'].includes(req.method))checkOrigin(req);
  const ip=req.socket.remoteAddress;limit(ipRates,ip,240,1000);
  if(u.pathname.startsWith('/api/'))res.setHeader('Cache-Control','no-store');
  if(await auth.handle(req,res,u))return;
