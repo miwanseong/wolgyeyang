@@ -13,6 +13,9 @@ services:
         value: production
       - key: HOST
         value: 0.0.0.0
+      # Render terminates public HTTP behind its reverse proxy. Trust only the final hop.
+      - key: TRUST_PROXY_HOPS
+        value: "1"
       - key: DATA_DIR
         value: /app/data
       - key: ADMIN_USERNAME

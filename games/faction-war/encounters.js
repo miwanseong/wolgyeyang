@@ -3,6 +3,7 @@ import {gearStats,wearGear,classBalance} from './equipment.js';import {terrainBl
 export const bossDefinitions=[{id:'boss-rootboar',name:'가시뿌리 멧돼지',kind:'rootboar',region:'forest',x:96,y:72,maxHp:900,damage:20,level:5,lore:'옛 벌목터의 쇠덫이 뿌리와 뒤엉켰다. 부러진 수레가 돌진의 흔적을 남긴다.'},{id:'boss-bellwarden',name:'무너진 종의 파수꾼',kind:'bellwarden',region:'ruins',x:96,y:72,maxHp:1400,damage:25,level:8,lore:'성벽이 무너진 뒤에도 통행 종을 지키는 수문장. 종 아래의 빈 피난 명부는 마지막 행렬에서 멈췄다.'}];
 export function initializeEncounters(world){for(const b of bossDefinitions)if(!world.monsters.some(m=>m.id===b.id))world.monsters.push({...b,hp:b.maxHp,boss:true,homeX:b.x,homeY:b.y,phase:1,nextAttackAt:Date.now()+2500});}
 export function enemyDamage(world,m,p,damage,emit,now=Date.now()){
+ if(p.gmInvincible)return false;
  if(p.dodgeUntil>now){if(now-(p.lastDodgeAt||0)<200){p.perfectUntil=now+700;m.stunUntil=now+700;emit({kind:'perfect',actorId:p.id,region:m.region,x:p.x,y:p.y,targetX:m.x,targetY:m.y});}return false;}
  const dealt=Math.max(1,damage-(classBalance[p.classId]?.defense||0)-gearStats(p).defense);p.hp-=dealt;p.hurtUntil=now+340;p.hitAt=now;p.hitFromX=m.x;p.hitFromY=m.y;wearGear(p,'armor',1.5);const d=Math.hypot(p.x-m.x,p.y-m.y)||1,nx=p.x+(p.x-m.x)/d*.35,ny=p.y+(p.y-m.y)/d*.35;if(!terrainBlocked(p.region,nx,ny)){p.x=nx;p.y=ny;}emit({kind:'enemyHit',actorId:p.id,targetId:p.id,sourceId:m.id,region:m.region,x:m.x,y:m.y,targetX:p.x,targetY:p.y,damage:dealt});downPlayer(p,now);return true;
 }

@@ -1,0 +1,3 @@
+const mime='application/x-faction-slot';
+export function dragEntry(node,entry){node.draggable=true;node.dataset.dragKind=entry.kind;node.dataset.dragId=entry.id;node.addEventListener('dragstart',e=>{e.dataTransfer.setData(mime,JSON.stringify(entry));e.dataTransfer.effectAllowed='copyMove';document.body.classList.add('slot-dragging');});node.addEventListener('dragend',()=>document.body.classList.remove('slot-dragging'));}
+export function readDrag(event){try{const entry=JSON.parse(event.dataTransfer.getData(mime));return entry&&['item','skill','gear'].includes(entry.kind)&&typeof entry.id==='string'?entry:null;}catch{return null;}}
