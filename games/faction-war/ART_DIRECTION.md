@@ -30,3 +30,5 @@ High-quality 8-bit pixel art with a consistent cartoon / cel-shaded aesthetic, d
 - public/assets/panel-pixel.png: 짙은 남색과 오래된 금색의 도트 패널. nine-slice 프레임으로 사용해 모서리와 텍스트가 겹치지 않도록 구성.
 - 두 이미지는 이번 프로젝트용으로 생성한 환경/UI 이미지이며 기존 인물의 공식 디자인을 대체하지 않는다.
 - PC 1440px 및 모바일 390px Chromium에서 이미지 응답, 수평 넘침, 가입·게임 진입·로그아웃을 확인했다. 실제 게임 지도와 캐릭터는 아직 임시 도형이다.
+
+- public/assets/world-sprites.png: 4열×2행 아틀라스. 위 행 검사·마법사·사냥꾼·장인, 아래 행 늑대·해골·집·침엽수. 각 셀을 canvas에서 직접 읽고 픽셀 보간 없이 표시한다. 원작 캐릭터의 최종 외형을 대체하지 않는 임시 모험가/환경 자산이다.
