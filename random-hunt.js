@@ -1,7 +1,7 @@
-import {hauntEligible} from './haunt-causality.js?v=ae58b5091df2';
-import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=ae58b5091df2';
-import {bindWatcher} from './encounters.js?v=ae58b5091df2';
-import {canMove,findPath} from './world.js?v=ae58b5091df2';
+import {hauntEligible} from './haunt-causality.js?v=c1be5b836ac4';
+import {chooseRelayHunter,hollowStage} from './hollow-art.js?v=c1be5b836ac4';
+import {bindWatcher} from './encounters.js?v=c1be5b836ac4';
+import {canMove,findPath} from './world.js?v=c1be5b836ac4';
 export class RandomHunt{
  constructor(random=Math.random){this.random=random;this.reset();}
  reset(s=null){this.state=s;this.delay=45+this.random()*45;this.rest=0;this.wasBusy=false;this.lastKind=null;}

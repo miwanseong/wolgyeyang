@@ -1,4 +1,4 @@
-import {sight} from './world.js?v=ae58b5091df2';
+import {sight} from './world.js?v=c1be5b836ac4';
 export class ThresholdHorror{
  constructor(){this.state=null;this.map=null;this.delay=55;this.rest=0;this.active=null;}
  update(map,s,dt,allowed=true){

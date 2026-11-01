@@ -10,7 +10,7 @@ export function validBody(b){
  const minimum=Math.ceil((b.legs??+b.leg)/2)+(b.arms??+b.arm);return minimum<=2&&(b.captures===undefined||b.captures>=minimum);
 }
 export function bodyState(s){const b=s.body||(s.body={leg:false,arm:false});b.legs??=+b.leg;b.arms??=+b.arm;b.captures??=Math.min(2,b.legs+b.arms);return b;}
-export function loseLimb(s,random=Math.random){const b=bodyState(s);if(b.captures>=2)return{fatal:true};const available=['leg','arm'].filter(k=>b[k+'s']<2),part=available[Math.min(available.length-1,Math.floor(random()*available.length))];if(part==='leg')b.legs=2;else b.arms++;b[part]=true;b.captures++;s.running=false;if(b.arms>=2)s.flashlight=false;return{fatal:false,part,count:b[part+'s']};}
+export function loseLimb(s,random=Math.random){const b=bodyState(s);if(b.captures>=2)return{fatal:true};const available=['leg','arm'].filter(k=>b[k+'s']<2),part=available[Math.min(available.length-1,Math.floor(random()*available.length))];if(part==='leg')b.legs=2;else b.arms++;b[part]=true;b.captures++;s.running=false;if(b.arms>=2){s.flashlight=false;s.flags.lightStowed=true;s.flags.temporaryLighter=false;s.flags.temporaryPhone=false;}return{fatal:false,part,count:b[part+'s']};}
 export function bodyDescription(s){const b=bodyState(s);return[b.leg?'다리를 딛을 수 없다. 팔로 바닥을 밀며 몸을 끈다.':null,b.arms===2?'두 소매가 비었다. 떨어진 빛을 붙잡을 수 없다.':b.arm?(b.leg?'남은 팔로 몸을 끈다. 손전등은 입에 물 수 있다.':'남은 손으로 손전등을 쥔다. 물건을 집을 때는 내려놓아야 한다.'):null].filter(Boolean).join(' / ');}
 export function injuryRow(s){const b=bodyState(s);return b.leg&&b.arm?2:b.leg?0:b.arm?1:-1;}
 export function injuryDirection(d){return d<4?d:d===4||d===5?0:3;}
