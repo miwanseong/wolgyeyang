@@ -1,0 +1,11 @@
+{
+  "initial_public_bytes": 169775118,
+  "current_public_bytes": 117842113,
+  "format": "lossless WebP, stereo BGM MP3 96kbps",
+  "pixel_verification": "45 unchanged atlases verified before deliberate art replacement; four character sheets repainted on 2026-11-02",
+  "excluded_legacy_atlases": [
+    "movement-sprites",
+    "skill-vfx",
+    "npc-sprites"
+  ]
+}

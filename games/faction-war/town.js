@@ -30,3 +30,10 @@ townLandmarks.push(
 export function townAction(p,a){if(a.type!=='inspectPlace')return null;const s=townLandmarks.find(s=>s.id===a.id&&s.region===p.region&&Math.hypot(s.x-p.x,s.y-p.y)<=3);if(!s)throw Error('조사할 장소 가까이 이동하세요.');p.townJournal??=[];if(!p.townJournal.includes(s.id)){p.townJournal.push(s.id);p.xp=(p.xp||0)+3;}return s.name+' — '+s.story;}
 export function marketAccess(p){return ['shop','butcher','bakery'].includes(p.region)||p.region==='village'&&(Math.hypot(p.x-71,p.y-53)<=2.5||townLandmarks.slice(0,6).some(s=>Math.hypot(p.x-s.x,p.y-s.y)<=3));}
 export function marketStock(p){if(p.region==='butcher')return ['meat','salt','leather'];if(p.region==='bakery')return ['wheat','flour','egg','milk','butter','honey'];if(p.region!=='village')return null;const vendor=townLandmarks.slice(0,6).filter(s=>Math.hypot(s.x-p.x,s.y-p.y)<=3).sort((a,b)=>Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y))[0];if(!vendor)return null;return ({'meat-stall':['meat','salt','leather'],'bread-stall':['wheat','flour','egg','milk','butter','honey'],'fish-stall':['riverfish','deepfish','salt','kelp','clam'],'vegetable-stall':['carrot','potato','onion','cabbage','beans','rice','pepper'],'cloth-stall':['leather','rope','raincloak','bedroll'],'soup-counter':['herb','spice','cheese','apple','salt']})[vendor.id]||null;}
+
+townLandmarks.push(
+ {...prop('west-cart',10,55,57,'멈춰 선 상단 수레','폭우로 부러진 차축을 순찰자가 묶어 두었다. 물에 번진 상단 인장이 서쪽 교역로를 가리킨다.',false,2.8,1.5)},
+ {...prop('woodcutters-rest',11,50,66,'벌목꾼의 점심자리','그루터기에 마른 빵 부스러기와 반으로 접힌 천이 남아 있다. 해 질 무렵이면 도끼 주인이 돌아온다.',false,1.6,1.2)},
+ {...prop('old-drill-sign',7,51,86,'폐훈련장 수칙','붉은 기둥 안은 동의한 참가자만 겨루는 곳이다. 쓰러지면 입구로 돌아오고 물건이나 경험치는 잃지 않는다.',false,1.4,1.5)},
+ {...prop('forest-supply',14,19,29,'채집꾼의 보급 천','젖지 않도록 나무 아래 매단 보급품. 리에는 깊은 숲에 들어가기 전에 늘 이곳에서 짐을 다시 묶는다.',false,2,1.4),region:'forest'},
+ {...prop('pasture-memory',12,65,69,'비어 있는 목책','비바람에 색이 바랜 울타리에는 양털이 걸려 있다. 목동은 아직 우물 뚜껑을 매일 닫는다.',false,2,1.2),region:'meadow'});

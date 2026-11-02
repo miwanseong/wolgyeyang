@@ -1,4 +1,5 @@
+import {assetImage} from './assets.js';
 import {fishingMotionRows} from '/asset-layout.js';
-export const fishingMotionImage=new Image();fishingMotionImage.src='/assets/fishing-motion.png';
+export const fishingMotionImage=assetImage('/assets/fishing-motion.webp');
 export function fishingFrame(f,now=Date.now()){const age=now-f.startedAt;if(age<720)return Math.max(0,Math.min(2,Math.floor(age/240)));return f.phase==='bite'?5:f.phase==='fight'?6+Math.floor(now/160)%2:3+Math.floor(now/650)%2;}
 export function drawFishingActor(ctx,index,actor,x,y,w,h){const f=actor.fishingVisual,im=fishingMotionImage;if(!f||!im.naturalWidth||actor.hurtUntil>Date.now())return false;const row=fishingMotionRows[index]*im.height/887,sh=(fishingMotionRows[index+1]-fishingMotionRows[index])*im.height/887,sw=im.width/8,frame=fishingFrame(f);ctx.save();ctx.translate(x,y);if(actor.facing<0)ctx.scale(-1,1);ctx.drawImage(im,frame*sw,row,sw,sh,-w/2,-h,w,h);ctx.restore();return true;}

@@ -1,6 +1,7 @@
+import {assetImage} from './assets.js';
 import {abilities,skillPoints,skillPaths,effectiveAbility} from '/skills.js';
 import {dragEntry} from './drag.js';
-const art=new Image();art.src='/assets/skill-icons.png';
+const art=assetImage('/assets/skill-icons.webp');
 export function skillIcon(id){const c=document.createElement('canvas');c.className='skill-icon';c.width=c.height=64;const i=Object.keys(abilities).indexOf(id),paint=()=>{if(!art.naturalWidth)return;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(art,i%4*art.width/4,Math.floor(i/4)*art.height/4,art.width/4,art.height/4,0,0,64,64);};if(art.complete)paint();else art.addEventListener('load',paint,{once:true});return c;}
 const invoke=(type,data)=>document.dispatchEvent(new CustomEvent('game-action',{detail:{type,...data}}));let stamp='',viewport,board,zoom=1;
 const node=(tag,text)=>{const e=document.createElement(tag);if(text)e.textContent=text;return e;};

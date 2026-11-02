@@ -147,3 +147,31 @@ attack-east/north/south.png는 같은 네 기본 직업의 8프레임 동작을 
 2026-11-02 낚시 동작: fishing-motion.png는 directional-sprites.png와 fishing-poses.png를 직접 참조해 네 기본 직업의 복장/머리/SD 비율을 유지한 32셀 시트다. bobber-sprites.png는 12가지 찌의 정상/입질 24셀, fishing-line-icons.png는 추가 낚싯줄 아이콘 시트다. 투명도를 검증하고 수면에 사각 배경을 얹지 않는다. 원작 NPC 디자인의 대용품이 아니다. 낚시 동작은 우측 기본과 반전이며 전 방향 독립 모션 전체를 제작한 것은 아니다.
 
 2026-11-02 농사 동작: farming-motion.png는 같은 네 기본 직업의 괭이 밭 갈기 32셀이다. asset-layout.js의 실제 행 경계와 발 기준을 사용한다. 괭이 날 끝을 발로 오인해 캐릭터가 뜨지 않도록 바닥 기준은 별도로 고정한다. 일반 NPC나 원작 인물 그림체를 이 신규 모험가 시트로 대체하지 않는다.
+
+## 2026-11-02 — 배포 자산 경량화·생활 대기
+
+배포 PNG는 동일 표시 픽셀/투명도를 보존한 무손실 WebP로 교체했다. 이 문서와 과거 문서의 .png 경로는 이제 같은 이름 .webp를 참조한다. 현재 기본 직업 스타일 기준은 public/assets/directional-sprites.webp다. npc-idle.webp는 기존 변경 주민 8역할을 그 기준의 SD로 다시 그린 4×8 생활 동작 시트이며 원작 캐릭터 대체물이 아니다. 필드와 대화 초상은 같은 시트를 쓴다. player-idle.webp는 기본 4직업의 남쪽 대기/숨쉬기/옷자락/눈깜박임 4×4 시트다. 다른 방향의 대기는 기존 방향 시트에 작은 호흡·바람 변형을 적용하며 전 방향 독립 대기 작화 완료를 뜻하지 않는다.
+
+## 대륙 재구성 — 최신 참고 배경
+
+첨부된 사막 화면은 자연스러운 해안선, 층이 드러난 절벽, 군락 식생, 높은 곳과 낮은 곳의 명도·그림자 차이를 위한 배경 기준이다. 인물의 기존 SD 도트 기준은 유지한다. 새 사막 소품은 `desert-props.webp`와 `atlas-frame.js`의 실제 좌표로 읽는다. 생성 시트가 균등한 칸이라는 가정은 금지한다. 참고 화면과 같은 완성도에 도달했다는 의미는 아니다.
+
+## 최신 우선 교정 — 블루 아카이브 참고 + SD 도트 유지 (2026-11-02)
+
+사용자 지시: 「블루아카이브 아트스타일을 참고하되 도트 스타일은 유지」. 앞선 림버스 중심의 거친 인물 표현 지침과 충돌할 경우 이번 기준을 우선한다. 아래 세부사항은 해당 지시를 제작에 적용하기 위한 해석이며 신규 시안으로 검증한다.
+
+- 캐릭터의 맑고 정돈된 색 면, 읽기 쉬운 셀 음영, 표현력 있는 눈매, 섬세한 의상·소품 구성을 참고한다. 피부와 얼굴을 일괄적으로 어둡고 거칠게 처리하지 않는다. 검은 옷도 원작 색을 유지하면서 재질·주름·밝은 가장자리를 구분한다.
+- 필드 인물은 기존 약 2등신 SD 비율, 점/짧은 선 코, 작은 입, 점눈 허용을 유지한다. 작은 필드 스프라이트에서 읽히는 눈·앞머리·옷 실루엣을 우선하고 대화 초상에도 같은 얼굴과 의상을 사용한다.
+- 픽셀 군집과 계단형 윤곽, 재질당 제한된 2~3단계 셀 음영, 일관된 픽셀 밀도를 유지한다. 부드러운 일러스트를 단순 축소하거나 전체 화면 저해상도 필터로 도트를 대체하지 않는다. 안티앨리어싱·흐릿한 확대를 피한다.
+- 원작 캐릭터 고유 얼굴, 머리·의상 색, 소품과 무기를 보존한다. 블랙의 보라 안쪽 머리·보라 연지·복대, 트와일라잇의 정장과 카드 등 COSTUME_DIRECTION.md의 식별 요소는 그대로 따른다.
+- 작품의 기존 캐릭터·교복·헤일로·총기 장식을 일괄 이식하지 않는다. 사용자 세계관의 중세 판타지와 지정한 오버테크놀로지, 어두운 서사, 지형 참고 이미지를 유지한다.
+- NPC·플레이어·대화 초상을 같은 비율/선/팔레트 규칙으로 검수한다. 원본 참고 → 한 인물의 정면/측면/후면 → 걷기/대기 → 실제 게임 배율 비교 순으로 확장한다. 기존 시트는 새 기준 반영 완료로 간주하지 않는다.
+- 전투 순간의 흑백 묵선·타격 연출은 유지하되 평상시 인물 채색 전체에 강제하지 않는다.
+
+제작용 공통 문장: Original medieval fantasy SD pixel-art character, approximately two heads tall, bright clean anime color design, expressive simplified eyes, tiny dot or short-line nose, carefully designed original costume and accessories, crisp pixel clusters, coherent 2–3-tone cel shading, readable silhouette, consistent native pixel density, stable foot anchors. Preserve the user's original character design. No blurred downscaled illustration, no automatic school uniforms or halos.
+
+이번 변경은 아트 기준의 기록이다. 새 캐릭터 이미지 생성·기존 시트 교체·배포 완료를 뜻하지 않는다.
+
+## 교체 1차 적용 — 2026-11-02
+
+기본 4직업의 directional-sprites.webp(32셀), diagonal-sprites.webp(32셀), player-idle.webp(16셀), 일반 주민 npc-idle.webp(32셀)를 새 참고 기준으로 교체했다. 대화 초상은 동일 주민 시트를 사용한다. 총 112셀의 기존 배치/의상/역할을 유지한 색감·얼굴 교정이다. 전투·농사·낚시 시트와 원작 주요 인물 전체의 새 작화 완료를 뜻하지 않는다. 플레이어 대기 시트 실제 높이 1234px와 UI 초상 추출 좌표를 함께 반영했다.

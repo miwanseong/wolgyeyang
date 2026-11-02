@@ -1,3 +1,4 @@
+import {continentRegions} from './continent.js';
 // Canon names and statements come from the user's supplied world document.
 // Territory ownership, building plans and frontier place names below are game design additions.
 export const nations={yodrin:{name:'요드린 제국',source:'원작',detail:'룬을 새긴 공용 통화 요드를 사용한다. 수도의 화이란 은행이 유통·보관·생산을 맡는다.'},seraph:{name:'세라프 신성국',source:'원작',detail:'대성신 세라프를 모시는 신성국. 이타적인 삶을 권하며 성녀의 결계는 악의를 감지한다.'},haedong:{name:'해동',source:'원작',detail:'은둔한 고수가 많으며 대마법사 신수아의 출신지다.'}};
@@ -5,3 +6,6 @@ export const regionNation={village:'yodrin',forest:'yodrin',ruins:'yodrin',meado
 export const architecture={market:{style:'목조 시장 회랑',wall:'#a08055',roof:'#466c5d',height:1.8,roofKind:'flat',detail:'상단의 녹색 차양과 개방 진열대'},forge:{style:'석조 대장간',wall:'#675e55',roof:'#675350',height:2.2,roofKind:'gable',detail:'화재에 강한 돌벽·높은 굴뚝·화구'},kitchen:{style:'목골 여관',wall:'#d6c49d',roof:'#724a48',height:2.5,roofKind:'gable',detail:'회반죽 벽·노출 목골·돌출 간판'},warehouse:{style:'상단 석조 창고',wall:'#8a8271',roof:'#536272',height:1.8,roofKind:'flat',detail:'낮은 지붕·하역용 이중문'},house:{style:'변경 농가',wall:'#d4c3a1',roof:'#a18a53',height:1.9,roofKind:'hip',detail:'초가지붕·흙회 벽·텃밭 창문'},house2:{style:'산림 통나무집',wall:'#65533b',roof:'#455447',height:1.8,roofKind:'gable',detail:'어두운 통나무·장작 더미·깊은 처마'},clinic:{style:'약초사의 치료소',wall:'#d7d5bc',roof:'#627653',height:2,roofKind:'hip',detail:'밝은 회벽·녹색 지붕·약초 화단'},chapel:{style:'세라프 예배당',wall:'#b5b2a1',roof:'#687b8f',height:3.2,roofKind:'gable',detail:'뾰족 아치·장미창·종탑·룬 성표'},archive:{style:'제국 기록탑',wall:'#95947f',roof:'#56817c',height:2.8,roofKind:'tower',detail:'구리빛 다각 지붕·봉인 기록실·룬 유리'}};
 
 Object.assign(architecture,{butcher:{style:'석조 기단 푸줏간',wall:'#9b8776',roof:'#763e36',height:1.9,roofKind:'gable'},bakery:{style:'회벽 제빵소',wall:'#d1b98c',roof:'#996647',height:2.2,roofKind:'hip'},gatehouse:{style:'성문 석조 수비동',wall:'#8c8b81',roof:'#4a6271',height:3.8,roofKind:'tower'},mudhouse:{style:'흙벽과 기운 초가',wall:'#967653',roof:'#877343',height:1.5,roofKind:'hip'},lanternhouse:{style:'목골 붉은 등불 살롱',wall:'#c7ad91',roof:'#683e48',height:2.5,roofKind:'gable'}});
+
+for(const [id,r]of Object.entries(continentRegions))regionNation[id]=r.nation;
+nations.iseria={name:'북쪽 마왕의 영역',source:'사용자 설정',detail:'이세리아가 소원과 영혼을 거래하는 북쪽 영역. 지역의 세부 지리는 게임용 보충안.'};

@@ -1,6 +1,7 @@
+import {assetImage} from './assets.js';
 import {floatVisuals} from '/fishing-gear.js';
-export const bobberImage=new Image();bobberImage.src='/assets/bobber-sprites.png';
-export const lineIconImage=new Image();lineIconImage.src='/assets/fishing-line-icons.png';
+export const bobberImage=assetImage('/assets/bobber-sprites.webp');
+export const lineIconImage=assetImage('/assets/fishing-line-icons.webp');
 export function bobberFrame(id,dipped=false){return (floatVisuals[id]??0)*2+(dipped?1:0);}
 export function drawBobber(ctx,id,x,y,size,dipped=false){const im=bobberImage;if(!im.naturalWidth)return;const frame=bobberFrame(id,dipped),sx=frame%6*im.width/6,sy=Math.floor(frame/6)*im.height/4;ctx.drawImage(im,sx,sy,im.width/6,im.height/4,x-size/2,y-size*.8,size,size);}
 export function bobberIcon(id){const c=document.createElement('canvas');c.width=c.height=64;c.className='tackle-icon';c.dataset.bobber=id;const paint=()=>{const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;drawBobber(ctx,id,32,51,64);};if(bobberImage.complete)paint();else bobberImage.addEventListener('load',paint,{once:true});return c;}

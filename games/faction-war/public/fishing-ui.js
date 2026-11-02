@@ -1,9 +1,10 @@
+import {assetImage} from './assets.js';
 import {bobberIcon,lineIcon} from './bobber-art.js';
 import {fishingSpot} from '/fishing-water.js';
 import {playSound,fishingReel} from './audio.js';
 import {fishSpecies,fishById,fishName,fishGrades,fishRarities,fishHabitats,fishValue} from '/fish-catalog.js';import {fishingParts,fishingStats} from '/fishing-gear.js';import {fishIcon} from './fish-art.js';
 const $=id=>document.getElementById(id),emit=(type,extra={})=>document.dispatchEvent(new CustomEvent('game-action',{detail:{type,...extra}}));let easedBar=.28,easedFish=.45;let tackleSlot='rod';let player,world,lastSession='',phaseStamp='',held=false,seq=0,heartbeat=0,lastResult=0,bagStamp='',resultFish=null,inputBusy=false;
-const art=new Image();art.src='/assets/fishing-tackle.png';
+const art=assetImage('/assets/fishing-tackle.webp');
 function tackleIcon(id){if(fishingParts[id].atlas==='bobber')return bobberIcon(id);if(fishingParts[id].atlas==='line')return lineIcon(fishingParts[id].icon);const c=document.createElement('canvas');c.width=c.height=64;c.className='tackle-icon';const paint=()=>{const i=fishingParts[id].icon;if(!art.naturalWidth)return;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(art,i%4*art.width/4,Math.floor(i/4)*art.height/4,art.width/4,art.height/4,0,0,64,64);};if(art.complete)paint();else art.addEventListener('load',paint,{once:true});return c;}
 async function input(force=false){const f=player?.fishing;if(!f||f.phase!=='fight'||inputBusy||!force&&performance.now()-heartbeat<180)return;heartbeat=performance.now();inputBusy=true;try{await fetch('/api/action',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'fishInput',session:f.id,seq:++seq,held})});}catch{}finally{inputBusy=false;}}
 function press(on){held=on;const f=player?.fishing;if(on&&f?.phase==='bite')emit('fishHook',{session:f.id});else input(true);}

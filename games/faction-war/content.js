@@ -10,11 +10,15 @@ export const gatherNodes=[...Array.from({length:8},(_,i)=>({id:'wood'+i,region:'
 export const villagers=[
 {id:'merchant',name:'잡화상 베른',role:'시장 거래',x:72,y:54,sprite:0,dialogue:'제국 통화 요드는 브론즈부터 센다네. 씨앗과 소금은 여기서 구하고, 남는 음식은 팔게.',need:{bread:3},reward:{seed:6},gold:25},
 {id:'smith',name:'대장장이 로안',role:'제련·장비',x:79,y:54,sprite:1,dialogue:'광석만 들고 있어서는 칼이 되지 않아. 화덕에서 주괴를 제련해 보게.',need:{ingot:2},reward:{ore:3},gold:40},
-{id:'innkeeper',name:'여관주인 미레느',role:'조리·식량',x:83,y:54,sprite:2,dialogue:'스튜 한 솥이면 원정대도 버티지. 감자와 고기를 가져오면 식사를 나눠 주겠어.',need:{potato:3,meat:1},reward:{stew:2},gold:20},
+{id:'innkeeper',name:'여관주인 미레느',role:'조리·식량',x:85,y:55,sprite:2,dialogue:'스튜 한 솥이면 원정대도 버티지. 감자와 고기를 가져오면 식사를 나눠 주겠어.',need:{potato:3,meat:1},reward:{stew:2},gold:20},
 {id:'farmer',name:'농부 올란',role:'농사',x:68,y:61,sprite:3,dialogue:'밀만 심을 필요는 없어. 씨앗을 골라 당근과 감자도 길러 봐.',need:{carrot:3},reward:{potato_seed:3},gold:25},
-{id:'healer',name:'약초사 세실',role:'치료·물약',x:100,y:87,sprite:4,dialogue:'숲의 약초를 함부로 씹지 마. 달이는 법과 쓰는 양이 중요하지.',need:{herb:4},reward:{potion:2},gold:0},
+{id:'healer',name:'약초사 세실',role:'치료·물약',x:102,y:87,sprite:4,dialogue:'숲의 약초를 함부로 씹지 마. 달이는 법과 쓰는 양이 중요하지.',need:{herb:4},reward:{potion:2},gold:0},
 {id:'archivist',name:'기록관 아델문',role:'세계관 기록',x:136,y:55,sprite:5,dialogue:'기록은 승자의 시선이지 전지적 진실이 아니야. 진영전쟁의 역사도 그렇게 읽어야 해.'},
-{id:'cleric',name:'사제 루시엔',role:'쉼터',x:116,y:71,sprite:6,dialogue:'이곳은 작은 변경 쉼터야. 누군가의 신앙을 보고 그 사람의 전부를 안다고 여기지는 말게.'}];
+{id:'roadwarden',region:'village',name:'순찰자 헤른',role:'서쪽 순찰로',x:58,y:56,sprite:7,dialogue:'부러진 수레는 지난 폭우 때 길을 잃은 상단의 것이야. 숲길의 목재로 바퀴를 고치려 해.',need:{timber:4},reward:{bread:2},gold:30},
+{id:'forager',region:'forest',name:'채집꾼 리에',role:'숲길 야영지',x:18,y:27,sprite:4,dialogue:'풀숲의 꽃은 길에서 볼 때와 가까이 볼 때가 달라. 월광초는 삽으로 뿌리를 보존해서 캐야 해.',need:{herb:3},reward:{salt:2},gold:20},
+{id:'shepherd',region:'meadow',name:'목동 토렌',role:'옛 목초지',x:68,y:70,sprite:3,dialogue:'지금은 양들이 남쪽 능선으로 옮겨 갔지. 빈 울타리와 낡은 우물도 누군가 살았던 자리야.',need:{wheat:3},reward:{cheese:2},gold:25},
+{id:'coastwatch',region:'coast',name:'등대지기 오델',role:'해안 보급소',x:76,y:10,sprite:0,dialogue:'통에 소금을 채워 두면 젖은 장작 옆에서도 생선을 보존할 수 있지. 바다는 장비를 살펴보고 들어가게.'},
+{id:'cleric',name:'사제 루시엔',role:'쉼터',x:114,y:71,sprite:6,dialogue:'이곳은 작은 변경 쉼터야. 누군가의 신앙을 보고 그 사람의 전부를 안다고 여기지는 말게.'}];
 export const canonCharacters=[
 {name:'블랙 디 크라이스',role:'블랙 진영 수장 · 소드마스터',art:'얼굴 도트 방향 확인 / 전신·목 비율 보완 중',detail:'여성, 29세, 179/70. 검은 머리와 보라색 안쪽 머리, 흰 와이셔츠·검은 바지·복대·초커·보라색 연지. 무기 묵혈검. 크라이스류 검술.'},
 {name:'트와일라잇',role:'마법학교 교사 · 과거 용병 조커',art:'원작 참고 확보 / 새 얼굴·전신 미완성',detail:'여성, 26세, 170/62. 노란 머리·머리 위 검은 선글라스·검은 양복·흡연. 고유 마법 카드 뽑기: J 제스트라 에반슨, K 카타르시스 오브 체인, Q 쿼드 세크리파이스, A 에퀴즈 오버도즈.'},

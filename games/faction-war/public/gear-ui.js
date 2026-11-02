@@ -1,14 +1,16 @@
+import {actorFrame} from './atlas-frame.js';
+import {assetImage} from './assets.js';
 import {dragEntry} from './drag.js';
 import {playSound} from './audio.js';
 import {directionRows} from '/asset-layout.js';
 import {rarities,slots,gearBases,gearStats,repairCost,attributes,attributePoints,equipmentStatus} from '/equipment.js';
 const invoke=(type,id)=>document.dispatchEvent(new CustomEvent('game-action',{detail:{type,id}}));
 const el=(tag,text)=>{const n=document.createElement(tag);if(text!==undefined)n.textContent=text;return n;};
-const art=new Image();art.src='/assets/equipment-icons.png';
-const avatar=new Image();avatar.src='/assets/directional-sprites.png';
+const art=assetImage('/assets/equipment-icons.webp');
+const avatar=assetImage('/assets/directional-sprites.webp');
 let player,stamp='',previous=null,feedbackTimer;
 export function gearIcon(base){const c=el('canvas');c.width=c.height=64;c.className='gear-icon';const i=Object.keys(gearBases).indexOf(base),paint=()=>{if(!art.naturalWidth)return;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(art,i%4*art.width/4,Math.floor(i/4)*art.height/2,art.width/4,art.height/2,0,0,64,64);};if(art.complete)paint();else art.addEventListener('load',paint,{once:true});return c;}
-function paintAvatar(){const c=document.getElementById('gear-avatar');if(!c||!player||!avatar.naturalWidth)return;const index=({warrior:0,mage:1,ranger:2,artisan:3})[player.classId]??0,row=directionRows[index],h=directionRows[index+1]-row,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=false;ctx.drawImage(avatar,0,row,avatar.width/8,h,6,8,116,132);}
+function paintAvatar(){const c=document.getElementById('gear-avatar');if(!c||!player||!avatar.naturalWidth)return;const index=({warrior:0,mage:1,ranger:2,artisan:3})[player.classId]??0,row=directionRows[index],h=directionRows[index+1]-row,ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);ctx.imageSmoothingEnabled=false;ctx.drawImage(avatar,...actorFrame(avatar,index,0,directionRows),6,8,116,132);}
 avatar.onload=paintAvatar;
 function setup(){const summary=document.getElementById('gear-summary'),page=summary.closest('.bag-page'),heading=el('div');heading.className='equipment-heading';heading.append(el('h3','현재 착용 장비'));const count=el('span');count.id='equipment-count';heading.append(count);const feedback=el('p');feedback.id='gear-feedback';feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');const loadout=el('section');loadout.className='gear-loadout';loadout.setAttribute('aria-label','현재 장착 중인 장비');const figure=el('figure');figure.className='gear-figure';const c=el('canvas');c.id='gear-avatar';c.width=128;c.height=150;c.setAttribute('aria-label','캐릭터 기본 외형');figure.append(c,el('figcaption','기본 외형'));loadout.append(figure,document.getElementById('gear-slots'));const hint=el('p','기본 장비는 캐릭터 생성 시 자동 장착됩니다. 각 부위의 상태가 실제 적용 여부입니다.');hint.className='gear-help';const bagHeading=el('h3');bagHeading.id='gear-bag-heading';page.prepend(heading,feedback,loadout,hint);document.getElementById('gear-bag').before(bagHeading);}
 function affixText(g){return (g.affixes||[]).map(a=>a.name+' ('+Object.entries(a.stats||{}).map(([k,v])=>({attack:'공격',spell:'주문',defense:'방어',crit:'치명 확률',staminaRegen:'기력 회복',manaRegen:'마나 회복',repairDiscount:'수리 할인'})[k]+' +'+(['crit','repairDiscount'].includes(k)?Math.round(v*100)+'%':v)).join(', ')+')').join(' · ')||'접두 효과 없음';}
