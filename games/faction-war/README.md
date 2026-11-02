@@ -106,3 +106,5 @@ Docker 설정은 제공하지만 이 환경에서 이미지를 빌드·실행 �
 요리: 상단 **요리 수첩**에서 40종의 조리법·해금·식품을 관리합니다. 모닥불에서 생선을 손질하고 소금구이를 만들 수 있습니다. 냄비/팬/주전자와 물·장작을 챙기면 야영 요리가 늘어납니다. 판매/납품은 선택이며 상세 규칙은 [COOKING.md](COOKING.md)를 참고하세요.
 
 최신 UI/운영 규칙: [QUICK_SLOTS.md](QUICK_SLOTS.md), [SKILL_TREE.md](SKILL_TREE.md), [ADMIN_TOOLS.md](ADMIN_TOOLS.md).
+
+화면 배치와 수면 낚시 갱신은 [RPG_UI.md](RPG_UI.md), [FISHING.md](FISHING.md)를 참고한다.

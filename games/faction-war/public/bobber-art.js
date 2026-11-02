@@ -1,0 +1,7 @@
+import {floatVisuals} from '/fishing-gear.js';
+export const bobberImage=new Image();bobberImage.src='/assets/bobber-sprites.png';
+export const lineIconImage=new Image();lineIconImage.src='/assets/fishing-line-icons.png';
+export function bobberFrame(id,dipped=false){return (floatVisuals[id]??0)*2+(dipped?1:0);}
+export function drawBobber(ctx,id,x,y,size,dipped=false){const im=bobberImage;if(!im.naturalWidth)return;const frame=bobberFrame(id,dipped),sx=frame%6*im.width/6,sy=Math.floor(frame/6)*im.height/4;ctx.drawImage(im,sx,sy,im.width/6,im.height/4,x-size/2,y-size*.8,size,size);}
+export function bobberIcon(id){const c=document.createElement('canvas');c.width=c.height=64;c.className='tackle-icon';c.dataset.bobber=id;const paint=()=>{const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;drawBobber(ctx,id,32,51,64);};if(bobberImage.complete)paint();else bobberImage.addEventListener('load',paint,{once:true});return c;}
+export function lineIcon(index){const c=document.createElement('canvas');c.width=c.height=64;c.className='tackle-icon';c.dataset.lineIcon=index;const paint=()=>{if(!lineIconImage.naturalWidth)return;const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.drawImage(lineIconImage,index%4*lineIconImage.width/4,Math.floor(index/4)*lineIconImage.height/2,lineIconImage.width/4,lineIconImage.height/2,0,0,64,64);};if(lineIconImage.complete)paint();else lineIconImage.addEventListener('load',paint,{once:true});return c;}

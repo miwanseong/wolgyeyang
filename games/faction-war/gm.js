@@ -1,3 +1,5 @@
+import {cancelFarming} from './farming.js';
+import {fishingParts,initializeFishingGear} from './fishing-gear.js';
 import {toolMax} from './life.js';
 import {randomUUID} from 'node:crypto';
 import {items} from './content.js';
@@ -13,10 +15,11 @@ const integer=(n,min,max)=>Number.isInteger(n)&&n>=min&&n<=max;
 export function gmAction(world,p,a,emit=()=>{}){if(!p)throw Error('대상 캐릭터가 없습니다.');initializePlayer(p);initializeGear(p);initializeSkills(p);initializeCooking(p);let message;
  switch(a.command){
  case 'grantItem':if(!Object.hasOwn(items,a.item)||!integer(a.count,1,999))throw Error('아이템과 수량 1~999를 확인하세요.');p.inv[a.item]=Math.min(999,(p.inv[a.item]||0)+a.count);syncPantry(p);message=items[a.item].name+' 지급';break;
+ case 'grantTackle':initializeFishingGear(p);if(!Object.hasOwn(fishingParts,a.part))throw Error('알 수 없는 낚시 장비입니다.');if(!p.fishingTackle.owned.includes(a.part))p.fishingTackle.owned.push(a.part);p.fishingTackle.condition[a.part]=100;message=fishingParts[a.part].name+' 지급';break;
  case 'grantGear':if(!Object.hasOwn(gearBases,a.base)||!Object.hasOwn(rarities,a.rarity)||p.gear.length>=60)throw Error('장비·등급 또는 보관 한도를 확인하세요.');p.gear.push(makeGear(randomUUID(),a.base,a.rarity,p.classId));message='장비 생성';break;
- case 'heal':p.hp=p.maxHp;p.stamina=p.mana=p.hunger=p.thirst=p.oxygen=100;p.wounds=0;p.bleedingUntil=p.downUntil=0;p.activity=null;message='체력·자원·부상 회복';break;
+ case 'heal':cancelFarming(world,p);p.hp=p.maxHp;p.stamina=p.mana=p.hunger=p.thirst=p.oxygen=100;p.wounds=0;p.bleedingUntil=p.downUntil=0;p.activity=null;message='체력·자원·부상 회복';break;
  case 'invincible':if(typeof a.enabled!=='boolean')throw Error('무적 상태를 확인하세요.');p.gmInvincible=a.enabled;if(a.enabled){p.hp=p.maxHp;p.downUntil=0;}message='무적 '+(a.enabled?'켜짐':'꺼짐');break;
- case 'teleport':{const r=Object.hasOwn(regions,a.region)?regions[a.region]:null;if(!r||!Number.isFinite(a.x)||!Number.isFinite(a.y)||a.x<1||a.y<2||a.x>=r.width-1||a.y>=r.height-1||terrainBlocked(a.region,a.x,a.y))throw Error('통행 가능한 좌표를 지정하세요.');cancelAttack(p);p.region=a.region;p.x=a.x;p.y=a.y;p.activity=null;p.charging=null;p.fishing=null;p.cooking.job=p.cooking.eating=null;p.movingUntil=0;message='캐릭터 이동';break;}
+ case 'teleport':{const r=Object.hasOwn(regions,a.region)?regions[a.region]:null;if(!r||!Number.isFinite(a.x)||!Number.isFinite(a.y)||a.x<1||a.y<2||a.x>=r.width-1||a.y>=r.height-1||terrainBlocked(a.region,a.x,a.y))throw Error('통행 가능한 좌표를 지정하세요.');cancelAttack(p);cancelFarming(world,p);p.region=a.region;p.x=a.x;p.y=a.y;p.activity=null;p.charging=null;p.fishing=null;p.cooking.job=p.cooking.eating=null;p.movingUntil=0;message='캐릭터 이동';break;}
  case 'level':if(!integer(a.level,1,50)||a.level<p.level)throw Error('현재 레벨 이상 1~50으로 설정하세요.');p.level=a.level;p.totalXp=p.xp=30*(a.level-1)**2;emit({kind:'levelup',actorId:p.id,region:p.region,x:p.x,y:p.y,targetX:p.x,targetY:p.y,level:p.level});message='레벨 설정';break;
  case 'learnSkills':if(!p.classId)throw Error('직업을 먼저 선택하세요.');for(const [id,s]of Object.entries(abilities))if(s.classId===p.classId)p.learnedSkills[id]=3;p.skill=true;message='직업 기술 최대 등급 해금';break;
  case 'unlockRecipes':for(const id of Object.keys(cookingRecipes)){if(!p.cooking.known.includes(id))p.cooking.known.push(id);if(!p.cooking.seen.includes(id))p.cooking.seen.push(id);}message='요리법 해금';break;
