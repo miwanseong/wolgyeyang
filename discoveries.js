@@ -1,6 +1,6 @@
-import {achievementBadge,browserAchievementLedger} from './achievements.js?v=108a1c56aefd';
-import {collectMemento,collectedMementos,MEMENTOS} from './mementos.js?v=108a1c56aefd';
-import {pickupBlocked} from './body.js?v=108a1c56aefd';
+import {achievementBadge,browserAchievementLedger} from './achievements.js?v=1d9826df86db';
+import {collectMemento,collectedMementos,MEMENTOS} from './mementos.js?v=1d9826df86db';
+import {pickupBlocked} from './body.js?v=1d9826df86db';
 export const GOALS=[
  {id:'homeMemory',chapter:1,title:'사건 전의 하루',description:'아파트에 남은 일상 세 조각을 따로 모았다.',test:s=>['memoryMeal','memoryOrange','memoryStitch'].every(id=>s.bag.includes(id))},
  {id:'backOfWall',chapter:1,title:'벽의 반대편',description:'막힌 출입구를 통과하지 않고 그 반대편의 기록을 찾았다.',secret:true,test:s=>!!s.flags.shadowRoomFinished},

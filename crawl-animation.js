@@ -1,4 +1,4 @@
-import{bodyState,injuryDirection}from'./body.js?v=108a1c56aefd';
+import{bodyState,injuryDirection}from'./body.js?v=1d9826df86db';
 // The front head is 198 source pixels wide versus 45 in the standing atlas.
 // At .074 it draws at14.65 world px, matching standing45*61/178=15.42.
 // One uniform scale preserves the artwork's proportions throughout the cycle.

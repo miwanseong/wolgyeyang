@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=108a1c56aefd';
+import {pickupBlocked} from './body.js?v=1d9826df86db';
 
 const remember=(s,id,text)=>{if(!s.notes.some(n=>n.id===id))s.notes.push({id,text});};
 export const SHADOW_ITEMS={

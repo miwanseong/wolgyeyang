@@ -39,3 +39,6 @@ Validation: `node game/game.test.mjs` and `node game/story-route.test.mjs`. Brow
 Crawl sprites share a uniform .074 native-pixel scale: the measured198px front head renders at14.65 world pixels, compared to15.42 for the45px head in the standing178px crop. Floor contact stays at y+5; shadows and temporary-light hand offsets use the smaller geometry. Source art and the distance-driven arm cycle are unchanged.
 
 Achievements use seven distinct vector badges, queued bottom-right unlock cards, locked/earned library cards and a completion meter. Unlocks are stored separately from save slots so rolling back a save does not repeat a notification. Previously earned saved flags import silently. Secret badge details remain hidden until earned. Notifications do not intercept mouse/touch input and respect reduced motion. The browser ledger is local to this browser; this is an in-game presentation, not a Steam SDK integration.
+
+## Outdoor wall material
+Outdoor opaque boundary cells render through the same orthogonal masonry wall geometry as service walls. The former dark-green line grid is removed. The entire4×4 wall atlas is cached at128×128 in grayscale, retaining real joints and texture variations instead of repeating a tiny32px source corner. Map cells, collision, door placement and game progress are unchanged.

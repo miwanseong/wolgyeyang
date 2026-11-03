@@ -1,50 +1,50 @@
-import {AchievementNotifications} from './achievements.js?v=108a1c56aefd';
-import {checkGoals,secretDiscovery,renderDiscoveries,GOALS} from './discoveries.js?v=108a1c56aefd';
-import {conversationBeat} from './conversation-flow.js?v=108a1c56aefd';
-import {dialoguePages,dialogueMode} from './dialogue.js?v=108a1c56aefd';
-import {ContactPanel,contactRequirements} from './contact-test.js?v=108a1c56aefd';
-import {nextShadowBeat,shadowObjective,shadowAction,finishShadowRoom,verifyShadowRecord,completeRelayClosure,relayClosureReady} from './shadow-route.js?v=108a1c56aefd';
-import {planWasherRecoil,recoilPoint,washerLanding} from './washer-reaction.js?v=108a1c56aefd';
-import {ThreadWrap,threadCount,dialogGlyphs} from './play-tools.js?v=108a1c56aefd';
-import {callFor} from './phone-calls.js?v=108a1c56aefd';
-import {assistResident} from './npc-threat.js?v=108a1c56aefd';
-import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective,tickWasher,canReleaseWasher} from './exploration.js?v=108a1c56aefd';
-import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=108a1c56aefd';
-import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=108a1c56aefd';
-import {ensureRun,recordDeathReturn} from './return-memory.js?v=108a1c56aefd';
-import {ThresholdHorror} from './threshold-horror.js?v=108a1c56aefd';
-import {MEMENTOS,MEMENTO_MONOLOGUES,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=108a1c56aefd';
-import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=108a1c56aefd';
-import {acquireRelayMap} from './chapter.js?v=108a1c56aefd';
-import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=108a1c56aefd';
-import {advanceDistortion} from './distortion.js?v=108a1c56aefd';
-import {hollowStage} from './hollow-art.js?v=108a1c56aefd';
-import {isRelayGhost} from './relay-ghosts.js?v=108a1c56aefd';
-import {collectRecovery,discoverThread} from './body.js?v=108a1c56aefd';
-import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=108a1c56aefd';
-import {MirrorView} from './mirror.js?v=108a1c56aefd';
-import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=108a1c56aefd';
-import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem,pickupBlocked,stowLight,toggleLightPower} from './body.js?v=108a1c56aefd';
-import {RandomHunt} from './random-hunt.js?v=108a1c56aefd';
-import {RoomHaunts,rememberHide} from './haunting.js?v=108a1c56aefd';
-import {travelSound} from './audio.js?v=108a1c56aefd';
-import {footContacts} from './gait.js?v=108a1c56aefd';
-import {Inventory,itemIcon,itemDescription} from './inventory.js?v=108a1c56aefd';
-import {ReasoningPanel,comparisonView} from './reasoning.js?v=108a1c56aefd';
-import {inPuddle,witnessesEntry} from './facility.js?v=108a1c56aefd';
-import {sanity,strain,Hallucinations} from './mental.js?v=108a1c56aefd';
-import {Atmosphere} from './atmosphere.js?v=108a1c56aefd';
-import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,checkRewards,resolveCheck,checkText,investigationState} from './investigation.js?v=108a1c56aefd';
-import {Crowd} from './crowd.js?v=108a1c56aefd';
-import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=108a1c56aefd';
-import { PuzzlePanel } from './puzzles.js?v=108a1c56aefd';
-import { CaptureAnimation, checkpoints } from './capture.js?v=108a1c56aefd';
-import { STORY, CINEMATICS, ORIGINALS, canSurrender,canSeekOriginal } from "./story.js?v=108a1c56aefd";
-import { Scene, facingDirection } from "./scene.js?v=108a1c56aefd";
-import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=108a1c56aefd";
-import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=108a1c56aefd";
-import { enterChapterTwo,arrivalBodyLine, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=108a1c56aefd";
-import { AudioDirector, TRACKS } from "./audio.js?v=108a1c56aefd";
+import {AchievementNotifications} from './achievements.js?v=1d9826df86db';
+import {checkGoals,secretDiscovery,renderDiscoveries,GOALS} from './discoveries.js?v=1d9826df86db';
+import {conversationBeat} from './conversation-flow.js?v=1d9826df86db';
+import {dialoguePages,dialogueMode} from './dialogue.js?v=1d9826df86db';
+import {ContactPanel,contactRequirements} from './contact-test.js?v=1d9826df86db';
+import {nextShadowBeat,shadowObjective,shadowAction,finishShadowRoom,verifyShadowRecord,completeRelayClosure,relayClosureReady} from './shadow-route.js?v=1d9826df86db';
+import {planWasherRecoil,recoilPoint,washerLanding} from './washer-reaction.js?v=1d9826df86db';
+import {ThreadWrap,threadCount,dialogGlyphs} from './play-tools.js?v=1d9826df86db';
+import {callFor} from './phone-calls.js?v=1d9826df86db';
+import {assistResident} from './npc-threat.js?v=1d9826df86db';
+import {prepareExploration,explorationGate,explorationAction,explorationBeat,explorationObjective,tickWasher,canReleaseWasher} from './exploration.js?v=1d9826df86db';
+import {learnFamilyBinding,noteManifestation} from './haunt-causality.js?v=1d9826df86db';
+import {prepareStoryFlow,nextStoryBeat,chooseStormResponse,storyExitBlocked,storyAction,replaceWetLight,useEmergencyLight} from './story-flow.js?v=1d9826df86db';
+import {ensureRun,recordDeathReturn} from './return-memory.js?v=1d9826df86db';
+import {ThresholdHorror} from './threshold-horror.js?v=1d9826df86db';
+import {MEMENTOS,MEMENTO_MONOLOGUES,collectMemento,collectedMementos,claimMementoRewards} from './mementos.js?v=1d9826df86db';
+import {chooseRecordRoute,beginLockEvent,tickLockEvent,releaseLock,TRAP_DOORS,routeFilm} from './route-events.js?v=1d9826df86db';
+import {acquireRelayMap} from './chapter.js?v=1d9826df86db';
+import {npcCorruption,startNpcScream,FEAR_LINES,protagonistReaction,noticeNpc} from './resident-corruption.js?v=1d9826df86db';
+import {advanceDistortion} from './distortion.js?v=1d9826df86db';
+import {hollowStage} from './hollow-art.js?v=1d9826df86db';
+import {isRelayGhost} from './relay-ghosts.js?v=1d9826df86db';
+import {collectRecovery,discoverThread} from './body.js?v=1d9826df86db';
+import {ArrivalScene,ROSTER,ROSTER_FOOT,routeGate,canPreserve,firstListening} from './chapter1-route.js?v=1d9826df86db';
+import {MirrorView} from './mirror.js?v=1d9826df86db';
+import {mirrorVisit,canUnseal104,followsThroughExit} from './encounters.js?v=1d9826df86db';
+import {bodyState,bodyDescription,captureConsequence,recoverLimb,canHoldLight,lowerLightForPickup,isRecoveryItem,pickupBlocked,stowLight,toggleLightPower} from './body.js?v=1d9826df86db';
+import {RandomHunt} from './random-hunt.js?v=1d9826df86db';
+import {RoomHaunts,rememberHide} from './haunting.js?v=1d9826df86db';
+import {travelSound} from './audio.js?v=1d9826df86db';
+import {footContacts} from './gait.js?v=1d9826df86db';
+import {Inventory,itemIcon,itemDescription} from './inventory.js?v=1d9826df86db';
+import {ReasoningPanel,comparisonView} from './reasoning.js?v=1d9826df86db';
+import {inPuddle,witnessesEntry} from './facility.js?v=1d9826df86db';
+import {sanity,strain,Hallucinations} from './mental.js?v=1d9826df86db';
+import {Atmosphere} from './atmosphere.js?v=1d9826df86db';
+import {CHARACTER,EQUIPMENT,equip,CHECKS,checkPreview,checkRewards,resolveCheck,checkText,investigationState} from './investigation.js?v=1d9826df86db';
+import {Crowd} from './crowd.js?v=1d9826df86db';
+import {FOLLOW_UP,RESIDENT_QUESTIONS,residentQuestions,residentActions,Residents,residentDialogue,residentExpression} from './residents.js?v=1d9826df86db';
+import { PuzzlePanel } from './puzzles.js?v=1d9826df86db';
+import { CaptureAnimation, checkpoints } from './capture.js?v=1d9826df86db';
+import { STORY, CINEMATICS, ORIGINALS, canSurrender,canSeekOriginal } from "./story.js?v=1d9826df86db";
+import { Scene, facingDirection } from "./scene.js?v=1d9826df86db";
+import { MAPS, sight, canMove, worldFor, nearestObject, ECHO_ZONES, findPath } from "./world.js?v=1d9826df86db";
+import { locomotion, Pursuer, StillnessHaunt, ProgressHaunt } from "./mechanics.js?v=1d9826df86db";
+import { enterChapterTwo,arrivalBodyLine, relayObjective, relayAction, migrateStorySave } from "./chapter.js?v=1d9826df86db";
+import { AudioDirector, TRACKS } from "./audio.js?v=1d9826df86db";
 import {
   initial,
   ITEMS,
@@ -56,7 +56,7 @@ import {
   canRepair,
   collectFuse,
   finish,
-} from "./state.js?v=108a1c56aefd";
+} from "./state.js?v=1d9826df86db";
 const $ = (id) => document.getElementById(id),
   canvas = $("world");
 let state = initial(),
@@ -206,7 +206,7 @@ function say(speaker, text, actions = [["계속", closeDialog]]) {
   $("speaker").textContent = speaker;
   const person=scene.npcs.find(n=>!n.ambient&&n.name===speaker),face=$("npc-portrait");
   $("portrait").hidden = speaker !== "서하";face.hidden=!person;
-  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=108a1c56aefd')":"url('assets/resident-portraits.png?v=108a1c56aefd')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
+  if(person){const corruption=npcCorruption(state),expression=corruption||residentExpression(state,person);face.style.backgroundImage=corruption?"url('assets/resident-corruption.png?v=1d9826df86db')":"url('assets/resident-portraits.png?v=1d9826df86db')";face.dataset.corruption=corruption;face.style.backgroundSize='400% 300%';face.style.backgroundPosition=`${expression*100/3}% ${person.column*50}%`;face.setAttribute('aria-label',person.name+' · '+(corruption?['','비명과 불안','얼굴 번짐','괴수화'][corruption]:['평상','경계','불안','후회'][expression]));face.dataset.expression=expression;face.dataset.person=person.id;}
   dialogPageList=actions.length===0?[text]:dialoguePages(text);dialogPageIndex=0;dialogFinalActions=actions;
   $('dialog').hidden=false;showDialoguePage();
   updateSound();
@@ -1081,7 +1081,7 @@ function showEvent(kind, title, caption, after = () => {}) {
   if (eventActive) return;
   eventActive = true; keys.clear(); state.running = false;
   const screen = $("event-cg");
-  $("event-image").src = {capture: "assets/event-capture.png?v=108a1c56aefd", memory: "assets/event-memory.png?v=108a1c56aefd"}[kind];
+  $("event-image").src = {capture: "assets/event-capture.png?v=1d9826df86db", memory: "assets/event-memory.png?v=1d9826df86db"}[kind];
   $("event-image").alt = kind === "capture" ? "어두운 복도에서 정우의 그림자에게 붙잡힌 서하" : "풀려 나온 카세트테이프와 혼자 남은 서하의 기억";
   $("event-title").textContent = title; $("event-caption").textContent = caption;
   screen.hidden = false;

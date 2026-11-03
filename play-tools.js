@@ -1,5 +1,5 @@
-import {MEMENTOS} from './mementos.js?v=108a1c56aefd';
-import {bodyState,isRecoveryItem,pickupBlocked,recoverLimb,canHoldLight} from './body.js?v=108a1c56aefd';
+import {MEMENTOS} from './mementos.js?v=1d9826df86db';
+import {bodyState,isRecoveryItem,pickupBlocked,recoverLimb,canHoldLight} from './body.js?v=1d9826df86db';
 export const threadCount=s=>s.bag.filter(isRecoveryItem).length;
 export const itemGroup=id=>isRecoveryItem(id)||['lighter','flashlight','spareLight'].includes(id)?'usable':Object.hasOwn(MEMENTOS,id)?'collectible':'quest';
 const heldDuringWrap=s=>canHoldLight(s)&&(s.bag.includes('flashlight')&&!s.flags.lightStowed||s.flags.temporaryLighter||s.flags.temporaryPhone);

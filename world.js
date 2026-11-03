@@ -1,10 +1,10 @@
-import {addShadowSpaces} from './shadow-spaces.js?v=108a1c56aefd';
-import {addExploration} from './exploration.js?v=108a1c56aefd';
-import {addStorySpaces} from './story-spaces.js?v=108a1c56aefd';
-import {MEMENTOS} from './mementos.js?v=108a1c56aefd';
-import {applyArchitecture} from './architecture.js?v=108a1c56aefd';
-import { STORY } from "./story.js?v=108a1c56aefd";
-import { addRelayChapter } from "./chapter-world.js?v=108a1c56aefd";
+import {addShadowSpaces} from './shadow-spaces.js?v=1d9826df86db';
+import {addExploration} from './exploration.js?v=1d9826df86db';
+import {addStorySpaces} from './story-spaces.js?v=1d9826df86db';
+import {MEMENTOS} from './mementos.js?v=1d9826df86db';
+import {applyArchitecture} from './architecture.js?v=1d9826df86db';
+import { STORY } from "./story.js?v=1d9826df86db";
+import { addRelayChapter } from "./chapter-world.js?v=1d9826df86db";
 export const TILE = 32;
 const blank = (w, h) => Array.from({ length: h }, () => Array(w).fill(0));
 function map(id, name, w, h, floor, rects) {

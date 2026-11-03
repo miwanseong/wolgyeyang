@@ -1,4 +1,4 @@
-import {lowerLightForPickup,pickupBlocked} from './body.js?v=108a1c56aefd';
+import {lowerLightForPickup,pickupBlocked} from './body.js?v=1d9826df86db';
 export const MEMENTOS={
  memoryLetter:{name:'보내지 못한 편지',map:'apartment',object:'bedroom-frame',hidden:true,text:'다음 쉬는 날, 언니가 고른 식당에 가자고 쓰다 만 편지. 사건을 설명하려 남긴 문서가 아니라 끝내 보내지 못한 평범한 약속이다.'},
  memoryRoomTone:{name:'일상 방송의 여백',map:'relayQuiet',object:'quiet-personal-drawer',text:'본 통화 원본과 다른 주민 안내 연습용 메모. 녹음 마지막에 서윤이 웃으며 「언니가 식당 고르면 다시 녹음」이라고 말했다고 적혀 있다. 구조 요청의 증거가 아닌 일상의 기록이다.'},
