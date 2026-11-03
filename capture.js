@@ -1,7 +1,7 @@
-import {isRelayGhost,RELAY_POSES} from './relay-ghosts.js?v=faf82fb8c86d';
-import {WATCHER_POSES} from './watcher-art.js?v=faf82fb8c86d';
-import {HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=faf82fb8c86d';
-import { restore } from './state.js?v=faf82fb8c86d';
+import {isRelayGhost,RELAY_POSES} from './relay-ghosts.js?v=108a1c56aefd';
+import {WATCHER_POSES} from './watcher-art.js?v=108a1c56aefd';
+import {HOLLOW_POSES,drawEyeCluster} from './hollow-art.js?v=108a1c56aefd';
+import { restore } from './state.js?v=108a1c56aefd';
 
 // Validate before ranking: a damaged newer slot must not hide a usable checkpoint.
 export function checkpoints(read) {
@@ -25,11 +25,11 @@ export function capturePose(seconds) {
 export class CaptureAnimation {
   constructor(canvas){
     this.canvas=canvas;this.ctx=canvas.getContext('2d');this.time=0;
-    this.head=new Image();this.head.src='assets/rolling-head.png?v=faf82fb8c86d';
-    this.image=new Image();this.image.src='assets/capture-sequence.png?v=faf82fb8c86d';
-    this.relay=new Image();this.relay.src='assets/relay-ghosts.png?v=faf82fb8c86d';
-    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=faf82fb8c86d';
-    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=faf82fb8c86d';this.ready=Promise.all([this.head.decode().catch(()=>{}),this.relay.decode().catch(()=>{}),this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
+    this.head=new Image();this.head.src='assets/rolling-head.png?v=108a1c56aefd';
+    this.image=new Image();this.image.src='assets/capture-sequence.png?v=108a1c56aefd';
+    this.relay=new Image();this.relay.src='assets/relay-ghosts.png?v=108a1c56aefd';
+    this.watcher=new Image();this.watcher.src='assets/watcher-sprites.png?v=108a1c56aefd';
+    this.hollow=new Image();this.hollow.src='assets/hollow-hunter.png?v=108a1c56aefd';this.ready=Promise.all([this.head.decode().catch(()=>{}),this.relay.decode().catch(()=>{}),this.image.decode().catch(()=>{}),this.hollow.decode().catch(()=>{}),this.watcher.decode().catch(()=>{})]);
   }
   reset(kind="jeongwoo",stage=0){this.time=0;this.kind=kind;this.stage=stage;}
   draw(dt,reduced=false){

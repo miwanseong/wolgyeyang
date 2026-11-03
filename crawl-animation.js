@@ -1,5 +1,9 @@
-import{bodyState,injuryDirection}from'./body.js?v=faf82fb8c86d';
-export const CRAWL_SCALE=.132,CRAWL_STRIDE=42;
+import{bodyState,injuryDirection}from'./body.js?v=108a1c56aefd';
+// The front head is 198 source pixels wide versus 45 in the standing atlas.
+// At .074 it draws at14.65 world px, matching standing45*61/178=15.42.
+// One uniform scale preserves the artwork's proportions throughout the cycle.
+export const CRAWL_SCALE=.074,CRAWL_STRIDE=42;
+export function crawlShadow(direction){const side=[1,2].includes(injuryDirection(direction));return{rx:side?13.5:10.5,ry:2.2};}
 export const ARM_CRAWL_RECTS=[[[38,28,307,240],[428,23,299,231],[795,25,314,246],[1194,25,305,229]],[[13,198,371,237],[411,197,357,244],[768,206,384,231],[1169,196,355,243]],[[27,623,357,239],[414,619,354,245],[768,638,384,224],[1152,619,334,243]],[[20,753,298,237],[431,753,275,238],[806,753,313,248],[1203,753,297,238]]];
 export const SINGLE_CRAWL_RECTS=[[[47,30,291,238],[430,25,285,229],[813,28,292,242],[1198,28,290,227]],[[14,273,348,220],[441,273,293,221],[778,274,364,219],[1219,274,287,225]],[[34,505,350,227],[422,505,291,217],[790,507,362,228],[1152,507,332,222]],[[22,737,292,221],[444,739,271,222],[814,739,330,222],[1213,740,265,221]]];
 const MOUTHS=[[[189,177],[569,177],[956,177],[1336,177]],[[98,341],[474,342],[854,347],[1218,340]],[[327,770],[693,773],[1104,785],[1468,773]],[[185,840],[569,840],[957,840],[1338,840]]];

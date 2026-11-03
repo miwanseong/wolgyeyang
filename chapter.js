@@ -1,11 +1,11 @@
-import {fullExportReady,relayEndingId,verifyShadowRecord} from './shadow-route.js?v=faf82fb8c86d';
-import {prepareExploration,explorationObjective} from './exploration.js?v=faf82fb8c86d';
-import {learnFamilyBinding} from './haunt-causality.js?v=faf82fb8c86d';
-import {prepareStoryFlow,storyObjective} from './story-flow.js?v=faf82fb8c86d';
-import {bodyState,pickupBlocked} from './body.js?v=faf82fb8c86d';
-import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=faf82fb8c86d";
-import { MAPS, sight, worldFor } from "./world.js?v=faf82fb8c86d";
-import { take, note } from "./state.js?v=faf82fb8c86d";
+import {fullExportReady,relayEndingId,verifyShadowRecord} from './shadow-route.js?v=108a1c56aefd';
+import {prepareExploration,explorationObjective} from './exploration.js?v=108a1c56aefd';
+import {learnFamilyBinding} from './haunt-causality.js?v=108a1c56aefd';
+import {prepareStoryFlow,storyObjective} from './story-flow.js?v=108a1c56aefd';
+import {bodyState,pickupBlocked} from './body.js?v=108a1c56aefd';
+import { hasOriginals,canSeekOriginal, CINEMATICS, STORY } from "./story.js?v=108a1c56aefd";
+import { MAPS, sight, worldFor } from "./world.js?v=108a1c56aefd";
+import { take, note } from "./state.js?v=108a1c56aefd";
 export const RELAY_MAPS=['relayYard','relayEntry','relayArchive','relayPlant','relaySignal','relayDrain'];
 export function migrateStorySave(s){
  if(!s.flags.chapter2&&s.ending==='return'&&!canSeekOriginal(s)){s.ending=null;s.flags.denial=false;if(!s.notes.some(n=>n.id==='104-route-needed'))s.notes.push({id:'104-route-needed',text:'원격 기록을 확인하러 가기 전에104호 점검 사진 원본부터 확보한다. 녹음만 제출하고 진술하는 경로는 열려 있다.'});}

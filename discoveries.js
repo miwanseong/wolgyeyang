@@ -1,5 +1,6 @@
-import {collectMemento,collectedMementos,MEMENTOS} from './mementos.js?v=faf82fb8c86d';
-import {pickupBlocked} from './body.js?v=faf82fb8c86d';
+import {achievementBadge,browserAchievementLedger} from './achievements.js?v=108a1c56aefd';
+import {collectMemento,collectedMementos,MEMENTOS} from './mementos.js?v=108a1c56aefd';
+import {pickupBlocked} from './body.js?v=108a1c56aefd';
 export const GOALS=[
  {id:'homeMemory',chapter:1,title:'사건 전의 하루',description:'아파트에 남은 일상 세 조각을 따로 모았다.',test:s=>['memoryMeal','memoryOrange','memoryStitch'].every(id=>s.bag.includes(id))},
  {id:'backOfWall',chapter:1,title:'벽의 반대편',description:'막힌 출입구를 통과하지 않고 그 반대편의 기록을 찾았다.',secret:true,test:s=>!!s.flags.shadowRoomFinished},
@@ -25,8 +26,9 @@ export function discoveryEnding(s){
  return['다음 쉬는 날','증거와 별도로 접어 둔 편지와 일상 녹음은 내게 돌아왔다.\n원고 끝에는 「언니가 가게를 고르면 다시 녹음」이라고 적혀 있었다. 내일의 약속을 끝내 지키지는 못했다.\n조사를 마친 날, 쓰다 만 편지의 식당에 혼자 갔다. 전화기를 탁자 위에 놓고 마지막까지 밥을 먹었다.',''];
 }
 export function renderDiscoveries(root,s){
- checkGoals(s);root.replaceChildren();const heading=document.createElement('h3');heading.textContent='남겨진 일상 · '+collectedMementos(s).length+'/'+Object.keys(MEMENTOS).length;root.append(heading);
+ const ledger=browserAchievementLedger();ledger.importState(s,GOALS);root.replaceChildren();const heading=document.createElement('h3');heading.textContent='남겨진 일상 · '+collectedMementos(s).length+'/'+Object.keys(MEMENTOS).length;root.append(heading);
+ const visible=GOALS.filter(g=>s.flags.chapter2||g.chapter===1),completed=visible.filter(g=>s.flags['goal_'+g.id]||ledger.has(g.id)).length,summary=document.createElement('div');summary.className='achievement-summary';const count=document.createElement('strong');count.textContent='도전과제 '+completed+' / '+visible.length;const progress=document.createElement('progress');progress.max=visible.length;progress.value=completed;progress.setAttribute('aria-label','도전과제 달성 진행도');summary.append(count,progress);root.append(summary);
  const intro=document.createElement('p');intro.textContent='사건의 증거와 따로 모아 둔 물건들. 아래 목표는 필수 진행과 무관하다. 숨은 기록의 내용은 찾은 뒤에만 남는다.';root.append(intro);
- for(const chapter of(s.flags.chapter2?[1,2]:[1])){const h=document.createElement('h4');h.textContent=chapter+'챕터 · 발견 기록';root.append(h);for(const g of GOALS.filter(g=>g.chapter===chapter)){const found=!!s.flags['goal_'+g.id],a=document.createElement('article');a.className='discovery-goal';a.dataset.completed=String(found);const title=document.createElement('strong');title.textContent=(found?'✓ ':'◇ ')+(g.secret&&!found?'발견하지 못한 기록':g.title);const p=document.createElement('p');p.textContent=g.secret&&!found?'—':g.description;a.append(title,p);root.append(a);}}
+ for(const chapter of(s.flags.chapter2?[1,2]:[1])){const h=document.createElement('h4');h.textContent=chapter+'챕터 · 발견 기록';root.append(h);for(const g of GOALS.filter(g=>g.chapter===chapter)){const found=!!s.flags['goal_'+g.id]||ledger.has(g.id),a=document.createElement('article');a.className='discovery-goal';a.dataset.completed=String(found);const title=document.createElement('strong');title.textContent=g.secret&&!found?'숨겨진 도전과제':g.title;const p=document.createElement('p');p.textContent=g.secret&&!found?'발견하면 기록이 드러납니다.':g.description;const copy=document.createElement('div');copy.className='achievement-goal-copy';const status=document.createElement('small');status.className='achievement-goal-status';const at=ledger.unlocked[g.id];status.textContent=found?'달성'+(at?' · '+new Intl.DateTimeFormat('ko-KR',{month:'short',day:'numeric',timeZone:'Asia/Seoul'}).format(new Date(at)):''):'잠김';copy.append(title,p,status);a.append(achievementBadge(g,found),copy);root.append(a);}}
  const rewards=document.createElement('p');rewards.textContent='일상 세 조각과 여섯 조각을 모으면 매듭실을 한 타래씩 얻는다. 찾은 물건은 소지품의 수집품 칸에 보관한다. 모아 둔 일상은 사건 기록과 다른 방식으로 마지막에 남는다.';root.append(rewards);
 }

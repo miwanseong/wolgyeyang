@@ -1,11 +1,11 @@
-import {SHADOW_ITEMS} from './shadow-route.js?v=faf82fb8c86d';
-import {MEMENTOS} from './mementos.js?v=faf82fb8c86d';
-import {canPreserve} from './chapter1-route.js?v=faf82fb8c86d';
-import {bodyState,validBody,pickupBlocked} from './body.js?v=faf82fb8c86d';
-import {validInvestigation} from './investigation.js?v=faf82fb8c86d';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=faf82fb8c86d';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=faf82fb8c86d";
-import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=faf82fb8c86d";
+import {SHADOW_ITEMS} from './shadow-route.js?v=108a1c56aefd';
+import {MEMENTOS} from './mementos.js?v=108a1c56aefd';
+import {canPreserve} from './chapter1-route.js?v=108a1c56aefd';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=108a1c56aefd';
+import {validInvestigation} from './investigation.js?v=108a1c56aefd';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=108a1c56aefd';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=108a1c56aefd";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=108a1c56aefd";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,

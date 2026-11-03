@@ -1,7 +1,7 @@
-import{PLAYER_POSES}from'./player-art.js?v=faf82fb8c86d';
-import{SIDE_POSES}from'./side-art.js?v=faf82fb8c86d';
-import{sideFrame}from'./gait.js?v=faf82fb8c86d';
-import{WALK_ARMS,SIDE_ARMS}from'./walk-injury-data.js?v=faf82fb8c86d';
+import{PLAYER_POSES}from'./player-art.js?v=108a1c56aefd';
+import{SIDE_POSES}from'./side-art.js?v=108a1c56aefd';
+import{sideFrame}from'./gait.js?v=108a1c56aefd';
+import{WALK_ARMS,SIDE_ARMS}from'./walk-injury-data.js?v=108a1c56aefd';
 export function containsPixel(poly,x,y){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;}
 export function walkInjuryPose(direction,clock,moving,arms=1){
  const side=moving&&(direction===1||direction===2),frame=side?sideFrame(clock,false,true):moving?((Math.floor(clock)%4)+4)%4:1,p=side?SIDE_POSES[0][frame]:PLAYER_POSES[direction][frame],data=side?SIDE_ARMS[frame]:WALK_ARMS[direction][frame];

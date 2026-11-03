@@ -34,3 +34,8 @@ NPC introductions and follow-ups depend on the actual evidence. Ordinary dialogu
 Optional keepsakes have dedicated fixtures separate from tools/equipment/key containers. Hidden frame and preservation-room interactions are absent from main objectives. Discovery records reveal secret names only after finding them; memory rewards remain finite, and two optional personal records add an epilogue. Inventory tabs separate consumables, keys/evidence and keepsakes. Equipment has four independent visible slots and one-click equip/unequip.
 
 Validation: `node game/game.test.mjs` and `node game/story-route.test.mjs`. Browser QA uses a valid chapter-one checkpoint, actual E/dialogue/puzzle/ending controls and verified reachable interaction approaches. Tests relocate between fixture approaches to cover the story graph; they are not a four-hour uninterrupted playthrough.
+
+## Crawl proportions and achievement presentation
+Crawl sprites share a uniform .074 native-pixel scale: the measured198px front head renders at14.65 world pixels, compared to15.42 for the45px head in the standing178px crop. Floor contact stays at y+5; shadows and temporary-light hand offsets use the smaller geometry. Source art and the distance-driven arm cycle are unchanged.
+
+Achievements use seven distinct vector badges, queued bottom-right unlock cards, locked/earned library cards and a completion meter. Unlocks are stored separately from save slots so rolling back a save does not repeat a notification. Previously earned saved flags import silently. Secret badge details remain hidden until earned. Notifications do not intercept mouse/touch input and respect reduced motion. The browser ledger is local to this browser; this is an in-game presentation, not a Steam SDK integration.
