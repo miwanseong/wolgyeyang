@@ -257,6 +257,7 @@ export class AudioDirector {
     o.start();
     o.stop(c.currentTime + 0.1);
   }
+  phoneEnd(){if(!this.ctx||!this.enabled)return;const c=this.ctx,start=c.currentTime;for(const at of [0,.36]){const o=c.createOscillator(),g=c.createGain();o.frequency.value=425;g.gain.setValueAtTime(0,start+at);g.gain.linearRampToValueAtTime(.025,start+at+.008);g.gain.setValueAtTime(.025,start+at+.16);g.gain.linearRampToValueAtTime(0,start+at+.18);o.connect(g);g.connect(this.fxBus);o.start(start+at);o.stop(start+at+.19);}}
   phoneRing(){if(!this.ctx||!this.enabled)return;const c=this.ctx,start=c.currentTime;for(const at of [0,.65])for(const hz of [440,480]){const o=c.createOscillator(),g=c.createGain();o.frequency.value=hz;g.gain.setValueAtTime(0,start+at);g.gain.linearRampToValueAtTime(.035,start+at+.015);g.gain.setValueAtTime(.035,start+at+.42);g.gain.linearRampToValueAtTime(0,start+at+.46);o.connect(g);g.connect(this.fxBus);o.start(start+at);o.stop(start+at+.48);}}
   heartbeat(){return this.effect('heartbeat',.75);}
 

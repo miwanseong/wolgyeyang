@@ -1,8 +1,9 @@
-import {hasOriginals} from './story.js?v=c1be5b836ac4';
-import {residentOutcome} from './npc-threat.js?v=c1be5b836ac4';
-import {familyEnding} from './haunt-causality.js?v=c1be5b836ac4';
-import {stormEndingBeat} from './story-flow.js?v=c1be5b836ac4';
-import {lowerLightForPickup} from './body.js?v=c1be5b836ac4';
+import {discoveryEnding} from './discoveries.js?v=faf82fb8c86d';
+import {hasOriginals} from './story.js?v=faf82fb8c86d';
+import {residentOutcome} from './npc-threat.js?v=faf82fb8c86d';
+import {familyEnding} from './haunt-causality.js?v=faf82fb8c86d';
+import {stormEndingBeat} from './story-flow.js?v=faf82fb8c86d';
+import {lowerLightForPickup} from './body.js?v=faf82fb8c86d';
 export const TRAP_DOORS=['relay-quiet-inner-door','relay-booth-door'];
 export function chooseRecordRoute(s,route){
  if(!s.bag.includes('relayCopy')||s.bag.includes('relayExport'))return false;
@@ -26,4 +27,4 @@ function baseRouteFilm(s,id,film){
  return film;
 }
 
-export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);if(id==='surrender'&&!hasOriginals(s))result={...film,beats:[['내 목소리','녹음테이프를 창구 위에 올렸다. 그날 내가 한 확인과 취소를 내 말로 진술했다.',''],['남겨 둔 증거','104호 사진과 남은 서류를 확보하지 못했다고 말했다. 확인하지 못한 사실까지 채워 넣지는 않았다.',''],['진술 접수','녹음과 진술의 인수 번호가 적힌 종이를 받았다. 조사는 이제 시작이었다.','']]};const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const rescued=residentOutcome(s);if(rescued&&['signal','fragment','silence'].includes(id))result={...result,beats:[...result.beats,rescued]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}
+export function routeFilm(s,id,film){let result=baseRouteFilm(s,id,film);if(id==='surrender'&&!hasOriginals(s))result={...film,beats:[['내 목소리','녹음테이프를 창구 위에 올렸다. 그날 내가 한 확인과 취소를 내 말로 진술했다.',''],['남겨 둔 증거','104호 사진과 남은 서류를 확보하지 못했다고 말했다. 확인하지 못한 사실까지 채워 넣지는 않았다.',''],['진술 접수','녹음과 진술의 인수 번호가 적힌 종이를 받았다. 조사는 이제 시작이었다.','']]};const beat=stormEndingBeat(s);if(beat&&['signal','fragment','silence','answered','unanswered'].includes(id))result={...result,beats:[...result.beats.slice(0,-1),beat,...result.beats.slice(-1)]};const rescued=residentOutcome(s);if(rescued&&['signal','fragment','silence','answered','unanswered'].includes(id))result={...result,beats:[...result.beats,rescued]};if(s.flags.relayClosure&&s.flags.storyRefusedCall&&['signal','fragment'].includes(id))result={...result,beats:[...result.beats,['남아 있는 수신음','원본은 제출했다. 그런데 마지막 질문에는 답하지 못했다.\n조사실 문 앞에서 꺼 둔 전화가 다시 울렸다. 이번에는 내 차례였다.','']]};const personal=discoveryEnding(s);if(personal&&['signal','fragment','answered'].includes(id))result={...result,beats:[...result.beats,personal]};const family=familyEnding(s,id);return family?{...result,beats:[...result.beats,family]}:result;}

@@ -24,6 +24,8 @@ export function addRelayChapter(M,map,prop,door){
  furniture('relayEntry','relay-inspection-lens','desk',36,18,'당직실 검사 도구함','검사용 확대경과 열쇠 점검표.',{equipment:'lens',facilityFrame:7,w:24,back:20,front:10});
  furniture('relayPlant','relay-circuit-tester','desk',42,17,'절연 공구 트레이','도현의 비접촉 회로 시험기. 측정 도구를 빌릴 수 있다.',{equipment:'tester',facilityFrame:5,w:24,back:20,front:10});
  for(const [i,label] of ['A','B','C'].entries())furniture('relayPlant','relay-test-'+label,'panel',33+i*2,21,'시험 접점 '+label,'복귀용 저전압 시험 접점.',{testContact:label,w:10,back:12,front:8});
+ wall('relayPlant','relay-contact-diagram',6,34,5.5,'저전압 점검대 결선도','A는 보호 기준 접점, C는 복귀 감시 접점으로 같은 감시 회로에 있다. B는 별도 시험 입력이다. 두 감시선이 이어져야 공구 트레이 확인등이 켜진다.',{contactClue:'contactDiagramSeen'});
+ detail('relayPlant','relay-contact-fault',6,44,17,'최근 점검지 · 입력 역류','점검일11월2일. 시험 입력B에 역류가 남아 분리 유지. 보호 기준A와 복귀 감시C를 연결한 상태에서 확인 신호를 시험할 것. 본 설비 전원과 분리된 점검대다.',{contactClue:'contactFaultSeen',w:10,back:8,front:5});
  // Reception: two enclosed offices open onto a wide, furnished waiting corridor.
  leaf('relayEntry','relay-reception-door',14,22,'접수실 방화문');M.relayEntry.objects.at(-1).doorType='fire';
  leaf('relayEntry','relay-duty-door',32,22,'당직실 방화문');M.relayEntry.objects.at(-1).doorType='fire';
@@ -65,6 +67,7 @@ export function addRelayChapter(M,map,prop,door){
  detail('relayArchive','relay-archive-reel',7,45,14,'분리된 청취 케이블','입력과 출력 케이블에 같은 이름표가 달렸다.');
  furniture('relayArchive','relay-listen-chair','chair',38,20,'대조대 의자','의자가 천천히 입구를 향한다.',{swivel:true,w:12,h:10});
  hide('relayArchive',47,20);
+ wall('relayPlant','relay-handle-spec',6,10,5.5,'순환 밸브 설비 대장','현재 순환 밸브는12mm 구동축 모델.16mm 수선품은 폐기 대기. 축 단면은 실제 밸브에서 확인할 것. 이 대장은 규격만 기록하며 모양이 다른 예비품도 같은 정비대에 반납된다.',{contactClue:'handleSpecSeen'});
  // Machinery: a mechanical cooling valve and a two-stage electrical transfer.
  leaf('relayPlant','relay-cooling-door',15,23,'냉각 순환실 방화문');
  leaf('relayPlant','relay-switch-door',39,23,'전원 절체실 방화문');
@@ -90,6 +93,7 @@ export function addRelayChapter(M,map,prop,door){
  furniture('relaySignal','relay-booth-chair','chair',13,16,'회신을 기다리는 의자','서윤이 앉았던 의자가 아니다. 서하가 앉을 자리다.',{swivel:true,w:12,h:10});
  detail('relaySignal','relay-mic-reel',7,18,19,'마이크 케이블','선은 제어실 벽 안쪽으로 이어진다.');
  for(const [x,id]of [[30,'a'],[34,'b'],[39,'c'],[44,'d']])furniture('relaySignal','relay-equipment-'+id,'panel',x,10,'비상 송출 장비 랙','서로 다른 회선 번호를 담당하는 랙. 초록 불빛 대신 작은 흰 표시등이 켜졌다.',{technical:7,w:20,back:36,front:12});
+ wall('relaySignal','relay-final-receiver',3,12,6.5,'원본 청취실 내선 수화기','원본 청취실과 접수 당직석을 잇는 내선. 송출 장비나 편집 단말과는 별개다.');
  action('relaySignal','relay-transmitter','player',36,19,'원본 대조·내보내기 콘솔','transmit','원본·취소 이력·잠금 회신을 하나의 기록으로 송출한다.',{technical:6,w:46,back:30,front:16});
  action('relaySignal','relay-six-names','desk',44,19,'송출 확인 명부','names','서하, 서윤, 정우, 해린, 도현, 미정. 여섯 이름 중 비워 둔 칸은 없다.',{w:31,back:28,front:12});
  hide('relaySignal',47,23);

@@ -19,7 +19,8 @@ export function nextStoryBeat(s){
   if(f.storyProtectRecord&&!f.storyFell&&!f.storyDrainEscaped&&s.x>=FALL_ZONE.x&&s.x<FALL_ZONE.x+FALL_ZONE.w&&s.y>=FALL_ZONE.y&&s.y<FALL_ZONE.y+FALL_ZONE.h)return'floorFall';
  }
  if(s.map==='relayPlant'&&f.relayPower&&!f.storyPowerReturn)return'powerReturn';
- if(s.map==='relaySignal'&&f.relayLastVoice&&!f.storyVoiceReaction)return'voiceReaction';
+ if(s.map==='relaySignal'&&f.relayLastVoice&&(!f.storyVoiceReaction||!f.storyAcceptedCall&&!f.storyRefusedCall))return'voiceReaction';
+ if(s.map==='relaySignal'&&s.bag.includes('relayExport')&&!f.relayRedacted&&!f.relayClosure&&!f.relayFinalCallSeen&&f.relayErasure)return'finalCall';
  return null;
 }
 export function chooseStormResponse(s,choice){

@@ -1,4 +1,4 @@
-import {pickupBlocked} from './body.js?v=c1be5b836ac4';
+import {pickupBlocked} from './body.js?v=faf82fb8c86d';
 // Side wings have physical purposes, supply chains and finite discoveries.
 export const EXPANSION_MAPS=['serviceHall','laundry','rearCourt','relayService','relayWorkshop','relayStore'];
 export function addExploration(M,map,prop,door){
@@ -74,7 +74,7 @@ export function explorationAction(s,o){
  const [item,line]=supply[a]||[];if(!item)return null;const flag='exploreTaken_'+a;if(s.flags[flag])return{line:'비어 있는 인수 자리와 떼어 낸 봉인만 남았다.'};s.flags[flag]=true;return{item,line,sound:'paper'};
 }
 export function explorationBeat(s){prepareExploration(s);const f=s.flags;
- const spec=s.map==='serviceHall'?['hallKnock','service-condemned','걸음을 멈췄는데도 소리가 났어. 보일러실 안에서… 똑, 똑, 똑. 누가 문을 두드리고 있어.','omenKnock']:
+ const spec=s.map==='serviceHall'&&!f.shadowWallSeen?['hallKnock','service-condemned','걸음을 멈췄는데도 소리가 났어. 보일러실 안에서… 똑, 똑, 똑. 누가 문을 두드리고 있어.','omenKnock']:
  s.map==='rearCourt'?['courtWindow','court-key-cabinet','시트 사이로 지나간 그림자가 저 열쇠함 앞에서 멈췄어. 바닥에 젖은 자국이 남아 있어.','stepWater0']:
  s.map==='relayService'&&f.exploreTaken_deckCoupler?['returnShadow','service-danger-door','올 때는 없던 젖은 발자국이 앞서 가고 있어.\n고압실 문 아래에서 끝났어. 따라 들어가면 안 돼.','stepWater0']:
  s.map==='relayWorkshop'&&f.exploreTaken_partsKey?['toolKnock','workshop-tools','공구함 서랍이 안에서 밀렸어. 누가 열쇠를 돌려놓으라는 듯이…\n등 뒤에서 열쇠 고리가 한 번 더 울렸어.','omenKnock']:

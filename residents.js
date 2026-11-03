@@ -1,7 +1,7 @@
-import {fleeActor} from './npc-threat.js?v=c1be5b836ac4';
-import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=c1be5b836ac4';
-import {advanceGait,actorStride} from './gait.js?v=c1be5b836ac4';
-import {canMove,findPath,sight} from './world.js?v=c1be5b836ac4';
+import {fleeActor} from './npc-threat.js?v=faf82fb8c86d';
+import {npcCorruption,corruptionReply,FEAR_LINES} from './resident-corruption.js?v=faf82fb8c86d';
+import {advanceGait,actorStride} from './gait.js?v=faf82fb8c86d';
+import {canMove,findPath,sight} from './world.js?v=faf82fb8c86d';
 export const RESIDENTS=[
  {id:'haerin',name:'해린',column:0,map:'relayEntry',route:[[13,10],[16,10]],outside:[[18,22],[19,22]]},
  {id:'mijeong',name:'미정',column:1,map:'relayEntry',route:[[35,16],[37,16]],outside:[[22,23],[24,23]]},
@@ -42,6 +42,7 @@ function residentAccount(s,n){
  if(s.flags['deduced_'+n.id])return ({haerin:'23:44 수신 행을 보셨군요. 그 줄은 제가 화면에서 숨겼어요. 통화 내용을 바꾼 건 아니지만 없었다고 적은 건 제 거짓말입니다. 수정 이력도 함께 가져가 주세요.',mijeong:'정우가 쓴 요약은 내가 확인한 내용과 달라. 나는 열쇠가 돌아간 것과 문이 안 움직인 것만 봤어. 화면을 누가 고쳤는지는 몰라. 그건 내 증언으로 채우면 안 돼.',dohyun:'운전표에 정지가 남아 있네요. 펌프 소리라고 적은 제 보고는 틀렸습니다. 직접 확인하지 않았고, 정우가 책임을 묻겠다고 하자 진술을 바꿨습니다.'})[n.id];
  if(n.id==='haerin'&&(s.flags.relayErasure||s.investigation?.rolls.haerin?.success))return '숨긴 행이 원본에는 남아 있었죠. 제가 원본을 지운 건 아니지만, 취소 뒤 수신이 없었다고 인계한 건 잘못입니다. 수정 이력을 원본 통화와 같이 보존해 주세요.';
  if(n.id==='haerin'&&s.flags.drawerSuspicion)return '서랍에 손댄 거 봤어요. 필요한 기록은 정식으로 요청하세요. 제 허락 없이 물건을 꺼내려 한 일은 잊지 않을 겁니다. 원본 조작 이력을 확인하는 건 막지 않겠어요.';
+ if(n.id==='mijeong'&&s.bag.includes('serviceCarbon'))return s.flags.shadowRecordMatched?'그 인수지의 응답석이 네 자리였구나. 나는 통화 내용을 못 들었어. 이제 원본과 네 말을 같이 남겨 줘. 문 앞에 늦게 간 내 일도 빼지 말고.':'그건 내가 내선 표시를 보고 적어 둔 인수지야. 정우가 쓰지 않는 인계함으로 옮기라고 했어. 문 쪽 소리가 나서 시간을 적었지. 네가 무슨 말을 했는지는 못 들었어.23시44분… 그 뒤에 전화가 없었다는 목록과는 맞지 않네.';
  const phase=residentPhase(s),lines={
   haerin:[
    '가져오신 녹음에서 빠진 구간을 확인하러 오셨죠. 아파트의 통화 원본은 이곳 기록동에 남아 있어요. 출입증은 인계대 서랍에 두었어요. 제가 인계한 목록에는 취소 뒤 통화가 없습니다. 다만… 화면 목록과 원본 파일은 따로 보관돼요.',
@@ -69,13 +70,13 @@ export function residentExpression(s,n){if(n.panic)return 2;if(residentPhase(s)=
 export const RESIDENT_QUESTIONS={
  haerin:[['왜 다시 연락했어요?','원본 대조를 원한다고 하셔서 도현 씨와 미정 씨도 불렀어요. 정우가 잠금을 유지한 회신이 남아 있거든요. 그 기록을 확인하면 당시 책임도 분명해질 거라고 생각했어요.'],['표시만 고쳤다는 게 무슨 뜻이죠?','같은 사건 번호가 반복된 행을 정리했어요. 인계 목록에는 필요한 통화가 다 있다고 생각했습니다. 원본과 차이가 난다면 기록동의 수정 이력 번호부터 확인하시죠.']],
  mijeong:[['그 열쇠로 왜 못 열었어요?','원래 잠금장치는 열렸어. 손목에 힘이 풀릴 만큼 돌려 봤으니까 알아. 그런데 문은 한 치도 안 움직였지. 그때 왜 다른 걸 의심하지 못했을까. 내 열쇠가 틀렸다는 생각만 했어. 누가 안쪽에 뭘 덧댔다는 생각은 못 하고.'],['아직 여길 지키는 이유가 있어요?','당직 수첩과 열쇠를 직접 넘기려고 기다렸어. 열쇠에는 그날 돌리다 긁힌 자국이 남아 있어. 도구함의 확대경으로 봐. 수첩 시각이랑 대조하면 내가 문 앞에 늦게 간 사실도 확인될 거야.']],
- dohyun:[['무슨 소리를 들었어요?','세 번. 같은 간격은 아니었어요. 그걸 배관 진동이라고 적었습니다. 그때 펌프는 정지 상태였어요. 운전 기록을 보고도 배관 진동이라고 고쳤습니다. 지금도 불규칙한 소리가 나면 시간을 재요. 이번에는… 사람 소리인지 먼저 들어야겠죠.'],['시험기는 빌릴 수 있나요?','정비대의 세 시험 접점을 복귀 순서대로 눌러 주세요. 지워진 순서는 정비대 옆 표찰에 남아 있어요. 시험이 끝나면 공구함 잠금이 풀립니다. 본 회선과 분리된 시험기예요. 그걸로 사고 설비를 켜지는 마세요.']],
+ dohyun:[['무슨 소리를 들었어요?','세 번. 같은 간격은 아니었어요. 그걸 배관 진동이라고 적었습니다. 그때 펌프는 정지 상태였어요. 운전 기록을 보고도 배관 진동이라고 고쳤습니다. 지금도 불규칙한 소리가 나면 시간을 재요. 이번에는… 사람 소리인지 먼저 들어야겠죠.'],['시험기는 빌릴 수 있나요?','원본 데크의 접점 부식을 확인하려는 거죠. 빌려 드릴 시험기가 트레이에 있습니다. 잠금은 별도 저전압 점검대의 복귀 신호로 풀어요. 시험대 뒤 결선도와 트레이 옆 최근 점검지를 같이 보세요. 입력에 역류가 남았으니, 전원을 무작정 잇지 마세요. 본 회선에는 손대지 않고 시험기만 꺼내는 작업입니다.']],
 };
 
 export const FOLLOW_UP={
  haerin:[['잘린 구간이 정말 없는 통화인지, 수정 전 목록과 원본으로 확인할게요.','네. 취소 통화 데크와 수정 이력 서랍의 번호가 같아야 합니다. 제 말만 받아 적지 말고 두 번호를 확인해 주세요.'],['정리한 행이 정말 중복인지 원본과 대조해 볼게요.','기록동 수정 이력 서랍에 정리 전 값이 남아 있을 거예요. 제 말만 듣고 결론 내리지는 마세요.']],
  mijeong:[['해제 접수증만 보고 문이 열렸다고 믿으면 안 됐어요.','내가 문을 열지 못한 건 수첩에 적었어. 23:47 회신이 무엇을 뜻하는지는 담당자에게 확인해. 나는 그 장치를 본 적이 없어.'],['그 자국과 수첩을 함께 남길게요.','내가 제때 도착했다고 적지는 마. 시각을 그대로 남겨. 네가 고칠 이유는 없어.']],
- dohyun:[['펌프가 꺼져 있었다면 제 최초 보고도 틀린 거네요.','네. 운전 기록에는 정지가 남아 있습니다. 최초 진술과 수정 진술을 겹쳐 놓으면 무엇을 바꿨는지 확인됩니다.'],['시험 접점으로 확인하고 도구를 빌릴게요.','표찰의 B, A, C 순서입니다. 본 회선은 냉각 확인 뒤에 분리하고 투입하세요. 시험 접점과 전원 절체반을 혼동하면 안 됩니다.']]
+ dohyun:[['펌프가 꺼져 있었다면 제 최초 보고도 틀린 거네요.','네. 운전 기록에는 정지가 남아 있습니다. 최초 진술과 수정 진술을 겹쳐 놓으면 무엇을 바꿨는지 확인됩니다.'],['시험 접점으로 확인하고 도구를 빌릴게요.','네. 접점 글자 순서를 외우는 문제가 아닙니다. 어느 선을 분리하고 어느 감시선을 이어야 하는지 실제 연결 상태를 봐 주세요. 결선도는 각 선의 역할을, 점검지는 지금 고장 난 부분을 알려 줍니다. 시험 신호가 돌아와야 트레이가 열려요.']]
 };
 
 RESIDENT_QUESTIONS.haerin.push(['이곳은 정확히 어떤 곳이에요?','아파트 위탁관리사가 쓰던 시설 출동 중계소예요. 주민의 출동 요청과 원격 명령, 녹음의 백업을 보관합니다. 접수 완료 신호와 문이 실제 열린 신호는 별개인데, 그날 보고서는 둘을 같은 뜻으로 썼어요.']);
@@ -86,7 +87,7 @@ export function residentQuestions(s,id){
  const has=k=>s.bag.includes(k),f=k=>!!s.flags[k],requirements={
   haerin:[()=>has('tape')||has('relayBadge'),()=>has('auditMemo')||f('relayErasure')||f('relayRegistered')&&has('relayCopy'),()=>true],
   mijeong:[()=>has('receipt')||f('relayDuty'),()=>has('restoredRoster')||has('rosterScrap')||f('relayDuty')],
-  dohyun:[()=>has('pumpLog')||f('relayPressure'),()=>f('seen_relay-circuit-tester')||['A','B','C'].some(k=>f('seen_relay-test-'+k))||f('relayLogic')||s.investigation?.gear?.includes('tester')]
+  dohyun:[()=>has('pumpLog')||f('relayPressure'),()=>has('relayCopy')||f('seen_relay-circuit-tester')||['A','B','C'].some(k=>f('seen_relay-test-'+k))||f('relayLogic')||s.investigation?.gear?.includes('tester')]
  };
  return (RESIDENT_QUESTIONS[id]||[]).map(([label,line],index)=>({label,line,index})).filter(q=>f('question_'+id+'_'+q.index)||requirements[id]?.[q.index]?.());
 }

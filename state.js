@@ -1,14 +1,15 @@
-import {MEMENTOS} from './mementos.js?v=c1be5b836ac4';
-import {canPreserve} from './chapter1-route.js?v=c1be5b836ac4';
-import {bodyState,validBody,pickupBlocked} from './body.js?v=c1be5b836ac4';
-import {validInvestigation} from './investigation.js?v=c1be5b836ac4';
-import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=c1be5b836ac4';
-import { MAPS, canMove, worldFor, sight } from "./world.js?v=c1be5b836ac4";
-import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=c1be5b836ac4";
+import {SHADOW_ITEMS} from './shadow-route.js?v=faf82fb8c86d';
+import {MEMENTOS} from './mementos.js?v=faf82fb8c86d';
+import {canPreserve} from './chapter1-route.js?v=faf82fb8c86d';
+import {bodyState,validBody,pickupBlocked} from './body.js?v=faf82fb8c86d';
+import {validInvestigation} from './investigation.js?v=faf82fb8c86d';
+import { validPuzzles, reconcilePuzzles } from './puzzles.js?v=faf82fb8c86d';
+import { MAPS, canMove, worldFor, sight } from "./world.js?v=faf82fb8c86d";
+import { STORY, canSurrender,canSeekOriginal } from "./story.js?v=faf82fb8c86d";
 export const VERSION = 2;
 export const initial = () => ({
   version: VERSION,
-  layout: 18,
+  layout: 19,
   map: "lobby",
   x: 11 * 32,
   y: 20 * 32,
@@ -26,6 +27,7 @@ export const initial = () => ({
   ending: null,
 });
 export const ITEMS = {
+ ...SHADOW_ITEMS,
  boltSketch:'미정의 빗장 위치 스케치',
  spareLight:'방수 포장의 예비 작업등',
  laundryKey:'공동 세탁실 열쇠',rearKey:'후면 현관 열쇠',partsKey:'밀봉 부품실 열쇠',deckCoupler:'원본 데크용 회선 어댑터',courtSlip:'서윤의 세탁 인수표',knotThreadService:'매듭실 · 반환 비품함',
@@ -101,7 +103,7 @@ export function restore(raw) {
     typeof s.flags !== "object" ||
     Array.isArray(s.flags) ||
     !Object.values(s.flags).every((v) => typeof v === "boolean") ||
-    ![null, "witness", "return", "surrender", "signal", "fragment", "silence", "preserve"].includes(s.ending) ||
+    ![null, "witness", "return", "surrender", "signal", "fragment", "silence", "preserve", "answered", "unanswered"].includes(s.ending) ||
     !Number.isFinite(s.stamina) ||
     s.stamina < 0 ||
     s.stamina > 100 ||
@@ -113,7 +115,7 @@ export function restore(raw) {
   if(s.notes.some(n=>n.id==='104-ledger'))s.notes=s.notes.filter(n=>n.id!=='104-ledger');
   if(oldLayout<8 && s.flags.listened)s.flags.shutterOpen=true;
   if(!canMove(worldFor(s),s.x,s.y)) {
-    if(s.layout===18)throw Error("가구 내부의 저장 위치");
+    if(s.layout===19)throw Error("가구 내부의 저장 위치");
     let best=null;
     const map=worldFor(s);
     for(let y=0;y<map.h;y++)for(let x=0;x<map.w;x++){
@@ -123,7 +125,7 @@ export function restore(raw) {
     if(!best)throw Error("저장 위치 복원 실패");
     s.x=best.x;s.y=best.y;s.flags.relocated=true;
   }
-  return { ...s, layout:18, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&!s.flags.lightStowed&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
+  return { ...s, layout:19, body:bodyState(s),omenVisits:s.omenVisits||{},flashlight:s.flashlight&&!s.flags.lightStowed&&s.bag.includes("flashlight")&&bodyState(s).arms<2, hidden: false, hideSpot:null, running: false };
 }
 export function unlock(s, code) {
   if (code !== "0411") return "wrong";
